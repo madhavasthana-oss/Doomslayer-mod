@@ -27,9 +27,14 @@ QtObject {
     readonly property color accentWarm:  "#FFCA80"   // RAM, execution time, highlights — ember
     readonly property color accentSoft:  "#FF80BF"   // kubectl, project — faint rose
 
-    // Text
-    readonly property color textPrimary: "#F8F8F2"   // all label text — near white
-    readonly property color textMuted:   "#994400"   // de-emphasized text — dark ember
+    // ---------------------------------------------------------
+    //  TEXT — replace these lines in theme.qml
+    // ---------------------------------------------------------
+
+    readonly property color textPrimary: "#FF4500"   // fire red — dominant text
+    readonly property color textSecondary: "#FFCA80" // ember — secondary labels
+    readonly property color textMuted:   "#CC2200"   // deep red — de-emphasized
+    readonly property color textDim:     "#3D0A00"   // barely visible — decorative
 
     // State colors
     readonly property color stateCritical: "#CC2200" // errors, critical thermals — deep red
@@ -61,18 +66,18 @@ QtObject {
     //  BAR GEOMETRY
     // ---------------------------------------------------------
 
-    readonly property int barHeightSide:   32
-    readonly property int barHeightCenter: 48
+    readonly property int barHeightSide:   20
+    readonly property int barHeightCenter: 30
 
-    readonly property int barWidthSide:    320
-    readonly property int barWidthCenter:  480
+    readonly property int barWidthSide:    350
+    readonly property int barWidthCenter:  640
 
     // Trapezoid angle offset in pixels
-    // 20px over 32px height ≈ 32° — clean, intentional, not aggressive
-    readonly property int angleOffset:     20
+    // 45px over 30px height ≈ 45° — clean, intentional, not aggressive
+    readonly property int angleOffset:     45
 
     // Gap between bars — the seam / visor crack
-    readonly property int barGap:          18
+    readonly property int barGap:          0
 
     readonly property int barMarginTop:    8
 

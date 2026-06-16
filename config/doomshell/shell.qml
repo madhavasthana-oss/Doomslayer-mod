@@ -2,14 +2,16 @@ import QtQuick
 import Quickshell
 import Quickshell.Wayland
 import "utils"
+import "bars"
+import "."
 
 ShellRoot {
 
     PanelWindow {
         id: leftBarWindow
         anchors { top: true; left: true }
-        implicitWidth:  340
-        implicitHeight: 20
+        implicitWidth:  Globals.leftWidth
+        implicitHeight: Globals.leftHeight
         color: "transparent"
         exclusiveZone: 0
         WlrLayershell.layer:     WlrLayer.Top
@@ -17,8 +19,8 @@ ShellRoot {
 
         LeftTrapezoid {
             anchors.fill: parent
-            barWidth:     340
-            barHeight:    20
+            barWidth:     Globals.leftWidth
+            barHeight:    Globals.leftHeight
             alertActive:  false
         }
     }
@@ -26,36 +28,33 @@ ShellRoot {
     PanelWindow {
         id: centerBarWindow
         anchors { top: true }
-        implicitWidth:  640
-        implicitHeight: 30
+        implicitWidth:  Globals.centerWidth
+        implicitHeight: Globals.centerHeight
         color: "transparent"
         exclusiveZone: 0
         WlrLayershell.layer:     WlrLayer.Top
         WlrLayershell.namespace: "doomshell-center"
 
-        CenterTrapezoid {
+        CenterBar {
             anchors.fill: parent
-            barWidth:     640
-            barHeight:    30
-            alertActive:  false
         }
     }
 
-     PanelWindow {
-         id: rightBarWindow
-         anchors { top: true; right: true }
-         implicitWidth:  340
-         implicitHeight: 20
-         color: "transparent"
-         exclusiveZone: 0
-         WlrLayershell.layer:     WlrLayer.Top
-         WlrLayershell.namespace: "doomshell-right"
+    PanelWindow {
+        id: rightBarWindow
+        anchors { top: true; right: true }
+        implicitWidth:  Globals.rightWidth
+        implicitHeight: Globals.rightHeight
+        color: "transparent"
+        exclusiveZone: 0
+        WlrLayershell.layer:     WlrLayer.Top
+        WlrLayershell.namespace: "doomshell-right"
 
-         RightTrapezoid {
-             anchors.fill: parent
-             barWidth:     340
-             barHeight:    20
-             alertActive:  false
-         }
-     }
+        RightTrapezoid {
+            anchors.fill: parent
+            barWidth:     Globals.rightWidth
+            barHeight:    Globals.rightHeight
+            alertActive:  false
+        }
+    }
 }

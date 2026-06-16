@@ -1,0 +1,2 @@
+singleton Theme theme.qml
+singleton Globals globals.qml
