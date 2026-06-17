@@ -7,7 +7,7 @@
 
 import QtQuick 2.15
 import QtQuick.Shapes 1.15
-
+import ".."
 Item {
     id: root
 
@@ -17,14 +17,15 @@ Item {
 
     property real barWidth:    600
     property real barHeight:   75
+    property real inset: Globals.barInset
 
     // True 45° — offset equals height exactly
     // Do not override this unless you want a different angle
     property real angleOffset: barHeight
 
-    property real fillOpacity:  0.8
-    property color fillColor:   "#1A0000"
-    property color strokeColor: "#FF4500"
+    property real fillOpacity:  Globals.barOpacity
+    property color fillColor:   Theme.bgSurface
+    property color strokeColor: Theme.accent
     property real strokeWidth:  1.5
 
     property bool hovered:     false
@@ -83,35 +84,34 @@ Item {
     //  Fades out when alert is active.
     // ---------------------------------------------------------
 
-    Shape {
-        id: innerGlow
-        anchors.fill: parent
-        opacity: root.alertActive ? 0.0 : 0.30
-        layer.enabled: true
-        layer.samples: 4
+    // Shape {
+    //     id: innerGlow
+    //     anchors.fill: parent
+    //     opacity: root.alertActive ? 0.0 : 0.30
+    //     layer.enabled: true
+    //     layer.samples: 4
 
-        Behavior on opacity {
-            NumberAnimation {
-                duration: 220
-                easing.type: Easing.OutCubic
-            }
-        }
+    //     Behavior on opacity {
+    //         NumberAnimation {
+    //             duration: 220
+    //             easing.type: Easing.OutCubic
+    //         }
+    //     }
 
-        ShapePath {
-            fillColor:   "transparent"
-            strokeColor: "#FFCA80"
-            strokeWidth: 0.6
+    //     ShapePath {
+    //         fillColor:   "transparent"
+    //         strokeColor: "#FFCA80"
+    //         strokeWidth: 0.6
 
-            property real inset: 6
-            startX: inset
-            startY: inset
+    //         startX: inset
+    //         startY: inset
             
-            PathLine { x: root.barWidth - root.angleOffset - inset; y: inset                  }
-            PathLine { x: root.barWidth - inset;                    y: root.barHeight - inset }
-            PathLine { x: inset;                                    y: root.barHeight - inset }
-            PathLine { x: inset;                                    y: inset                  }
-        }
-    }
+    //         PathLine { x: root.barWidth - root.angleOffset - inset; y: inset                  }
+    //         PathLine { x: root.barWidth - inset;                    y: root.barHeight - inset }
+    //         PathLine { x: inset;                                    y: root.barHeight - inset }
+    //         PathLine { x: inset;                                    y: inset                  }
+    //     }
+    // }
 
     // ---------------------------------------------------------
     //  ALERT PULSE

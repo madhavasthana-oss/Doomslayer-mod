@@ -8,22 +8,40 @@ import "."
 ShellRoot {
 
     PanelWindow {
-        id: leftBarWindow
-        anchors { top: true; left: true }
-        implicitWidth:  Globals.leftWidth
-        implicitHeight: Globals.leftHeight
+        id: rightBarWindow
+        anchors { 
+            top: true; 
+            right: true 
+        }
+        implicitWidth:  Globals.rightWidth
+        implicitHeight: Globals.rightHeight
         color: "transparent"
-        exclusiveZone: 0
-        WlrLayershell.layer:     WlrLayer.Top
-        WlrLayershell.namespace: "doomshell-left"
+        exclusiveZone: Globals.exclusiveZone    // ← match center
+        WlrLayershell.layer: WlrLayer.Top
+        WlrLayershell.namespace: "doomshell-right"
 
-        LeftTrapezoid {
+        RightBar {
             anchors.fill: parent
-            barWidth:     Globals.leftWidth
-            barHeight:    Globals.leftHeight
-            alertActive:  false
         }
     }
+
+    PanelWindow {
+    id: leftBarWindow
+    anchors { 
+        top: true; 
+        left: true 
+    }
+    implicitWidth:  Globals.leftWidth
+    implicitHeight: Globals.leftHeight
+    color: "transparent"
+    exclusiveZone: Globals.exclusiveZone    // ← match center
+    WlrLayershell.layer:     WlrLayer.Top
+    WlrLayershell.namespace: "doomshell-left"
+
+    LeftBar {
+        anchors.fill: parent
+    }
+}
 
     PanelWindow {
         id: centerBarWindow
@@ -31,7 +49,7 @@ ShellRoot {
         implicitWidth:  Globals.centerWidth
         implicitHeight: Globals.centerHeight
         color: "transparent"
-        exclusiveZone: 0
+        exclusiveZone: Globals.exclusiveZone
         WlrLayershell.layer:     WlrLayer.Top
         WlrLayershell.namespace: "doomshell-center"
 
@@ -40,21 +58,4 @@ ShellRoot {
         }
     }
 
-    PanelWindow {
-        id: rightBarWindow
-        anchors { top: true; right: true }
-        implicitWidth:  Globals.rightWidth
-        implicitHeight: Globals.rightHeight
-        color: "transparent"
-        exclusiveZone: 0
-        WlrLayershell.layer:     WlrLayer.Top
-        WlrLayershell.namespace: "doomshell-right"
-
-        RightTrapezoid {
-            anchors.fill: parent
-            barWidth:     Globals.rightWidth
-            barHeight:    Globals.rightHeight
-            alertActive:  false
-        }
-    }
 }

@@ -6,12 +6,45 @@ import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
 import "../utils"
 import ".."
+import "../widgets/centerBarWidgets/system/CPU"
+import "../widgets/centerBarWidgets/system/GPU"
+import "../widgets/centerBarWidgets/system/RAM"
+import "../widgets/centerBarWidgets/system/temp"
 
 Item {
     id: centerBar
     width:  Globals.centerWidth
     height: Globals.centerHeight
+    property string activePanel: ""
+
+    // load CPU Stats
+    CPUStats{
+        id: cpuPopup
+        visible: false
+        anchors.top: parent.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+    }
     
+    GPUStats{
+        id: gpuPopup
+        visible: false
+        anchors.top: parent.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+    }
+
+    RAMStats{
+        id: ramPopup
+        visible: false
+        anchors.top: parent.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+    }
+
+    TempStats{
+        id: tempPopup
+        visible: false
+        anchors.top: parent.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+    }
     Timer {
         id: clockTimer
         interval: 1000
@@ -43,6 +76,7 @@ Item {
         barWidth:     Globals.centerWidth
         barHeight:    Globals.centerHeight
         alertActive:  false
+        expanded:     activePanel !== ""
     }
 
     // ---------------------------------------------------------
@@ -54,23 +88,33 @@ Item {
 
     GridLayout {
         anchors.centerIn: parent
-        columns:          5
-        rows:             2
+        columns:          Globals.columnCount
+        rows:             Globals.rowCount
         rowSpacing:       2
-        columnSpacing:    60
+        columnSpacing:    Globals.columnSpacing
 
         // ── ROW 0 — labels ──────────────────────────────────
 
         Text {
-            Layout.alignment: Qt.AlignHCenter
+            Layout.alignment: Qt.AlignVCenter
             text:             "CPU"
             font.family:      kogni.name
             font.pixelSize:   Theme.fontSizeBase
             color:            Theme.textMuted
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    activePanel =
+                        activePanel === "cpu"
+                        ? ""
+                        : "cpu"
+                }
+            }
         }
 
         Text {
-            Layout.alignment: Qt.AlignHCenter
+            Layout.alignment: Qt.AlignVCenter
             text:             "GPU"
             font.family:      kogni.name
             font.pixelSize:   Theme.fontSizeBase
@@ -94,8 +138,8 @@ Item {
         }
 
         Text {
-            Layout.alignment: Qt.AlignHCenter
-            text:             "BAT"
+            Layout.alignment: Qt.AlignVCenter
+            text:             "Temp"
             font.family:      kogni.name
             font.pixelSize:   Theme.fontSizeBase
             color:            Theme.textMuted
@@ -105,16 +149,16 @@ Item {
 
         Text {
             Layout.alignment: Qt.AlignHCenter
-            text:             "X %"
-            font.family:      kogni.name
+            text:             cpuPopup.__cpu_usage__ + " %"
+            font.family:      jetbrains.name
             font.pixelSize:   Theme.fontSizeSmall
             color:            Theme.textSecondary
         }
 
         Text {
             Layout.alignment: Qt.AlignHCenter
-            text:             "Y %"
-            font.family:      kogni.name
+            text:             gpuPopup.__gpu_usage__ + " %"
+            font.family:      jetbrains.name
             font.pixelSize:   Theme.fontSizeSmall
             color:            Theme.textSecondary
         }
@@ -123,23 +167,23 @@ Item {
             id:               timeText
             Layout.alignment: Qt.AlignHCenter
             text:             Qt.formatTime(new Date(), "hh:mm")
-            font.family:      kogni.name
+            font.family:      jetbrains.name
             font.pixelSize:   Theme.fontSizeSmall
             color:            Theme.textSecondary
         }
 
         Text {
             Layout.alignment: Qt.AlignHCenter
-            text:             "Z %"
-            font.family:      kogni.name
+            text:             ramPopup.__ram_in_use__ + "/" + ramPopup.__ram_total__ + " gB"
+            font.family:      jetbrains.name
             font.pixelSize:   Theme.fontSizeSmall
             color:            Theme.textSecondary
         }
 
         Text {
             Layout.alignment: Qt.AlignHCenter
-            text:             "W %"
-            font.family:      kogni.name
+            text:             tempPopup.__temp__ + " \u00B0C"
+            font.family:      jetbrains.name
             font.pixelSize:   Theme.fontSizeSmall
             color:            Theme.textSecondary
         }

@@ -11,58 +11,117 @@ Item {
     id: leftBar
     width:  Globals.leftWidth
     height: Globals.leftHeight
+    property int visibleCount: Globals.workspaceNumber
+    property int focusedId:    Hyprland.focusedWorkspace?.id ?? 1
+    property int windowStart:  1    // starts at 1, updated by Connections
 
-    Timer {
-        id: clockTimer
-        interval: 1000
-        running:  true
-        repeat:   true
-        onTriggered: timeText.text = Qt.formatTime(new Date(), "hh:mm")
+    Connections {
+        target: Hyprland
+        function onFocusedWorkspaceChanged() {
+            var id = Hyprland.focusedWorkspace?.id ?? 1
+            leftBar.focusedId = id
+
+            // hit right boundary — shift forward
+            if (id >= leftBar.windowStart + leftBar.visibleCount) {
+                leftBar.windowStart = id - leftBar.visibleCount + 1
+            }
+            // hit left boundary — shift backward
+            else if (id < leftBar.windowStart) {
+                leftBar.windowStart = id
+            }
+            // within range — don't touch windowStart
+        }
     }
-    // ---------------------------------------------------------
-    //  FONT
-    // ---------------------------------------------------------
+    //  FONTS
 
     FontLoader {
         id: kogni
         source: "../assets/fonts/KogniGear.ttf"
     }
 
-    // ---------------------------------------------------------
-    //  SHAPE
-    // ---------------------------------------------------------
+    FontLoader {
+        id: jetbrains
+        source: "../assets/fonts/JetBrainsMonoNerdFontMono-Regular.ttf"
+    }
 
-    leftTrapezoid {
+    //  SHAPE
+
+    LeftTrapezoid {
         anchors.fill: parent
         barWidth:     Globals.leftWidth
         barHeight:    Globals.leftHeight
         alertActive:  false
     }
 
+
     // ---------------------------------------------------------
     //  CONTENT
+    //  Two RowLayouts side by side:
+    //  Left  → workspace numbers
+    //  Right → active window icons in current workspace
     // ---------------------------------------------------------
 
-    Column {
-        anchors.centerIn       : parent
-        spacing                : 2   
-        
-        Text {
-            anchors.horizontalCenter: parent.horizaontalleft
-            // hortizontalAlignment    : Text.AlignHleft
-            text                    : "Greetings, Slayer"
-            font.family             : kogni.name
-            font.pixelSize          : Theme.fontSizeMedium
-            color                   : Theme.textPrimary
+    RowLayout {
+    anchors.fill:        parent
+    anchors.leftMargin:  Globals.workspaceToggleMargin
+    anchors.rightMargin: Globals.leftHeight + Globals.inMostSpacing 
+    spacing:             Globals.inMostSpacing * 2
+
+    // ---------------------------------------------------------
+    //  ROW 1 — Workspace Numbers — FIXED WIDTH
+    // ---------------------------------------------------------
+    RowLayout {
+        Layout.preferredWidth: Globals.workspaceNumber * (Theme.fontSizeSmall + Globals.inMostSpacing)
+        Layout.fillWidth:      false  // never grow or shrink
+        spacing:               Globals.inMostSpacing 
+
+        Repeater {
+            model: Array.from(
+                { length: leftBar.visibleCount },
+                (_, i) => leftBar.windowStart + i
+            )
+
+            Text {
+                property int  wsId:     modelData
+                property bool isActive: Hyprland.focusedWorkspace?.id === wsId
+
+                text:           wsId
+                font.family:    kogni.name
+                font.pixelSize: Theme.fontSizeSmall
+                color:          isActive ? Theme.textSecondary : Theme.textMuted
+
+                Behavior on color {
+                    ColorAnimation { duration: 120; easing.type: Easing.OutCubic }
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: Hyprland.dispatch("workspace " + wsId)
+                }
+            }
         }
-        
+    }
+
+    // Separator — now always at fixed position
+        Rectangle {
+            Layout.preferredWidth:  1
+            Layout.preferredHeight: parent.height * 0.5
+            Layout.fillWidth:       false
+            Layout.alignment:       Qt.AlignVCenter
+            color:                  Theme.borderIdle
+        }
+
+    // ---------------------------------------------------------
+    //  ROW 2 — Active Window Name
+    // ---------------------------------------------------------
         Text {
-            anchors.horizontalCenter: parent.horizontalleft
-            // hortizontalAlignment    : Text.AlignHleft
-            text                    : Qt.formatTime(new Date(), "hh:mm")
-            font.family             : kogni.name
-            font.pixelSize          : Theme.fontSizeSmall
-            color                   : Theme.textSecondary
+            Layout.fillWidth:    true       // takes remaining space
+            Layout.alignment:    Qt.AlignVCenter
+            elide:               Text.ElideRight
+            text:                Hyprland.activeToplevel?.title ?? "Desktop"
+            font.family:         kogni.name
+            font.pixelSize:      Theme.fontSizeSmall
+            color:               Theme.textSecondary
         }
     }
 }

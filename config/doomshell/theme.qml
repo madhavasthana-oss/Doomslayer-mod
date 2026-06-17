@@ -34,7 +34,7 @@ QtObject {
     readonly property color textPrimary: "#FF4500"   // fire red — dominant text
     readonly property color textSecondary: "#FFCA80" // ember — secondary labels
     readonly property color textMuted:   "#CC2200"   // deep red — de-emphasized
-    readonly property color textDim:     "#3D0A00"   // barely visible — decorative
+    readonly property color textDim:     "#601000"   // barely visible — decorative
 
     // State colors
     readonly property color stateCritical: "#CC2200" // errors, critical thermals — deep red
@@ -43,7 +43,7 @@ QtObject {
 
     // Border / stroke
     readonly property color borderActive:  "#FF4500" // active bar borders
-    readonly property color borderIdle:    "#3D0A00" // idle/dim borders
+    readonly property color borderIdle:    '#CC2200' // idle/dim borders
 
 
     // ---------------------------------------------------------
@@ -134,4 +134,49 @@ QtObject {
     readonly property int iconSizeBase:  18
     readonly property int iconSizeLarge: 24
 
+    // ---------------------------------------------------------
+    //  EXPANSION PANEL VISUALS
+    // ---------------------------------------------------------
+
+    // Console surface — slightly lighter than bar fill
+    // Distinguishes the deployed panel from the header
+    readonly property color bgConsole:     "#1F0200"
+
+    // Console border — dimmer than active bar stroke
+    // Panel feels subordinate to the header above it
+    readonly property color borderConsole: "#CC2200"
+
+    // Console inner glow — same ember but dimmer
+    readonly property color glowConsole:   "#994400"
+
+
+    // ---------------------------------------------------------
+    //  CONTENT PANEL TYPOGRAPHY
+    // ---------------------------------------------------------
+
+    // Stat value — large, dominant, KogniGear
+    readonly property int fontSizeStat:    18
+
+    // Stat label — small, muted, above value
+    readonly property int fontSizeLabel:   9
+
+    // Console header — section titles inside panel
+    readonly property int fontSizeConsole: 11
+
+
+    // ---------------------------------------------------------
+    //  OPACITY STATES
+    // ---------------------------------------------------------
+
+    readonly property real opacityVisible:  1.0
+    readonly property real opacityHidden:   0.0
+    readonly property real opacityConsole:  0.95   // panel bg — slightly more solid than bar
+
+
+    // ---------------------------------------------------------
+    //  ANIMATION EASING NOTES
+    // ---------------------------------------------------------
+    //  Straighten phase: Easing.InOutCubic  — mechanical, deliberate
+    //  Expand phase:     Easing.OutCubic    — decisive deployment
+    //  Fade phase:       Easing.InQuad      — content materializes
 }
