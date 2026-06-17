@@ -115,13 +115,20 @@ Item {
     //  ROW 2 — Active Window Name
     // ---------------------------------------------------------
         Text {
-            Layout.fillWidth:    true       // takes remaining space
-            Layout.alignment:    Qt.AlignVCenter
-            elide:               Text.ElideRight
-            text:                Hyprland.activeToplevel?.title ?? "Desktop"
-            font.family:         kogni.name
-            font.pixelSize:      Theme.fontSizeSmall
-            color:               Theme.textSecondary
+            Layout.fillWidth: true
+            Layout.alignment: Qt.AlignVCenter
+            elide: Text.ElideRight
+
+            text: (
+                Hyprland.activeToplevel &&
+                Hyprland.activeToplevel.workspace &&
+                Hyprland.focusedWorkspace &&
+                Hyprland.activeToplevel.workspace.id === Hyprland.focusedWorkspace.id
+            ) ? Hyprland.activeToplevel.title : "Desktop"
+
+            font.family: kogni.name
+            font.pixelSize: Theme.fontSizeSmall
+            color: Theme.textSecondary
         }
     }
 }
