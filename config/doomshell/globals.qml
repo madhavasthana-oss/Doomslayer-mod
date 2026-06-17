@@ -23,23 +23,63 @@ QtObject {
     readonly property int leftWidth:  350
     readonly property int leftHeight: 35
 
+    // ---------------------------------------------------------
+    // helper Fonts
+    // ---------------------------------------------------------
+    readonly property int fontSizeSmall:  11
+    readonly property int fontSizeBase:   13
+    readonly property int fontSizeMedium: 16
 
     // ---------------------------------------------------------
     //  CENTER BAR
     // ---------------------------------------------------------
 
     readonly property int centerWidth:          640
+    // inMostSpacing is 5, 
+    readonly property int centerSmallerWidth:   centerWidth - 2 * (centerHeight + inMostSpacing) 
     readonly property int centerHeight:         45
-    readonly property int columnSpacing:        50
+
+    // Character width estimates
+    // JetBrains Mono is monospace — very predictable at ~0.6× ratio
+    // KogniGear is display — runs wide at ~0.75× ratio
+    readonly property real monoCharWidth:    fontSizeSmall  * 0.6   // ~6.6px per char
+    readonly property real kogniCharWidth:   fontSizeBase   * 0.75  // ~9.75px per char
+    readonly property real kogniMedWidth:    fontSizeMedium * 0.75  // ~12px per char
+
+    // these values are now derived with logic, will update automatically
+    /*
+        the key idea is that the center bar is of length centerSmallerWidth effectively
+
+        ---------------------------------------------------------------
+         \                                                           /
+          \_________________________________________________________/
+         the bottom length is of length centerSmallerWidth
+
+         the problem now rises that there are 4 margins, say they are of value x
+         max(space_bottom_text) = monoCharWidth * 12 ---> the ram entry = bottom_space
+
+         that means 4 * (bottom_space + margin) + kogniMedWidth * 17 <= centerSmallerWidth
+
+         that is the satisfying constraint
+
+         ------------------------------------------------------------------------
+
+         holding the fonts as variable, and likewise only modulating them, we get
+
+         for bottom space = 6.6 * 12 = 79.2 --> 80
+         
+         and kogniMedWidth * 17 = 17 * 12 = 204
+
+         we get 4 * (80 + margin) + 204 = 540 for the current values
+
+         that gives margin = 336 / 4 - 80 = 4 
+
+    */ 
+    readonly property int preferredWidthNoGreeting: 80
+    readonly property int columnSpacing:        4
     readonly property int columnCount:          5
     readonly property int rowCount:             2
-    readonly property int greetingWidth:        120
-
-    // derived — update automatically
-    readonly property int totalSpacing:         columnSpacing * (columnCount - 1)
-    readonly property int availableWidth:       centerWidth - (inMostSpacing * 2) - totalSpacing
-    readonly property int preferredColumnWidth: Math.floor((availableWidth - greetingWidth) / (columnCount - 1))
-
+    readonly property int greetingWidth:        204
 
     // ---------------------------------------------------------
     //  RIGHT BAR
@@ -89,6 +129,7 @@ QtObject {
     // expanded:  angleOffset = 0 (rectangle)
     readonly property int angleOffsetCollapsed: 30     // == centerCollapsedHeight
     readonly property int angleOffsetExpanded:  0
+
 
 
     // ---------------------------------------------------------

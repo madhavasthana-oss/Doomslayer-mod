@@ -16,13 +16,31 @@ Item {
     width:  Globals.centerWidth
     height: Globals.centerHeight
     property string activePanel: ""
-
+    property string gpuLoading: "Loading."
+    property string cpuLoading: "Loading."
+    property string ramLoading: "Loading."
+    property string tempLoading: "Loading."
+    // add loading helper
     // load CPU Stats
     CPUStats{
         id: cpuPopup
         visible: false
         anchors.top: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
+    }
+
+    Timer{
+        id: cpuTimer
+        interval: 500
+        running: !cpuPopup.__is_ready__
+        repeat: true
+        onTriggered: {
+            centerBar.cpuLoading = (centerBar.cpuLoading == "Loading." ? 
+                      "Loading.." : (
+                        centerBar.cpuLoading == "Loading.." 
+                        ? "Loading..." : "Loading."
+                      ))
+        }   
     }
     
     GPUStats{
@@ -31,6 +49,20 @@ Item {
         anchors.top: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
     }
+    Timer{
+        id: gpuTimer
+        interval: 500
+        running: !gpuPopup.__is_ready__
+        repeat: true
+        onTriggered: {
+            centerBar.gpuLoading = (centerBar.gpuLoading == "Loading." ? 
+                      "Loading.." : (
+                        centerBar.gpuLoading == "Loading.." 
+                        ? "Loading..." : "Loading."
+                      ))
+        }   
+    }
+    
 
     RAMStats{
         id: ramPopup
@@ -38,12 +70,38 @@ Item {
         anchors.top: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
     }
+    Timer{
+        id: ramTimer
+        interval: 500
+        running: !ramPopup.__is_ready__
+        repeat: true
+        onTriggered: {
+            centerBar.ramLoading = (centerBar.ramLoading == "Loading." ? 
+                      "Loading.." : (
+                        centerBar.ramLoading == "Loading.." 
+                        ? "Loading..." : "Loading."
+                      ))
+        }   
+    }
 
     TempStats{
         id: tempPopup
         visible: false
         anchors.top: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
+    }
+    Timer{
+        id: tempTimer
+        interval: 500
+        running: !tempPopup.__is_ready__
+        repeat: true
+        onTriggered: {
+            centerBar.tempLoading = (centerBar.tempLoading == "Loading." ? 
+                      "Loading.." : (
+                        centerBar.tempLoading == "Loading.." 
+                        ? "Loading..." : "Loading."
+                      ))
+        }   
     }
     Timer {
         id: clockTimer
@@ -90,14 +148,18 @@ Item {
         anchors.centerIn: parent
         columns:          Globals.columnCount
         rows:             Globals.rowCount
-        rowSpacing:       2
+        rowSpacing:       1
         columnSpacing:    Globals.columnSpacing
+        Layout.fillWidth: false
 
         // ── ROW 0 — labels ──────────────────────────────────
 
         Text {
+            Layout.preferredWidth: Globals.preferredWidthNoGreeting
+            id              : cpu
             Layout.alignment: Qt.AlignVCenter
             text:             "CPU"
+            horizontalAlignment: Text.AlignHCenter
             font.family:      kogni.name
             font.pixelSize:   Theme.fontSizeBase
             color:            Theme.textMuted
@@ -114,32 +176,41 @@ Item {
         }
 
         Text {
-            Layout.alignment: Qt.AlignVCenter
+            id:               gpu
+            Layout.preferredWidth: Globals.preferredWidthNoGreeting
+            Layout.alignment: Qt.AlignHCenter
             text:             "GPU"
+            horizontalAlignment: Text.AlignHCenter
             font.family:      kogni.name
             font.pixelSize:   Theme.fontSizeBase
             color:            Theme.textMuted
         }
 
         Text {
+            Layout.preferredWidth: Globals.greetingWidth
             Layout.alignment: Qt.AlignHCenter
             text:             "Greetings, Slayer"
+            horizontalAlignment: Text.AlignHCenter
             font.family:      kogni.name
             font.pixelSize:   Theme.fontSizeMedium
             color:            Theme.textPrimary
         }
 
         Text {
+            Layout.preferredWidth: Globals.preferredWidthNoGreeting
             Layout.alignment: Qt.AlignHCenter
             text:             "RAM"
+            horizontalAlignment: Text.AlignHCenter
             font.family:      kogni.name
             font.pixelSize:   Theme.fontSizeBase
             color:            Theme.textMuted
         }
 
         Text {
-            Layout.alignment: Qt.AlignVCenter
+            Layout.preferredWidth: Globals.preferredWidthNoGreeting
+            Layout.alignment: Qt.AlignHCenter
             text:             "Temp"
+            horizontalAlignment: Text.AlignHCenter
             font.family:      kogni.name
             font.pixelSize:   Theme.fontSizeBase
             color:            Theme.textMuted
@@ -148,42 +219,54 @@ Item {
         // ── ROW 1 — values ──────────────────────────────────
 
         Text {
+            id              : cpuStat
+            Layout.preferredWidth: Globals.preferredWidthNoGreeting
             Layout.alignment: Qt.AlignHCenter
-            text:             cpuPopup.__cpu_usage__ + " %"
+            horizontalAlignment: Text.AlignHCenter
+            text:             !cpuPopup.__is_ready__ ? centerBar.cpuLoading : cpuPopup.__cpu_usage__ + " %"
             font.family:      jetbrains.name
             font.pixelSize:   Theme.fontSizeSmall
             color:            Theme.textSecondary
         }
 
         Text {
+            id:               gpuStat
+            Layout.preferredWidth: Globals.preferredWidthNoGreeting
             Layout.alignment: Qt.AlignHCenter
-            text:             gpuPopup.__gpu_usage__ + " %"
+            text:             !gpuPopup.__is_ready__ ? centerBar.gpuLoading : gpuPopup.__gpu_usage__ + " %"
+            horizontalAlignment: Text.AlignHCenter
             font.family:      jetbrains.name
             font.pixelSize:   Theme.fontSizeSmall
             color:            Theme.textSecondary
         }
 
         Text {
+            Layout.preferredWidth: Globals.greetingWidth
             id:               timeText
             Layout.alignment: Qt.AlignHCenter
             text:             Qt.formatTime(new Date(), "hh:mm")
+            horizontalAlignment: Text.AlignHCenter
             font.family:      jetbrains.name
             font.pixelSize:   Theme.fontSizeSmall
             color:            Theme.textSecondary
         }
 
         Text {
+            Layout.preferredWidth: Globals.preferredWidthNoGreeting
             Layout.alignment: Qt.AlignHCenter
-            text:             ramPopup.__ram_in_use__ + "/" + ramPopup.__ram_total__ + " gB"
+            text:             !ramPopup.__is_ready__ ? centerBar.ramLoading : ramPopup.__ram_in_use__ + "/" + ramPopup.__ram_total__ + " gB"
+            horizontalAlignment: Text.AlignHCenter
             font.family:      jetbrains.name
             font.pixelSize:   Theme.fontSizeSmall
             color:            Theme.textSecondary
         }
 
         Text {
+            Layout.preferredWidth: Globals.preferredWidthNoGreeting
             Layout.alignment: Qt.AlignHCenter
-            text:             tempPopup.__temp__ + " \u00B0C"
+            text:             !tempPopup.__is_ready__ ? centerBar.tempLoading : tempPopup.__temp__ + " \u00B0C"
             font.family:      jetbrains.name
+            horizontalAlignment: Text.AlignHCenter
             font.pixelSize:   Theme.fontSizeSmall
             color:            Theme.textSecondary
         }

@@ -105,6 +105,12 @@ Item {
         visible: false
         anchors.top: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
+        onReady:{
+            batLabel.opacity = 1
+            batPercent.opacity = 1
+            constBatBar.opacity = 1
+            varBatBar.opacity = 1
+        }
     }
 
     Volume{
@@ -112,6 +118,12 @@ Item {
         visible: false
         anchors.top: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
+        onReady:{
+            volLabel.opacity = 1
+            volPercent.opacity = 1
+            constVolBar.opacity = 1
+            varVolBar.opacity = 1
+        }
     }
 
 
@@ -159,6 +171,7 @@ Item {
 
             // BAT label
             Text {
+                id:             batLabel
                 text:           "BAT"
                 font.family:    kogni.name
                 font.pixelSize: Theme.fontSizeLabel
@@ -171,8 +184,6 @@ Item {
                         easing.type: Easing.OutCubic
                     }
                 }
-
-                Component.onCompleted: opacity = 1  // triggers the animation
             }
 
             // BAT percentage
@@ -189,17 +200,18 @@ Item {
                         easing.type: Easing.OutCubic
                     }
                 }
-                Component.onCompleted: opacity = 1
             }
 
             // BAT bar
             Rectangle {
+                id:     constBatBar
                 width:  50
                 height: 4
                 color:  Theme.borderIdle
                 radius: 25
                 opacity: 0
                 Rectangle {
+                    id:     varBatBar
                     width:  parent.width * batStat.percentage * 0.01
                     height: parent.height
                     color:  __gradient__(Theme.stateSafe, Theme.stateCritical, 1.00 - (batStat.percentage / 100))
@@ -211,7 +223,6 @@ Item {
                             easing.type: Easing.OutCubic
                         }
                     }
-                    Component.onCompleted: opacity = 1
                 }
                 Behavior on opacity{
                     NumberAnimation{
@@ -219,11 +230,11 @@ Item {
                         easing.type: Easing.OutCubic
                     }
                 }
-                Component.onCompleted: opacity = 1
             }
 
             // VOL label
             Text {
+                id:             volLabel
                 text:           "VOL"
                 font.family:    kogni.name
                 font.pixelSize: Theme.fontSizeLabel
@@ -235,7 +246,6 @@ Item {
                         easing.type: Easing.OutCubic
                     }
                 }
-                Component.onCompleted: opacity = 1
             }
 
             // VOL percentage
@@ -252,18 +262,19 @@ Item {
                         easing.type: Easing.OutCubic
                     }
                 }
-                Component.onCompleted: opacity = 1
             }
 
             // VOL bar
             Rectangle {
+                id:     constVolBar
                 width:  50
                 height: 4
                 color:  Theme.borderIdle
                 radius: 25
-                opacity:        0
+                opacity:0
 
                 Rectangle {
+                    id:     varVolBar
                     width:  parent.width * audioStat.volume / 100
                     height: parent.height
                     color:  Theme.accent
@@ -275,7 +286,6 @@ Item {
                         easing.type: Easing.OutCubic
                     }
                 }
-                Component.onCompleted: opacity = 1
                 }
                 Behavior on opacity{
                     NumberAnimation{
@@ -283,7 +293,6 @@ Item {
                         easing.type: Easing.OutCubic
                     }
                 }
-                Component.onCompleted: opacity = 1
             }
         }
 

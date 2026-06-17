@@ -4,9 +4,10 @@ import QtQuick
 import "../../../.."
 
 Item{
-    id: ramStatLoader
-    property double __ram_in_use__
-    property double __ram_total__
+    id: ramStatsWindow
+    property double __ram_in_use__: -1
+    property double __ram_total__: -1
+    property bool __is_ready__: false
 
     Timer{
         id: ramTimer
@@ -35,6 +36,9 @@ Item{
                 
                 __ram_total__ = parseFloat(memTotal / 10**6).toFixed(2)
                 
+                if(!ramStatsWindow.__is_ready__){
+                    ramStatsWindow.__is_ready__ = true
+                }
                 let memAvailableInfo = data.find(
                     line => line.startsWith("MemAvailable")
                     ).trim().match(/^MemAvailable:\s*([\d]+)\s*kB/i)
@@ -44,6 +48,7 @@ Item{
                 let memUsed = memTotal - memAvailable
                 
                 __ram_in_use__ = parseFloat(memUsed / 10**6).toFixed(2)
+
             }
         }
     }
