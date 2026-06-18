@@ -46,23 +46,14 @@ Item {
     //  PROCESSES
     // ---------------------------------------------------------
 
-    Process { id: procShutdown; command: ["systemctl", "poweroff"]          }
-    Process { id: procReboot;   command: ["systemctl", "reboot"]            }
-    Process { id: procSleep;    command: ["systemctl", "suspend"]           }
-    Process { id: procLogout;   command: ["hyprctl", "dispatch", "exit"]    }
-    Process { id: procBluetooth;command: ["blueman-manager"]                }
-    Process { id: procWifi;     command: ["nm-connection-editor"]           }
-    Process { id: procSettings; command: ["nwg-look"]                       }
-
-    // Power terminal — launches kitty with power menu script
-    Process {
-        id: procPowerMenu
-        command: [
-            "kitty",
-            "--title", "doomshell-power",
-            "-e", "/home/yvon/Doomslayer-mod/scripts/power-menu.sh"
-        ]
-    }
+    Process { id: procShutdown; command: ["systemctl", "poweroff"]                }
+    Process { id: procReboot;   command: ["systemctl", "reboot"]                  }
+    Process { id: procSleep;    command: ["systemctl", "suspend"]                 }
+    Process { id: procLogout;   command: ["hyprctl", "dispatch", "exit"]          }
+    Process { id: procLock;     command: ["hyprlock"]                             }
+    Process { id: procBluetooth;command: ["blueman-manager"]                      }
+    Process { id: procWifi;     command: ["nm-connection-editor"]                 }
+    Process { id: procSettings; command: ["nwg-look"]                             }
 
     // ---------------------------------------------------------
     //  STAT LOADERS
@@ -106,12 +97,6 @@ Item {
     }
 
     // ---------------------------------------------------------
-    //  POWER MENU STATE
-    // ---------------------------------------------------------
-
-    property bool powerMenuOpen: false
-
-    // ---------------------------------------------------------
     //  CONTENT ROW
     // ---------------------------------------------------------
 
@@ -119,7 +104,7 @@ Item {
         anchors.fill:        parent
         anchors.leftMargin:  Globals.rightHeight + Globals.inMostSpacing
         anchors.rightMargin: Globals.inMostSpacing
-        spacing:             Globals.inMostSpacing   // manual spacing via fixed items
+        spacing:             Globals.inMostSpacing
 
         // ---------------------------------------------------------
         //  ZONE 1 — Battery + Volume
@@ -241,7 +226,7 @@ Item {
         }
 
         // ---------------------------------------------------------
-        //  SEPARATOR 1 — fixed, inMostSpacing from GridLayout
+        //  SEPARATOR 1
         // ---------------------------------------------------------
 
         Item { Layout.preferredWidth: Globals.inMostSpacing; Layout.fillWidth: false }
@@ -250,7 +235,7 @@ Item {
             Layout.preferredWidth:  1
             Layout.preferredHeight: parent.height * 0.6
             Layout.fillWidth:       false
-            Layout.alignment:       Qt.AlignVCenter
+            Layout.alignment:       Qt.AlignHCenter
             color:                  Theme.borderIdle
         }
 
@@ -261,9 +246,9 @@ Item {
         // ---------------------------------------------------------
 
         RowLayout {
-            spacing:          Globals.inMostSpacing
+            spacing:          Globals.inMostSpacing * 2
             Layout.fillWidth: false
-            Layout.alignment: Qt.AlignVCenter
+            Layout.alignment: Qt.AlignHCenter
 
             // Bluetooth
             Text {
@@ -303,7 +288,7 @@ Item {
         }
 
         // ---------------------------------------------------------
-        //  SEPARATOR 2 — fixed
+        //  SEPARATOR 2
         // ---------------------------------------------------------
 
         Item { Layout.preferredWidth: Globals.inMostSpacing; Layout.fillWidth: false }
@@ -312,31 +297,87 @@ Item {
             Layout.preferredWidth:  1
             Layout.preferredHeight: parent.height * 0.6
             Layout.fillWidth:       false
-            Layout.alignment:       Qt.AlignVCenter
+            Layout.alignment:       Qt.AlignHCenter
             color:                  Theme.borderIdle
         }
 
         Item { Layout.preferredWidth: Globals.inMostSpacing; Layout.fillWidth: false }
 
         // ---------------------------------------------------------
-        //  ZONE 3 — Power Button
+        //  ZONE 3 — Power Actions: lock · sleep · reboot · shutdown
         // ---------------------------------------------------------
 
-        Text {
-            text:             "⏻"
-            font.family:      kogni.name
-            font.pixelSize:   Theme.iconSizeSmall
-            color:            powerHover.hovered ? Theme.accent : Theme.textMuted
+        RowLayout {
+            spacing:          Globals.inMostSpacing * 2
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignHCenter
 
-            Behavior on color { ColorAnimation { duration: 120; easing.type: Easing.OutCubic } }
+            // Lock Screen — 󰍁
+            Text {
+                text:           "󰍁"
+                font.family:    kogni.name
+                font.pixelSize: Theme.iconSizeSmall
+                color:          lockHover.hovered ? Theme.accent : Theme.textMuted
+                Behavior on color { ColorAnimation { duration: 120; easing.type: Easing.OutCubic } }
+                HoverHandler { id: lockHover }
+                MouseArea {
+                    anchors.fill:     parent
+                    onClicked:        procLock.running = true
+                    ToolTip.visible:  lockHover.hovered
+                    ToolTip.text:     "Lock Screen"
+                    ToolTip.delay:    500
+                }
+            }
 
-            HoverHandler    { id: powerHover }
+            // Sleep — 󰒲
+            Text {
+                text:           "󰒲"
+                font.family:    kogni.name
+                font.pixelSize: Theme.iconSizeSmall
+                color:          sleepHover.hovered ? Theme.accent : Theme.textMuted
+                Behavior on color { ColorAnimation { duration: 120; easing.type: Easing.OutCubic } }
+                HoverHandler { id: sleepHover }
+                MouseArea {
+                    anchors.fill:     parent
+                    onClicked:        procSleep.running = true
+                    ToolTip.visible:  sleepHover.hovered
+                    ToolTip.text:     "Sleep"
+                    ToolTip.delay:    500
+                }
+            }
 
-            MouseArea {
-                anchors.fill: parent
-                onClicked:    procPowerMenu.running = true
+            // Reboot — 󰜉
+            Text {
+                text:           "󰜉"
+                font.family:    kogni.name
+                font.pixelSize: Theme.iconSizeSmall
+                color:          rebootHover.hovered ? Theme.accent : Theme.textMuted
+                Behavior on color { ColorAnimation { duration: 120; easing.type: Easing.OutCubic } }
+                HoverHandler { id: rebootHover }
+                MouseArea {
+                    anchors.fill:     parent
+                    onClicked:        procReboot.running = true
+                    ToolTip.visible:  rebootHover.hovered
+                    ToolTip.text:     "Reboot"
+                    ToolTip.delay:    500
+                }
+            }
+
+            // Shutdown — ⏻
+            Text {
+                text:           "⏻"
+                font.family:    kogni.name
+                font.pixelSize: Theme.iconSizeSmall
+                color:          shutdownHover.hovered ? Theme.stateCritical : Theme.textMuted
+                Behavior on color { ColorAnimation { duration: 120; easing.type: Easing.OutCubic } }
+                HoverHandler { id: shutdownHover }
+                MouseArea {
+                    anchors.fill:     parent
+                    onClicked:        procShutdown.running = true
+                    ToolTip.visible:  shutdownHover.hovered
+                    ToolTip.text:     "Shut Down"
+                    ToolTip.delay:    500
+                }
             }
         }
     }
