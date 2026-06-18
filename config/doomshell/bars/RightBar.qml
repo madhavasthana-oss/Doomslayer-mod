@@ -323,9 +323,6 @@ Item {
                 MouseArea {
                     anchors.fill:     parent
                     onClicked:        procLock.running = true
-                    ToolTip.visible:  lockHover.hovered
-                    ToolTip.text:     "Lock Screen"
-                    ToolTip.delay:    500
                 }
             }
 
@@ -340,9 +337,6 @@ Item {
                 MouseArea {
                     anchors.fill:     parent
                     onClicked:        procSleep.running = true
-                    ToolTip.visible:  sleepHover.hovered
-                    ToolTip.text:     "Sleep"
-                    ToolTip.delay:    500
                 }
             }
 
@@ -357,9 +351,6 @@ Item {
                 MouseArea {
                     anchors.fill:     parent
                     onClicked:        procReboot.running = true
-                    ToolTip.visible:  rebootHover.hovered
-                    ToolTip.text:     "Reboot"
-                    ToolTip.delay:    500
                 }
             }
 
@@ -374,9 +365,6 @@ Item {
                 MouseArea {
                     anchors.fill:     parent
                     onClicked:        procShutdown.running = true
-                    ToolTip.visible:  shutdownHover.hovered
-                    ToolTip.text:     "Shut Down"
-                    ToolTip.delay:    500
                 }
             }
         }
