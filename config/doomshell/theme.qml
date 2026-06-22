@@ -130,9 +130,9 @@ QtObject {
     //  ICON SIZES
     // ---------------------------------------------------------
 
-    readonly property int iconSizeSmall: 14
-    readonly property int iconSizeBase:  18
-    readonly property int iconSizeLarge: 24
+    readonly property int iconSizeSmall: 4
+    readonly property int iconSizeBase:  8
+    readonly property int iconSizeLarge: 10
 
     // ---------------------------------------------------------
     //  EXPANSION PANEL VISUALS

@@ -86,7 +86,7 @@ QtObject {
     // ---------------------------------------------------------
 
     readonly property int rightWidth:  350
-    readonly property int rightHeight: 35
+    readonly property int rightHeight: 35 
 
 
     // ---------------------------------------------------------
@@ -103,10 +103,7 @@ QtObject {
     // Active panel tracker — single source of truth
     // Values: "" | "cpu" | "gpu" | "ram" | "bat" | "greeting"
     property string activePanel: ""
-
-    // Derived expansion state
-    readonly property bool expanded: activePanel !== ""
-
+    property string lastPanel:   "cpu" 
 
     // ---------------------------------------------------------
     //  CENTER BAR EXPANSION GEOMETRY
@@ -172,6 +169,6 @@ QtObject {
 
     readonly property int iconSizeSmall: 4
     readonly property int iconSizeBase: 8
-    readonly property int iconSizeMedium: 10
-    readonly property int iconSizeLarge: 16
+    readonly property int iconSizeMedium: 12
+    readonly property int iconSizeLarge: 14
 }   

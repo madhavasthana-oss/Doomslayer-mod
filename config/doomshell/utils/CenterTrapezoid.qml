@@ -21,7 +21,7 @@ Item {
 
     // True 45° — offset equals height exactly
     // Do not override this unless you want a different angle
-    property real angleOffset: expanded ? 0 : barHeight
+    property real angleOffset: barHeight
     property real fillOpacity:  Globals.barOpacity
     property color fillColor:   Theme.bgSurface
     property color strokeColor: Theme.accent
@@ -170,13 +170,6 @@ Item {
 
     onAlertActiveChanged: {
         if (!alertActive) trapShape.opacity = 1.0
-    }
-
-    Behavior on angleOffset {
-        NumberAnimation{
-            duration: 250
-            easing.type: Easing.OutCubic
-        }
     }
 
     // ---------------------------------------------------------

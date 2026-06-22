@@ -118,6 +118,7 @@ Item {
             Layout.alignment: Qt.AlignHCenter
             Layout.fillWidth: false
 
+
             // BAT label
             Text {
                 id:             batLabel
@@ -223,13 +224,26 @@ Item {
                     }
                 }
             }
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+
+                onClicked: {
+                    if (Globals.activePanel !== ""){
+                        Globals.lastPanel = Globals.activePanel
+                        Globals.activePanel = ""
+                    }
+                    else
+                        Globals.activePanel = Globals.lastPanel 
+                }
+            }
         }
 
         // ---------------------------------------------------------
         //  SEPARATOR 1
         // ---------------------------------------------------------
 
-        Item { Layout.preferredWidth: Globals.inMostSpacing; Layout.fillWidth: false }
+        Item { Layout.preferredWidth: 1; Layout.fillWidth: false }
 
         Rectangle {
             Layout.preferredWidth:  1
@@ -239,7 +253,7 @@ Item {
             color:                  Theme.borderIdle
         }
 
-        Item { Layout.preferredWidth: Globals.inMostSpacing; Layout.fillWidth: false }
+        Item { Layout.preferredWidth: 1; Layout.fillWidth: false }
 
         // ---------------------------------------------------------
         //  ZONE 2 — Toggle Row
@@ -251,47 +265,42 @@ Item {
             Layout.alignment: Qt.AlignHCenter
 
             // Bluetooth
-            Text {
-                id:             btIcon
-                text:           "󰂯"
-                font.family:    kogni.name
-                font.pixelSize: Theme.iconSizeSmall
-                color:          btHover.hovered ? Theme.accent : Theme.textMuted
-                Behavior on color { ColorAnimation { duration: 120; easing.type: Easing.OutCubic } }
-                HoverHandler    { id: btHover }
-                MouseArea { anchors.fill: parent; onClicked: procBluetooth.running = true }
+            Image {
+                source:           "/home/yvon/.local/share/icons/besgnulinux-mono-red/apps/scalable/bluetooth.svg"
+                fillMode:         Image.PreserveAspectFit
+                sourceSize: Qt.size(Globals.iconSizeMedium, Globals.iconSizeMedium)
+                opacity:          btHover.hovered ? 1.0 : 0.5
+                Behavior on opacity { NumberAnimation { duration: 120; easing.type: Easing.OutCubic } }
+                HoverHandler { id: btHover }
+                MouseArea { anchors.fill: parent; onClicked: procBluetooth.running = true; cursorShape: Qt.PointingHandCursor }
             }
 
             // Wifi
-            Text {
-                id:             wifiIcon
-                text:           "󰤨"
-                font.family:    kogni.name
-                font.pixelSize: Theme.iconSizeSmall
-                color:          wifiHover.hovered ? Theme.accent : Theme.textMuted
-                Behavior on color { ColorAnimation { duration: 120; easing.type: Easing.OutCubic } }
-                HoverHandler    { id: wifiHover }
-                MouseArea { anchors.fill: parent; onClicked: procWifi.running = true }
+            Image {
+                source:           "/home/yvon/.local/share/icons/besgnulinux-mono-red/actions/scalable/network-wireless.svg"
+                sourceSize: Qt.size(Globals.iconSizeMedium, Globals.iconSizeMedium)
+                fillMode:         Image.PreserveAspectFit
+                opacity:          wifiHover.hovered ? 1.0 : 0.5
+                Behavior on opacity { NumberAnimation { duration: 120; easing.type: Easing.OutCubic } }
+                HoverHandler { id: wifiHover }
+                MouseArea { anchors.fill: parent; onClicked: procWifi.running = true; cursorShape: Qt.PointingHandCursor }
             }
 
             // Settings
-            Text {
-                id:             settingsIcon
-                text:           "󰒓"
-                font.family:    kogni.name
-                font.pixelSize: Theme.iconSizeSmall
-                color:          settingsHover.hovered ? Theme.accent : Theme.textMuted
-                Behavior on color { ColorAnimation { duration: 120; easing.type: Easing.OutCubic } }
-                HoverHandler    { id: settingsHover }
-                MouseArea { anchors.fill: parent; onClicked: procSettings.running = true }
+            Image {
+                source:           "/home/yvon/.local/share/icons/besgnulinux-mono-red/apps/scalable/system-settings.svg"
+                width:            Theme.iconSizeSmall
+                sourceSize: Qt.size(Globals.iconSizeMedium, Globals.iconSizeMedium)
+                fillMode:         Image.PreserveAspectFit
+                opacity:          settingsHover.hovered ? 1.0 : 0.5
+                Behavior on opacity { NumberAnimation { duration: 120; easing.type: Easing.OutCubic } }
+                HoverHandler { id: settingsHover }
+                MouseArea { anchors.fill: parent; onClicked: procSettings.running = true; cursorShape: Qt.PointingHandCursor }
             }
         }
 
-        // ---------------------------------------------------------
-        //  SEPARATOR 2
-        // ---------------------------------------------------------
 
-        Item { Layout.preferredWidth: Globals.inMostSpacing; Layout.fillWidth: false }
+        Item { Layout.preferredWidth: 1; Layout.fillWidth: false }
 
         Rectangle {
             Layout.preferredWidth:  1
@@ -301,10 +310,10 @@ Item {
             color:                  Theme.borderIdle
         }
 
-        Item { Layout.preferredWidth: Globals.inMostSpacing; Layout.fillWidth: false }
-
+        Item { Layout.preferredWidth: 1; Layout.fillWidth: false }
+        
         // ---------------------------------------------------------
-        //  ZONE 3 — Power Actions: lock · sleep · reboot · shutdown
+        //  ZONE 3 — Power Actions
         // ---------------------------------------------------------
 
         RowLayout {
@@ -312,60 +321,50 @@ Item {
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignHCenter
 
-            // Lock Screen — 󰍁
-            Text {
-                text:           "󰍁"
-                font.family:    kogni.name
-                font.pixelSize: Theme.iconSizeSmall
-                color:          lockHover.hovered ? Theme.accent : Theme.textMuted
-                Behavior on color { ColorAnimation { duration: 120; easing.type: Easing.OutCubic } }
+            // Lock
+            Image {
+                source:           "/home/yvon/.local/share/icons/besgnulinux-mono-red/actions/scalable/system-lock-screen.svg"
+                width:            Theme.iconSizeSmall
+                sourceSize: Qt.size(Globals.iconSizeMedium, Globals.iconSizeMedium)
+                fillMode:         Image.PreserveAspectFit
+                opacity:          lockHover.hovered ? 1.0 : 0.5
+                Behavior on opacity { NumberAnimation { duration: 120; easing.type: Easing.OutCubic } }
                 HoverHandler { id: lockHover }
-                MouseArea {
-                    anchors.fill:     parent
-                    onClicked:        procLock.running = true
-                }
+                MouseArea { anchors.fill: parent; onClicked: procLock.running = true; cursorShape: Qt.PointingHandCursor }
             }
 
-            // Sleep — 󰒲
-            Text {
-                text:           "󰒲"
-                font.family:    kogni.name
-                font.pixelSize: Theme.iconSizeSmall
-                color:          sleepHover.hovered ? Theme.accent : Theme.textMuted
-                Behavior on color { ColorAnimation { duration: 120; easing.type: Easing.OutCubic } }
+            // Sleep
+            Image {
+                source:           "/home/yvon/.local/share/icons/besgnulinux-mono-red/apps/scalable/system-suspend.svg"
+                sourceSize: Qt.size(Globals.iconSizeMedium, Globals.iconSizeMedium)
+                fillMode:         Image.PreserveAspectFit
+                opacity:          sleepHover.hovered ? 1.0 : 0.5
+                Behavior on opacity { NumberAnimation { duration: 120; easing.type: Easing.OutCubic } }
                 HoverHandler { id: sleepHover }
-                MouseArea {
-                    anchors.fill:     parent
-                    onClicked:        procSleep.running = true
-                }
+                MouseArea { anchors.fill: parent; onClicked: procSleep.running = true; cursorShape: Qt.PointingHandCursor }
             }
 
-            // Reboot — 󰜉
-            Text {
-                text:           "󰜉"
-                font.family:    kogni.name
-                font.pixelSize: Theme.iconSizeSmall
-                color:          rebootHover.hovered ? Theme.accent : Theme.textMuted
-                Behavior on color { ColorAnimation { duration: 120; easing.type: Easing.OutCubic } }
+            // Reboot
+            Image {
+                source:           "/home/yvon/.local/share/icons/besgnulinux-mono-red/actions/scalable/system-reboot.svg"
+                sourceSize: Qt.size(Globals.iconSizeMedium, Globals.iconSizeMedium)
+                fillMode:         Image.PreserveAspectFit
+                opacity:          rebootHover.hovered ? 1.0 : 0.5
+                Behavior on opacity { NumberAnimation { duration: 120; easing.type: Easing.OutCubic } }
                 HoverHandler { id: rebootHover }
-                MouseArea {
-                    anchors.fill:     parent
-                    onClicked:        procReboot.running = true
-                }
+                MouseArea { anchors.fill: parent; onClicked: procReboot.running = true; cursorShape: Qt.PointingHandCursor }
             }
 
-            // Shutdown — ⏻
-            Text {
-                text:           "⏻"
-                font.family:    kogni.name
-                font.pixelSize: Theme.iconSizeSmall
-                color:          shutdownHover.hovered ? Theme.stateCritical : Theme.textMuted
-                Behavior on color { ColorAnimation { duration: 120; easing.type: Easing.OutCubic } }
+            // Shutdown
+            Image {
+                source:           "/home/yvon/.local/share/icons/besgnulinux-mono-red/apps/scalable/xfsm-shutdown.svg"
+                width:            Theme.iconSizeSmall
+                sourceSize: Qt.size(Globals.iconSizeMedium, Globals.iconSizeMedium)
+                fillMode:         Image.PreserveAspectFit
+                opacity:          shutdownHover.hovered ? 1.0 : 0.5
+                Behavior on opacity { NumberAnimation { duration: 120; easing.type: Easing.OutCubic } }
                 HoverHandler { id: shutdownHover }
-                MouseArea {
-                    anchors.fill:     parent
-                    onClicked:        procShutdown.running = true
-                }
+                MouseArea { anchors.fill: parent; onClicked: procShutdown.running = true; cursorShape: Qt.PointingHandCursor }
             }
         }
     }
