@@ -162,10 +162,10 @@ Item {
                 ListView {
                     id: coreList
                     anchors.top:          coreListHeader.bottom
-                    anchors.topMargin:    4
                     anchors.left:         parent.left
                     anchors.right:        parent.right
                     anchors.bottom:       parent.bottom
+                    anchors.topMargin:    4
                     anchors.leftMargin:   4
                     anchors.rightMargin:  4
                     anchors.bottomMargin: 4

@@ -129,7 +129,7 @@ Item {
 
             if (current === -1) {
                 freqAnimator.transitionTo("[ PROBING ]")
-                freqBoxAnimator.transitionTo("--")
+                freqBoxAnimator.transitionTo("--") 
             } else {
                 freqAnimator.transitionTo(String(current))
                 freqBoxAnimator.transitionTo(String(current))

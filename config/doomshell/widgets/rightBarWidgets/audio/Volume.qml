@@ -6,9 +6,21 @@ Item {
     property int volume: 0
     property bool muted: false
     signal ready
+    Component.onCompleted: {
+        initialize()
+    }
     PwObjectTracker {
         id: sinkTracker
         objects: [Pipewire.defaultAudioSink]
+    }
+    function initialize() {
+        const sink = Pipewire.defaultAudioSink
+
+        if (!sink || !sink.audio)
+            return
+
+        audioStat.volume = Math.round(sink.audio.volume * 100)
+        audioStat.muted = sink.audio.muted
     }
     Timer {
         id: initTimer
@@ -31,17 +43,17 @@ Item {
 
     Connections {
         target: Pipewire
+
         function onDefaultAudioSinkChanged() {
-            initTimer.restart()
+            initialize()
         }
     }
 
     Connections {
-        target: sinkTracker.objects[0]?.audio ?? null
-        function onVolumeChanged() {
+       target: sinkTracker.objects[0] ?? null
+
+        function onAudioChanged() {
             audioStat.volume = Math.round(sinkTracker.objects[0].audio.volume * 100)
-        }
-        function onMutedChanged() {
             audioStat.muted = sinkTracker.objects[0].audio.muted
         }
     }

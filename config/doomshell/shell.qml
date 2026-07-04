@@ -5,9 +5,9 @@ import QtQuick.Layouts
 import "utils"
 import "bars"
 import "."
-import "widgets/rightBarWidgets"
 import "widgets/rightBarWidgets/system/CPU"
 import "widgets/rightBarWidgets/system/GPU"
+import "widgets/rightBarWidgets/system/RAM"
 
 ShellRoot {
 
@@ -53,7 +53,7 @@ ShellRoot {
 
                 CPUFrontend { id: cpu }      // 2 — CPU
                 GPUFrontend { id: gpu }      // 3 — GPU
-                Item { }             // 4 — RAM placeholder
+                RAMFrontend { id: ram }      // 4 — RAM placeholder
             }
         }
         

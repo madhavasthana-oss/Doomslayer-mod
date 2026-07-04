@@ -52,7 +52,7 @@ Item {
     Process { id: procLogout;   command: ["hyprctl", "dispatch", "exit"]          }
     Process { id: procLock;     command: ["hyprlock"]                             }
     Process { id: procBluetooth;command: ["blueman-manager"]                      }
-    Process { id: procWifi;     command: ["nm-connection-editor"]                 }
+    Process { id: procWifi;     command: ["ghostty", "-e", "nmtui"]               }
     Process { id: procSettings; command: ["nwg-look"]                             }
 
     // ---------------------------------------------------------
