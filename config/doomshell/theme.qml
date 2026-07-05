@@ -61,7 +61,7 @@ QtObject {
     readonly property int fontSizeLarge:  22
     readonly property int fontSizeHuge:   32
 
-
+ 
     // ---------------------------------------------------------
     //  BAR GEOMETRY
     // ---------------------------------------------------------
