@@ -6,7 +6,7 @@
 # Hyprland blur is compositor-level; kitty uses window opacity 0.80 in windowrules.conf
 
 font-family = CaskaydiaCove Nerd Font Mono
-font-size = 9
+font-size = 7
 window-padding-x = 25
 window-padding-y = 25
 

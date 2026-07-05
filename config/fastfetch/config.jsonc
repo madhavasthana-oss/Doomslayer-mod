@@ -8,7 +8,7 @@ fastfetch --config hyde/*.jsonc
   "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
   "logo": {
     "source": "/home/yvon/Doomslayer-mod/config/logos/mark-img.png",
- 	"height" : 25
+ 	"height" : 20
   },
   "display": {
     "separator": " : "
