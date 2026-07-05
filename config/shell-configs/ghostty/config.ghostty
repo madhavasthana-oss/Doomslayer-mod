@@ -10,9 +10,14 @@ font-size = 9
 window-padding-x = 25
 window-padding-y = 25
 
-# opacity is set to 0.90 instead
-background-opacity = 0.90
-background-blur = true
+background-image = /home/yvon/Doomslayer-mod/config/logos/ultra-nightmare-ascii.png
+background-image-opacity = 0.3
+background-image-position = center
+background-image-fit = contain
+
+# opacity is set to 1 instead
+background-opacity = 1
+background-blur = false
 background-opacity-cells = false
 
 config-file = ?~/.config/ghostty/theme.conf
