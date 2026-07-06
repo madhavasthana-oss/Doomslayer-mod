@@ -10,8 +10,8 @@ font-size = 7
 window-padding-x = 25
 window-padding-y = 25
 
-background-image = /home/yvon/Doomslayer-mod/config/logos/ultra-nightmare-ascii.png
-background-image-opacity = 0.3
+background-image = /home/yvon/Doomslayer-mod/config/logos/mark-img.png
+background-image-opacity = 0.05
 background-image-position = center
 background-image-fit = contain
 
