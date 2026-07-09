@@ -142,21 +142,15 @@
           "type": "root"
         },
         {
-          "foreground": "#CC2200",
-          "style": "diamond",
-          "template": "[<#F8F8F2></> Error, check your command]",
-          "type": "status"
-        },
-        {
-          "foreground": "#FFCA80",
+          "foreground": "#8AFF80",
           "foreground_templates": [
             "{{ if gt .Code 0 }}#CC2200{{ end }}"
           ],
-          "options": {
+          "properties": {
             "always_enabled": true
           },
-          "style": "plain",
-          "template": " ",
+          "style": "diamond",
+          "template": "[{{ if gt .Code 0 }}</> Exit {{ .Code }}{{ else }} Nominal{{ end }}] ",
           "type": "status"
         }
       ],

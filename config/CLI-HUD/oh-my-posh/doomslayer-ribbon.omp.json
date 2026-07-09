@@ -79,20 +79,21 @@
         {
           "background": "#0D0D0D",
           "foreground": "#FF4500",
-          "leading_diamond": "\ue0c5",
+          "leading_diamond": "\ue0b2",
           "style": "diamond",
-          "template": " {{ if .SSHSession }}\ueba9 {{ end }}{{ .UserName }}<transparent> / </>{{ .HostName }}",
+          "template": " {{ if .SSHSession }}\ueba9 {{ end }}{{ .UserName }}<transparent> / </>{{ .HostName }} ",
           "type": "session"
         },
         {
           "background": "#0D0D0D",
           "foreground": "#FFCA80",
+          "leading_diamond": "\ue0b2",
           "options": {
             "time_format": "3:04:05 PM"
           },
           "style": "diamond",
-          "template": "<#000000> \ue31e\uf0fb </>{{ .CurrentDate | date .Format }} ",
-          "trailing_diamond": "\ue0c5",
+          "template": "<#000000> \ue31e\uf0fb </>{{ .CurrentDate.Format \"3:04:05 PM\" }} ",
+          "trailing_diamond": "\ue0b0",
           "type": "time"
         }
       ],
