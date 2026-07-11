@@ -35,7 +35,9 @@ return {
   opts = function(_, opts)
     opts.image = opts.image or {}
     opts.image.enabled = true
-
+	opts.explorer = {
+	  enabled = true,
+	}
     opts.dashboard = opts.dashboard or {}
     opts.dashboard.enabled = true
 

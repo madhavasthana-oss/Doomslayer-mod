@@ -150,7 +150,7 @@
             "always_enabled": true
           },
           "style": "diamond",
-          "template": "[{{ if gt .Code 0 }}</> Exit {{ .Code }}{{ else }} Nominal{{ end }}] ",
+          "template": "[{{ if gt .Code 0 }}</> exit {{ .Code }}{{ else }} nominal{{ end }}] ",
           "type": "status"
         }
       ],
