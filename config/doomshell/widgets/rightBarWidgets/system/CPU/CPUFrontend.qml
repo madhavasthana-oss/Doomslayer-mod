@@ -10,7 +10,7 @@ Item {
     width:  Globals.rightWidth
     height: Globals.rightWidth * 8 / 7
 
-    opacity: Globals.active
+    opacity: Globals.activePanel === "cpu"
     // ---------------------------------------------------------
     //  BACKEND
     // ---------------------------------------------------------
