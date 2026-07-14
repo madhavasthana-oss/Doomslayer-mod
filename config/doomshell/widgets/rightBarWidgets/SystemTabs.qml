@@ -9,7 +9,7 @@ Item {
     property string active: Globals.activePanel   // "cpu" | "gpu" | "ram"
     signal switched(string panel)
 
-    height: 20
+    height: Globals.inMostSpacing * 4
     Layout.fillWidth: true
 
     // Tab labels
@@ -53,9 +53,7 @@ Item {
     Item {
         Layout.fillHeight: true
     }
-    // ───────────────────────────────────────────────
-    // THE single animated underline (Caelestia style)
-    // ───────────────────────────────────────────────
+
     Rectangle {
         id: underline
         height: 1
@@ -64,11 +62,9 @@ Item {
         radius: 0.5
         y: parent.height - height
 
-        // Smooth movement
         Behavior on x     { NumberAnimation { duration: Theme.animFast; easing.type: Easing.OutCubic } }
         Behavior on width { NumberAnimation { duration: Theme.animFast; easing.type: Easing.OutCubic } }
 
-        // Keep underline under the active tab
         property Item activeTab: {
             for (let i = 0; i < tabRow.children.length; i++) {
                 if (tabRow.children[i].panelId === root.active)
@@ -77,7 +73,7 @@ Item {
             return null
         }
 
-        x:     activeTab ? activeTab.x     : 0
+        x:     activeTab ? activeTab.x  : 0
         width: activeTab ? activeTab.width : 0
     }
 }

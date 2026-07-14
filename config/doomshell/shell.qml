@@ -5,10 +5,12 @@ import QtQuick.Layouts
 import "utils"
 import "bars"
 import "."
+import "widgets/rightBarWidgets"
+import "edges"
 import "widgets/rightBarWidgets/system/CPU"
 import "widgets/rightBarWidgets/system/GPU"
 import "widgets/rightBarWidgets/system/RAM"
-import "widgets/centerBarWidgets/console"
+import "widgets/centerBarWidgets/console"     
 
 ShellRoot {
 
@@ -30,7 +32,7 @@ ShellRoot {
         id: dropdownWindow
         anchors { top: true; right: true }
         implicitWidth:  350
-        implicitHeight: Globals.activePanel !== "" ? 400 : 0
+        implicitHeight: Globals.activePanel !== "" ? 430 : 0
 
         Behavior on implicitHeight {
             NumberAnimation { duration: 50; easing.type: Easing.OutQuart }
@@ -44,19 +46,20 @@ ShellRoot {
         WlrLayershell.margins.right: 5
         visible: Globals.activePanel !== ""
 
-        StackLayout {
+         Rectangle {
+            id: panelBg
             anchors.fill: parent
-
-                currentIndex: {
-                    let panels = ["cpu", "gpu", "ram"]
-                    return panels.indexOf(Globals.activePanel)
-                }
-
-                CPUFrontend { id: cpu }      // 2 — CPU
-                GPUFrontend { id: gpu }      // 3 — GPU
-                RAMFrontend { id: ram }      // 4 — RAM placeholder
-            }
+            radius:       10
+            color:        Theme.bgConsole
+            opacity:      Theme.opacityConsole
+            border.color: Theme.borderConsole
+            border.width: Theme.strokeWidth
         }
+
+        SystemPanel {
+            anchors.fill: parent
+        }
+    }
         
 
     PanelWindow {
@@ -107,4 +110,5 @@ ShellRoot {
             anchors.fill: parent 
         }
     }
+
 }

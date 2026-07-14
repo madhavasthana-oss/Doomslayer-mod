@@ -56,7 +56,7 @@ QtObject {
 
     readonly property int barMarginTop:    8
 
-    readonly property int paddingH:        12
+    readonly property int paddingH:        6
     readonly property int paddingV:        6
 
 
