@@ -44,30 +44,6 @@ Item {
     }
 
     // ---------------------------------------------------------
-    //  PANEL BACKGROUND
-    // ---------------------------------------------------------
-
-    Rectangle {
-        id: panelBg
-        anchors.fill: parent
-        radius:       10
-        color:        Theme.bgConsole
-        opacity:      Theme.opacityConsole
-        border.color: Theme.borderConsole
-        border.width: Theme.strokeWidth
-    }
-
-    Rectangle {
-        anchors.top:   parent.top
-        anchors.left:  parent.left
-        anchors.right: parent.right
-        height:        0
-        radius:        10
-        color:         Theme.accent
-        opacity:       0.55
-    }
-
-    // ---------------------------------------------------------
     //  MAIN LAYOUT
     // ---------------------------------------------------------
 
@@ -75,56 +51,6 @@ Item {
         anchors.fill:    parent
         anchors.margins: Theme.paddingH
         spacing:         Globals.inMostSpacing * 2
-
-        // ---------------------------------------------------------
-        //  TAB ROW
-        // ---------------------------------------------------------
-
-        RowLayout {
-            Layout.fillWidth:       true
-            Layout.preferredHeight: 20
-            spacing:                0
-
-            Repeater {
-            
-                model: ["CPU", "GPU", "RAM"]
-                Item {
-                    Layout.fillWidth: true
-                    height:           20
-
-                    Rectangle {
-                        anchors.bottom: parent.bottom
-                        anchors.left:   parent.left
-                        anchors.right:  parent.right
-                        height:         1
-                        color:          modelData === "CPU" ? Theme.accent : "transparent"
-                        opacity:        0.8
-                    }
-
-                    Text {
-                        anchors.centerIn:   parent
-                        text:               modelData
-                        font.family:        Theme.fontDisplay
-                        font.pixelSize:     Theme.fontSizeLabel
-                        color:              modelData === "CPU" ? Theme.accent : Theme.textDim
-                        font.letterSpacing: 1.2
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        cursorShape:  Qt.PointingHandCursor
-                        onClicked:    Globals.activePanel = modelData.toLowerCase()
-                    } 
-                }
-            }
-        }
-
-        Rectangle {
-            Layout.fillWidth: true
-            height:           1
-            color:            Theme.borderIdle
-            opacity:          0.5
-        }
 
         // ---------------------------------------------------------
         //  BODY — core list (left) + detail panel (right)
