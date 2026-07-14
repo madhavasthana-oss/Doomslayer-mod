@@ -10,6 +10,7 @@ Item {
     property bool __ready__           : false
     property int  __core_count__      : -1
     property int  historyLength       : 20
+    property int intervalLength       : 500
 
     // WARNING --- THIS IS HARDCODED!! YOU NEED TO UPDATE THIS YOURSELF FOR ACCURATE READING
     property var __core_id_map__: [0, 0, 4, 4, 8, 9, 10, 11, 12, 13, 14, 15]
@@ -87,7 +88,7 @@ Item {
 
     Timer {
         id: detector
-        interval: 150
+        interval: parent.intervalLength
         running:  true
         repeat:   true
         onTriggered: {
@@ -180,7 +181,7 @@ Item {
 
     Timer {
         id: tempDetector
-        interval: 150
+        interval: parent.intervalLength
         running:  false
         repeat:   true
         onTriggered: tempProc.running = true
