@@ -100,10 +100,6 @@ QtObject {
     //  ANIMATION STATE
     // ---------------------------------------------------------
 
-    // Active panel tracker — single source of truth
-    // Values: "" | "cpu" | "gpu" | "ram" | "bat" | "greeting"
-    property string activePanel: ""
-    property string lastPanel:   "cpu" 
 
     // ---------------------------------------------------------
     //  CENTER BAR EXPANSION GEOMETRY
@@ -171,4 +167,22 @@ QtObject {
     readonly property int iconSizeBase: 8
     readonly property int iconSizeMedium: 12
     readonly property int iconSizeLarge: 14
+   
+
+//    █████████                       █████                       ████         
+//   ███▒▒▒▒▒███                     ▒▒███                       ▒▒███         
+//  ███     ▒▒▒   ██████  ████████   ███████   ████████   ██████  ▒███   █████ 
+// ▒███          ███▒▒███▒▒███▒▒███ ▒▒▒███▒   ▒▒███▒▒███ ███▒▒███ ▒███  ███▒▒  
+// ▒███         ▒███ ▒███ ▒███ ▒███   ▒███     ▒███ ▒▒▒ ▒███ ▒███ ▒███ ▒▒█████ 
+// ▒▒███     ███▒███ ▒███ ▒███ ▒███   ▒███ ███ ▒███     ▒███ ▒███ ▒███  ▒▒▒▒███
+//  ▒▒█████████ ▒▒██████  ████ █████  ▒▒█████  █████    ▒▒██████  █████ ██████ 
+//   ▒▒▒▒▒▒▒▒▒   ▒▒▒▒▒▒  ▒▒▒▒ ▒▒▒▒▒    ▒▒▒▒▒  ▒▒▒▒▒      ▒▒▒▒▒▒  ▒▒▒▒▒ ▒▒▒▒▒▒  
+                                                                            
+                                                                            
+                                                                            
+    // Active panel tracker — single source of truth
+    // Values: "" | "cpu" | "gpu" | "ram" | "bat" | "greeting"
+    property string activePanel    : ""
+    property string lastPanel      : "cpu" 
+    property bool consolePanelOpen : false
 }   

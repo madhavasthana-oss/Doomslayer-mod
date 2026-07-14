@@ -8,6 +8,7 @@ import "."
 import "widgets/rightBarWidgets/system/CPU"
 import "widgets/rightBarWidgets/system/GPU"
 import "widgets/rightBarWidgets/system/RAM"
+import "widgets/centerBarWidgets/console"
 
 ShellRoot {
 
@@ -82,5 +83,28 @@ ShellRoot {
         WlrLayershell.namespace: "doomshell-center"
 
         CenterBar { anchors.fill: parent }
+    }
+
+    PanelWindow {
+        id: consoleDropdownWindow
+        anchors { top: true }
+        implicitWidth:  Globals.centerWidth - 2 * Globals.centerHeight
+        implicitHeight: !Globals.consolePanelOpen ? 0 : Globals.centerWidth * 3 / 4
+
+        Behavior on implicitHeight {
+            NumberAnimation { duration: 50; easing.type: Easing.OutQuart }
+        }
+
+        color:         "transparent"
+        exclusiveZone: 0
+        WlrLayershell.layer:         WlrLayer.Top
+        WlrLayershell.namespace:     "doomshell-console-dropdown"
+        WlrLayershell.margins.top:   5
+        WlrLayershell.margins.right: 5
+        visible: Globals.consolePanelOpen
+
+        Console {
+            anchors.fill: parent 
+        }
     }
 }
