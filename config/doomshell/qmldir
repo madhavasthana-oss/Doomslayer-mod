@@ -1,2 +1,3 @@
 singleton Theme theme.qml
 singleton Globals globals.qml
+singleton Tokens tokens.qml

@@ -14,8 +14,8 @@ Item {
                                    ? ram.processes.get(selectedProc)
                                    : null
 
-    width:  Globals.rightWidth
-    height: Globals.rightWidth * 8 / 7
+    width:  Tokens.rightWidth
+    height: Tokens.rightWidth * 8 / 7
 
     RAMBackend {
         id: ram
@@ -23,8 +23,8 @@ Item {
 
     ColumnLayout {
         anchors.fill:    parent
-        anchors.margins: Theme.paddingH
-        spacing:         Globals.inMostSpacing * 2
+        anchors.margins: Tokens.paddingH
+        spacing:         Tokens.inMostSpacing * 2
 
         RowLayout {
             Text {
@@ -34,7 +34,7 @@ Item {
                 horizontalAlignment:   Text.AlignHCenter
                 text: "RAM Usage: "
                 font.family:    Theme.fontDisplay
-                font.pixelSize: Theme.fontSizeLarge
+                font.pixelSize: Tokens.fontSizeLarge
                 color:          Theme.accent
             }
 
@@ -47,7 +47,7 @@ Item {
                     ? "-- / -- GB"
                     : ram.__ram_in_use__ + " / " + ram.__ram_total__ + " GB"
                 font.family:    Theme.fontMono
-                font.pixelSize: Theme.fontSizeBase
+                font.pixelSize: Tokens.fontSizeBase
                 color:          Theme.accentWarm
             }
         }
@@ -55,7 +55,7 @@ Item {
         RowLayout {
             Layout.fillWidth:  true
             Layout.fillHeight: true
-            spacing:           Globals.inMostSpacing * 3 / 2
+            spacing:           Tokens.inMostSpacing * 3 / 2
             Rectangle {
                 id: procListPanel
                 Layout.preferredWidth: 108
@@ -63,7 +63,7 @@ Item {
                 color:                  Theme.bgSurface
                 radius:                 6
                 border.color:           Theme.borderIdle
-                border.width:           Theme.strokeWidth
+                border.width:           Tokens.strokeWidth
 
                 Text {
                     id: procListHeader
@@ -72,7 +72,7 @@ Item {
                     anchors.horizontalCenter: parent.horizontalCenter
                     text:                     "PROCESSES"
                     font.family:              Theme.fontDisplay
-                    font.pixelSize:           Theme.fontSizeLabel
+                    font.pixelSize:           Tokens.fontSizeLabel
                     color:                    Theme.textMuted
                     font.letterSpacing:       1.5
                 }
@@ -121,7 +121,7 @@ Item {
                             anchors.leftMargin:     5
                             text:                   "P" + model.idx
                             font.family:            Theme.fontDisplay
-                            font.pixelSize:         Theme.fontSizeSmall
+                            font.pixelSize:         Tokens.fontSizeSmall
                             color:                  isSelected ? Theme.accent : Theme.textMuted
                         }
 
@@ -145,7 +145,7 @@ Item {
                                 height: parent.height
                                 radius: 2
                                 color:  usageColor
-                                Behavior on width { NumberAnimation { duration: Theme.animFast } }
+                                Behavior on width { NumberAnimation { duration: Tokens.animFast } }
                             }
                         }
 
@@ -156,7 +156,7 @@ Item {
                             anchors.rightMargin:    5
                             text:                   model.ram_mb === -1 ? "--" : model.ram_mb
                             font.family:            Theme.fontMono
-                            font.pixelSize:         Theme.fontSizeTiny
+                            font.pixelSize:         Tokens.fontSizeTiny
                             color:                  usageColor
                         }
 
@@ -171,8 +171,8 @@ Item {
                 id: procDataAndControls
                 Layout.fillHeight: true
                 Layout.fillWidth:  true
-                anchors.margins: Theme.paddingH
-                spacing:         Globals.inMostSpacing 
+                anchors.margins: Tokens.paddingH
+                spacing:         Tokens.inMostSpacing 
                 Rectangle {
                     id: procDataBox
                     Layout.fillWidth:       true
@@ -181,7 +181,7 @@ Item {
                     color:             Theme.bgSurface
                     radius:            6
                     border.color:      Theme.borderIdle
-                    border.width:      Theme.strokeWidth
+                    border.width:      Tokens.strokeWidth
 
                     ColumnLayout {
                         anchors.fill:    parent
@@ -189,13 +189,13 @@ Item {
                         spacing:            1
                         visible: ramFrontend.selectedProcData !== null
                         RowLayout{
-                            spacing: Globals.inMostSpacing * 2 / 5
+                            spacing: Tokens.inMostSpacing * 2 / 5
                             Layout.alignment: Qt.AlignLeft
                             Text {
                                 Layout.alignment: Qt.AlignLeft
                                 text:           "Process Name: " 
                                 font.family:    Theme.fontDisplay
-                                font.pixelSize: Theme.fontSizeTiny
+                                font.pixelSize: Tokens.fontSizeTiny
                                 color:          Theme.textMuted
                             }
                             
@@ -203,18 +203,18 @@ Item {
                                 Layout.alignment: Qt.AlignLeft
                                 text:   ramFrontend.selectedProcData?.name   ?? "—"
                                 font.family:    Theme.fontMono
-                                font.pixelSize: Theme.fontSizeTiny
+                                font.pixelSize: Tokens.fontSizeTiny
                                 color:          Theme.textSecondary
                             }
                         }
                         RowLayout{
-                            spacing: Globals.inMostSpacing * 2 / 5
+                            spacing: Tokens.inMostSpacing * 2 / 5
                             Layout.alignment: Qt.AlignLeft
                             Text {
                                 Layout.alignment: Qt.AlignLeft
                                 text:           "Process ID: " 
                                 font.family:    Theme.fontDisplay
-                                font.pixelSize: Theme.fontSizeTiny
+                                font.pixelSize: Tokens.fontSizeTiny
                                 color:          Theme.textMuted
                             }
                             
@@ -222,122 +222,122 @@ Item {
                                 Layout.alignment: Qt.AlignLeft
                                 text:           ramFrontend.selectedProcData?.pid    ?? "—"
                                 font.family:    Theme.fontMono
-                                font.pixelSize: Theme.fontSizeTiny
+                                font.pixelSize: Tokens.fontSizeTiny
                                 color:          Theme.textSecondary
                             }
                         }
 
                         RowLayout{
-                            spacing: Globals.inMostSpacing * 2 / 5
+                            spacing: Tokens.inMostSpacing * 2 / 5
                             Layout.alignment: Qt.AlignLeft
                             Text {
                                 Layout.alignment: Qt.AlignLeft
                                 text:           "RAM Usage: "
                                 font.family:    Theme.fontDisplay
-                                font.pixelSize: Theme.fontSizeTiny
+                                font.pixelSize: Tokens.fontSizeTiny
                                 color:          Theme.textMuted
                             }
                             
                             Text {
                                 text:           (ramFrontend.selectedProcData?.ram_mb ?? "—") + " MB"
                                 font.family:    Theme.fontMono
-                                font.pixelSize: Theme.fontSizeTiny
+                                font.pixelSize: Tokens.fontSizeTiny
                                 color:          Theme.textSecondary
                             }
                         }
 
                         RowLayout{
-                            spacing: Globals.inMostSpacing * 2 / 5
+                            spacing: Tokens.inMostSpacing * 2 / 5
                             Layout.alignment: Qt.AlignLeft
                             Text {
                                 Layout.alignment: Qt.AlignLeft
                                 text:           "CPU Usage: "
                                 font.family:    Theme.fontDisplay
-                                font.pixelSize: Theme.fontSizeTiny
+                                font.pixelSize: Tokens.fontSizeTiny
                                 color:          Theme.textMuted
                             }
                             
                             Text {
                                 text:           (ramFrontend.selectedProcData?.cpu ?? "—") + " %"
                                 font.family:    Theme.fontMono
-                                font.pixelSize: Theme.fontSizeTiny
+                                font.pixelSize: Tokens.fontSizeTiny
                                 color:          Theme.textSecondary
                             }
                         }
 
                         RowLayout{
-                            spacing: Globals.inMostSpacing * 2 / 5
+                            spacing: Tokens.inMostSpacing * 2 / 5
                             Layout.alignment: Qt.AlignLeft
                             Text {
                                 Layout.alignment: Qt.AlignLeft
                                 text:           "Uptime: "
                                 font.family:    Theme.fontDisplay
-                                font.pixelSize: Theme.fontSizeTiny
+                                font.pixelSize: Tokens.fontSizeTiny
                                 color:          Theme.textMuted
                             }
                             
                             Text {
                                 text:           (ramFrontend.selectedProcData?.uptime ?? "—") + " s"
                                 font.family:    Theme.fontMono
-                                font.pixelSize: Theme.fontSizeTiny
+                                font.pixelSize: Tokens.fontSizeTiny
                                 color:          Theme.textSecondary
                             }
                         }
 
                         RowLayout{
-                            spacing: Globals.inMostSpacing * 2 / 5
+                            spacing: Tokens.inMostSpacing * 2 / 5
                             Layout.alignment: Qt.AlignLeft
                             Text {
                                 Layout.alignment: Qt.AlignLeft
                                 text:           "Threads: "
                                 font.family:    Theme.fontDisplay
-                                font.pixelSize: Theme.fontSizeTiny
+                                font.pixelSize: Tokens.fontSizeTiny
                                 color:          Theme.textMuted
                             }
 
                             Text {
                                 text:           ramFrontend.selectedProcData?.threads ?? "—"
                                 font.family:    Theme.fontMono
-                                font.pixelSize: Theme.fontSizeTiny
+                                font.pixelSize: Tokens.fontSizeTiny
                                 color:          Theme.textSecondary
                             }
                         }
 
                         RowLayout{
-                            spacing: Globals.inMostSpacing * 2 / 5
+                            spacing: Tokens.inMostSpacing * 2 / 5
                             Layout.alignment: Qt.AlignLeft
                                 
                             Text {
                                 Layout.alignment: Qt.AlignLeft
                                 text:           "State: "
                                 font.family:    Theme.fontDisplay
-                                font.pixelSize: Theme.fontSizeTiny
+                                font.pixelSize: Tokens.fontSizeTiny
                                 color:          Theme.textMuted
                             }
 
                             Text {
                                 text: ramFrontend.selectedProcData?.stateDesc ?? "—"
                                 font.family:    Theme.fontMono
-                                font.pixelSize: Theme.fontSizeTiny
+                                font.pixelSize: Tokens.fontSizeTiny
                                 color:          Theme.textSecondary
                             }
                         }
 
                         RowLayout{
-                            spacing: Globals.inMostSpacing * 2 / 5
+                            spacing: Tokens.inMostSpacing * 2 / 5
                             Layout.alignment: Qt.AlignLeft
                             Text {
                                 Layout.alignment: Qt.AlignLeft
                                 text:           "User: "
                                 font.family:    Theme.fontDisplay
-                                font.pixelSize: Theme.fontSizeTiny
+                                font.pixelSize: Tokens.fontSizeTiny
                                 color:          Theme.textMuted
                             }
 
                             Text {
                                 text:           ramFrontend.selectedProcData?.user ?? "—"
                                 font.family:    Theme.fontMono
-                                font.pixelSize: Theme.fontSizeTiny
+                                font.pixelSize: Tokens.fontSizeTiny
                                 color:          Theme.textSecondary
                             }
                         }
@@ -361,7 +361,7 @@ Item {
                         color:           "transparent"
                         border.width:    2
                         border.color:    Qt.rgba(killProcBtn.glowColor.r, killProcBtn.glowColor.g, killProcBtn.glowColor.b, killProcBtn.isHovered ? 0.10 : 0)
-                        Behavior on border.color { ColorAnimation { duration: Theme.animMedium } }
+                        Behavior on border.color { ColorAnimation { duration: Tokens.animMedium } }
                     }
                     Rectangle {
                         anchors.fill:    parent
@@ -370,7 +370,7 @@ Item {
                         color:           "transparent"
                         border.width:    2
                         border.color:    Qt.rgba(killProcBtn.glowColor.r, killProcBtn.glowColor.g, killProcBtn.glowColor.b, killProcBtn.isHovered ? 0.22 : 0)
-                        Behavior on border.color { ColorAnimation { duration: Theme.animMedium } }
+                        Behavior on border.color { ColorAnimation { duration: Tokens.animMedium } }
                     }
                     Rectangle {
                         anchors.fill:    parent
@@ -379,7 +379,7 @@ Item {
                         color:           "transparent"
                         border.width:    2
                         border.color:    Qt.rgba(killProcBtn.glowColor.r, killProcBtn.glowColor.g, killProcBtn.glowColor.b, killProcBtn.isHovered ? 0.4 : 0)
-                        Behavior on border.color { ColorAnimation { duration: Theme.animMedium } }
+                        Behavior on border.color { ColorAnimation { duration: Tokens.animMedium } }
                     }
 
                     Rectangle {
@@ -392,16 +392,16 @@ Item {
                         opacity:      ramFrontend.selectedProcData !== null ? 1.0 : 0.4
                         scale:        killProcBtn.isPressed ? 0.94 : 1.0
 
-                        Behavior on scale       { NumberAnimation { duration: Theme.animFast; easing.type: Easing.OutCubic } }
-                        Behavior on border.color { ColorAnimation { duration: Theme.animMedium } }
+                        Behavior on scale       { NumberAnimation { duration: Tokens.animFast; easing.type: Easing.OutCubic } }
+                        Behavior on border.color { ColorAnimation { duration: Tokens.animMedium } }
 
                         Text {
                             anchors.centerIn:   parent
                             text:               "Kill Process"
                             font.family:        Theme.fontDisplay
-                            font.pixelSize:     Theme.fontSizeSmall
+                            font.pixelSize:     Tokens.fontSizeSmall
                             color:              killProcBtn.isHovered ? killProcBtn.glowColor : Theme.textMuted
-                            Behavior on color { ColorAnimation { duration: Theme.animMedium } }
+                            Behavior on color { ColorAnimation { duration: Tokens.animMedium } }
                         }
                     }
 
@@ -433,7 +433,7 @@ Item {
                         color:           "transparent"
                         border.width:    2
                         border.color:    Qt.rgba(haltProcBtn.glowColor.r, haltProcBtn.glowColor.g, haltProcBtn.glowColor.b, haltProcBtn.isHovered ? 0.10 : 0)
-                        Behavior on border.color { ColorAnimation { duration: Theme.animMedium } }
+                        Behavior on border.color { ColorAnimation { duration: Tokens.animMedium } }
                     }
                     Rectangle {
                         anchors.fill:    parent
@@ -442,7 +442,7 @@ Item {
                         color:           "transparent"
                         border.width:    2
                         border.color:    Qt.rgba(haltProcBtn.glowColor.r, haltProcBtn.glowColor.g, haltProcBtn.glowColor.b, haltProcBtn.isHovered ? 0.22 : 0)
-                        Behavior on border.color { ColorAnimation { duration: Theme.animMedium } }
+                        Behavior on border.color { ColorAnimation { duration: Tokens.animMedium } }
                     }
                     Rectangle {
                         anchors.fill:    parent
@@ -451,7 +451,7 @@ Item {
                         color:           "transparent"
                         border.width:    2
                         border.color:    Qt.rgba(haltProcBtn.glowColor.r, haltProcBtn.glowColor.g, haltProcBtn.glowColor.b, haltProcBtn.isHovered ? 0.4 : 0)
-                        Behavior on border.color { ColorAnimation { duration: Theme.animMedium } }
+                        Behavior on border.color { ColorAnimation { duration: Tokens.animMedium } }
                     }
 
                     Rectangle {
@@ -464,8 +464,8 @@ Item {
                         opacity:      ramFrontend.selectedProcData !== null ? 1.0 : 0.4
                         scale:        haltProcBtn.isPressed ? 0.94 : 1.0
 
-                        Behavior on scale        { NumberAnimation { duration: Theme.animFast; easing.type: Easing.OutCubic } }
-                        Behavior on border.color { ColorAnimation { duration: Theme.animMedium } }
+                        Behavior on scale        { NumberAnimation { duration: Tokens.animFast; easing.type: Easing.OutCubic } }
+                        Behavior on border.color { ColorAnimation { duration: Tokens.animMedium } }
 
                         AnimatedText {
                             id: haltProcAnimText
@@ -477,12 +477,12 @@ Item {
                                 anchors.fill:       parent
                                 text:               haltProcAnimText.displayedText
                                 font.family:        Theme.fontDisplay
-                                font.pixelSize:      Theme.fontSizeSmall
+                                font.pixelSize:      Tokens.fontSizeSmall
                                 color:              haltProcBtn.isHovered ? haltProcBtn.glowColor : Theme.textMuted
                                 opacity:            haltProcAnimText.displayOpacity
                                 horizontalAlignment: Text.AlignHCenter
                                 verticalAlignment:   Text.AlignVCenter
-                                Behavior on color { ColorAnimation { duration: Theme.animMedium } }
+                                Behavior on color { ColorAnimation { duration: Tokens.animMedium } }
                             }
 
                             Component.onCompleted: {
@@ -525,7 +525,7 @@ Item {
                         color:           "transparent"
                         border.width:    2
                         border.color:    Qt.rgba(optimizeProcBtn.glowColor.r, optimizeProcBtn.glowColor.g, optimizeProcBtn.glowColor.b, optimizeProcBtn.isHovered ? 0.10 : 0)
-                        Behavior on border.color { ColorAnimation { duration: Theme.animMedium } }
+                        Behavior on border.color { ColorAnimation { duration: Tokens.animMedium } }
                     }
                     Rectangle {
                         anchors.fill:    parent
@@ -534,7 +534,7 @@ Item {
                         color:           "transparent"
                         border.width:    2
                         border.color:    Qt.rgba(optimizeProcBtn.glowColor.r, optimizeProcBtn.glowColor.g, optimizeProcBtn.glowColor.b, optimizeProcBtn.isHovered ? 0.22 : 0)
-                        Behavior on border.color { ColorAnimation { duration: Theme.animMedium } }
+                        Behavior on border.color { ColorAnimation { duration: Tokens.animMedium } }
                     }
                     Rectangle {
                         anchors.fill:    parent
@@ -543,7 +543,7 @@ Item {
                         color:           "transparent"
                         border.width:    2
                         border.color:    Qt.rgba(optimizeProcBtn.glowColor.r, optimizeProcBtn.glowColor.g, optimizeProcBtn.glowColor.b, optimizeProcBtn.isHovered ? 0.4 : 0)
-                        Behavior on border.color { ColorAnimation { duration: Theme.animMedium } }
+                        Behavior on border.color { ColorAnimation { duration: Tokens.animMedium } }
                     }
 
                     Rectangle {
@@ -556,16 +556,16 @@ Item {
                         opacity:      ramFrontend.selectedProcData !== null ? 1.0 : 0.4
                         scale:        optimizeProcBtn.isPressed ? 0.94 : 1.0
 
-                        Behavior on scale        { NumberAnimation { duration: Theme.animFast; easing.type: Easing.OutCubic } }
-                        Behavior on border.color { ColorAnimation { duration: Theme.animMedium } }
+                        Behavior on scale        { NumberAnimation { duration: Tokens.animFast; easing.type: Easing.OutCubic } }
+                        Behavior on border.color { ColorAnimation { duration: Tokens.animMedium } }
 
                         Text {
                             anchors.centerIn:   parent
                             text:               "Optimize Process"
                             font.family:        Theme.fontDisplay
-                            font.pixelSize:     Theme.fontSizeSmall
+                            font.pixelSize:     Tokens.fontSizeSmall
                             color:              optimizeProcBtn.isHovered ? optimizeProcBtn.glowColor : Theme.textMuted
-                            Behavior on color { ColorAnimation { duration: Theme.animMedium } }
+                            Behavior on color { ColorAnimation { duration: Tokens.animMedium } }
                         }
                     }
 
@@ -598,7 +598,7 @@ Item {
                 color:           "transparent"
                 border.width:    2
                 border.color:    Qt.rgba(ramTuiBtn.glowColor.r, ramTuiBtn.glowColor.g, ramTuiBtn.glowColor.b, ramTuiBtn.isHovered ? 0.10 : 0)
-                Behavior on border.color { ColorAnimation { duration: Theme.animMedium } }
+                Behavior on border.color { ColorAnimation { duration: Tokens.animMedium } }
             }
             Rectangle {
                 anchors.fill:    parent
@@ -607,7 +607,7 @@ Item {
                 color:           "transparent"
                 border.width:    2
                 border.color:    Qt.rgba(ramTuiBtn.glowColor.r, ramTuiBtn.glowColor.g, ramTuiBtn.glowColor.b, ramTuiBtn.isHovered ? 0.22 : 0)
-                Behavior on border.color { ColorAnimation { duration: Theme.animMedium } }
+                Behavior on border.color { ColorAnimation { duration: Tokens.animMedium } }
             }
             Rectangle {
                 anchors.fill:    parent
@@ -616,7 +616,7 @@ Item {
                 color:           "transparent"
                 border.width:    2
                 border.color:    Qt.rgba(ramTuiBtn.glowColor.r, ramTuiBtn.glowColor.g, ramTuiBtn.glowColor.b, ramTuiBtn.isHovered ? 0.4 : 0)
-                Behavior on border.color { ColorAnimation { duration: Theme.animMedium } }
+                Behavior on border.color { ColorAnimation { duration: Tokens.animMedium } }
             }
 
             Rectangle {
@@ -629,16 +629,16 @@ Item {
                 opacity:      ramTuiBtn.isAvailable ? 1.0 : 0.4
                 scale:        ramTuiBtn.isPressed ? 0.94 : 1.0
 
-                Behavior on scale        { NumberAnimation { duration: Theme.animFast; easing.type: Easing.OutCubic } }
-                Behavior on border.color { ColorAnimation { duration: Theme.animMedium } }
+                Behavior on scale        { NumberAnimation { duration: Tokens.animFast; easing.type: Easing.OutCubic } }
+                Behavior on border.color { ColorAnimation { duration: Tokens.animMedium } }
 
                 Text {
                     anchors.centerIn:   parent
                     text:               ramTuiBtn.isAvailable ? "Launch RAM Manager" : "RAM Manager TUI Not Found"
                     font.family:        Theme.fontDisplay
-                    font.pixelSize:     Theme.fontSizeSmall
+                    font.pixelSize:     Tokens.fontSizeSmall
                     color:              ramTuiBtn.isHovered ? ramTuiBtn.glowColor : Theme.textMuted
-                    Behavior on color { ColorAnimation { duration: Theme.animMedium } }
+                    Behavior on color { ColorAnimation { duration: Tokens.animMedium } }
                 }
             }
 

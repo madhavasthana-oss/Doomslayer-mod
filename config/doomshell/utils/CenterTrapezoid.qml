@@ -17,12 +17,12 @@ Item {
 
     property real barWidth:    600
     property real barHeight:   75
-    property real inset: Globals.barInset
+    property real inset: Tokens.barInset
 
     // True 45° — offset equals height exactly
     // Do not override this unless you want a different angle
     property real angleOffset: barHeight
-    property real fillOpacity:  Globals.barOpacity
+    property real fillOpacity:  Theme.barOpacity
     property color fillColor:   Theme.bgSurface
     property color strokeColor: Theme.accent
     property real strokeWidth:  1.5

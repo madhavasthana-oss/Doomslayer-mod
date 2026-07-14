@@ -9,8 +9,8 @@ import ".."
 
 Item {
     id: leftBar
-    width:  Globals.leftWidth
-    height: Globals.leftHeight
+    width:  Tokens.leftWidth
+    height: Tokens.leftHeight
     property int visibleCount: Globals.workspaceNumber
     property int focusedId:    Hyprland.focusedWorkspace?.id ?? 1
     property int windowStart:  1    // starts at 1, updated by Connections
@@ -48,8 +48,8 @@ Item {
 
     LeftTrapezoid {
         anchors.fill: parent
-        barWidth:     Globals.leftWidth
-        barHeight:    Globals.leftHeight
+        barWidth:     Tokens.leftWidth
+        barHeight:    Tokens.leftHeight
         alertActive:  false
     }
 
@@ -63,17 +63,17 @@ Item {
 
     RowLayout {
     anchors.fill:        parent
-    anchors.leftMargin:  Globals.workspaceToggleMargin
-    anchors.rightMargin: Globals.leftHeight + Globals.inMostSpacing 
-    spacing:             Globals.inMostSpacing * 2
+    anchors.leftMargin:  Tokens.workspaceToggleMargin
+    anchors.rightMargin: Tokens.leftHeight + Tokens.inMostSpacing 
+    spacing:             Tokens.inMostSpacing * 2
 
     // ---------------------------------------------------------
     //  ROW 1 — Workspace Numbers — FIXED WIDTH
     // ---------------------------------------------------------
     RowLayout {
-        Layout.preferredWidth: Globals.workspaceNumber * (Theme.fontSizeSmall + Globals.inMostSpacing)
+        Layout.preferredWidth: Globals.workspaceNumber * (Tokens.fontSizeSmall + Tokens.inMostSpacing)
         Layout.fillWidth:      false  // never grow or shrink
-        spacing:               Globals.inMostSpacing 
+        spacing:               Tokens.inMostSpacing 
 
         Repeater {
             model: Array.from(
@@ -87,7 +87,7 @@ Item {
 
                 text:           wsId
                 font.family:    kogni.name
-                font.pixelSize: Theme.fontSizeSmall
+                font.pixelSize: Tokens.fontSizeSmall
                 color:          isActive ? Theme.textSecondary : Theme.textMuted
 
                 Behavior on color {
@@ -127,7 +127,7 @@ Item {
             ) ? Hyprland.activeToplevel.title : "Desktop"
 
             font.family: kogni.name
-            font.pixelSize: Theme.fontSizeSmall
+            font.pixelSize: Tokens.fontSizeSmall
             color: Theme.textSecondary
         }
     }

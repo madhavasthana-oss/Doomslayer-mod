@@ -17,10 +17,10 @@ ShellRoot {
     PanelWindow {
         id: rightBarWindow
         anchors { top: true; right: true }
-        implicitWidth:  Globals.rightWidth
-        implicitHeight: Globals.rightHeight 
+        implicitWidth:  Tokens.rightWidth
+        implicitHeight: Tokens.rightHeight 
         color: "transparent"
-        exclusiveZone: Globals.exclusiveZone
+        exclusiveZone: Tokens.exclusiveZone
         WlrLayershell.layer: WlrLayer.Top
         WlrLayershell.namespace: "doomshell-right"
 
@@ -31,8 +31,8 @@ ShellRoot {
     PanelWindow {
         id: dropdownWindow
         anchors { top: true; right: true }
-        implicitWidth:  Globals.rightWidth
-        implicitHeight: Globals.activePanel !== "" ? Globals.rightWidth * 43 / 35 : 0
+        implicitWidth:  Tokens.rightWidth
+        implicitHeight: Globals.activePanel !== "" ? Tokens.rightWidth * 43 / 35 : 0
 
         Behavior on implicitHeight {
             NumberAnimation { duration: 50; easing.type: Easing.OutQuart }
@@ -65,10 +65,10 @@ ShellRoot {
     PanelWindow {
         id: leftBarWindow
         anchors { top: true; left: true }
-        implicitWidth:  Globals.leftWidth
-        implicitHeight: Globals.leftHeight
+        implicitWidth:  Tokens.leftWidth
+        implicitHeight: Tokens.leftHeight
         color: "transparent"
-        exclusiveZone: Globals.exclusiveZone
+        exclusiveZone: Tokens.exclusiveZone
         WlrLayershell.layer:     WlrLayer.Top
         WlrLayershell.namespace: "doomshell-left"
 
@@ -78,10 +78,10 @@ ShellRoot {
     PanelWindow {
         id: centerBarWindow
         anchors { top: true }
-        implicitWidth:  Globals.centerWidth
-        implicitHeight: Globals.centerHeight
+        implicitWidth:  Tokens.centerWidth
+        implicitHeight: Tokens.centerHeight
         color: "transparent"
-        exclusiveZone: Globals.exclusiveZone
+        exclusiveZone: Tokens.exclusiveZone
         WlrLayershell.layer:     WlrLayer.Top
         WlrLayershell.namespace: "doomshell-center"
 
@@ -91,8 +91,8 @@ ShellRoot {
     PanelWindow {
         id: consoleDropdownWindow
         anchors { top: true }
-        implicitWidth:  Globals.centerWidth - 2 * Globals.centerHeight
-        implicitHeight: !Globals.consolePanelOpen ? 0 : Globals.centerWidth * 3 / 4
+        implicitWidth:  Tokens.centerWidth - 2 * Tokens.centerHeight
+        implicitHeight: !Globals.consolePanelOpen ? 0 : Tokens.centerWidth * 3 / 4
 
         Behavior on implicitHeight {
             NumberAnimation { duration: 50; easing.type: Easing.OutQuart }

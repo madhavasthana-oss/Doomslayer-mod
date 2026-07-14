@@ -9,7 +9,7 @@ Item {
     property string active: Globals.activePanel   // "cpu" | "gpu" | "ram"
     signal switched(string panel)
 
-    height: Globals.inMostSpacing * 4
+    height: Tokens.inMostSpacing * 4
     Layout.fillWidth: true
 
     // Tab labels
@@ -36,7 +36,7 @@ Item {
                     anchors.centerIn: parent
                     text: modelData.label
                     font.family: Theme.fontDisplay
-                    font.pixelSize: Theme.fontSizeLabel
+                    font.pixelSize: Tokens.fontSizeLabel
                     color: isActive ? Theme.accent : Theme.textDim
                     font.letterSpacing: 1.2
                 }

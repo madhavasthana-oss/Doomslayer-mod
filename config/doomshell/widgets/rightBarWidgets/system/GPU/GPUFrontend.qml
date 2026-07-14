@@ -14,8 +14,8 @@ Item {
     property var freqTargets: []
     property real freqFrame: 0
 
-    width:  Globals.rightWidth
-    height: Globals.rightWidth * 8 / 7
+    width:  Tokens.rightWidth
+    height: Tokens.rightWidth * 8 / 7
 
     Connections {
         target: gpu
@@ -157,8 +157,8 @@ Item {
 
     ColumnLayout {
         anchors.fill:    parent
-        anchors.margins: Theme.paddingH
-        spacing:         Globals.inMostSpacing * 2
+        anchors.margins: Tokens.paddingH
+        spacing:         Tokens.inMostSpacing * 2
         Text {
             id: gpuName
 
@@ -169,7 +169,7 @@ Item {
             horizontalAlignment: Text.AlignHCenter
 
             font.family:    Theme.fontDisplay
-            font.pixelSize: Theme.fontSizeSmall
+            font.pixelSize: Tokens.fontSizeSmall
 
             color: Theme.accent
         }
@@ -179,7 +179,7 @@ Item {
             Text {
                 text:               "USAGE"
                 font.family:        Theme.fontDisplay
-                font.pixelSize:     Theme.fontSizeLabel
+                font.pixelSize:     Tokens.fontSizeLabel
                 color:              Theme.textMuted
                 font.letterSpacing: 1.2
             }
@@ -189,7 +189,7 @@ Item {
                 property int liveVal: gpu.__gpu_usage__
                 text:           textAnimator.displayedText
                 font.family:    Theme.fontMono
-                font.pixelSize: Theme.fontSizeSmall
+                font.pixelSize: Tokens.fontSizeSmall
                 color:          liveVal > 85 ? Theme.stateCritical
                                 : liveVal > 60 ? Theme.stateWarning
                                 : Theme.accent
@@ -230,7 +230,7 @@ Item {
 
                     ctx.setLineDash([])
                     ctx.fillStyle = Theme.textDim
-                    ctx.font      = "bold " + Theme.fontSizeTiny + "px " + Theme.fontMono
+                    ctx.font      = "bold " + Tokens.fontSizeTiny + "px " + Theme.fontMono
                     ctx.fillText("100", 3, 10)
                     ctx.fillText("50",  3, h * 0.5 - 2)
                     ctx.fillText("0",   3, h - 3)
@@ -289,7 +289,7 @@ Item {
             Text {
                 text:               "FREQUENCY"
                 font.family:        Theme.fontDisplay
-                font.pixelSize:     Theme.fontSizeLabel
+                font.pixelSize:     Tokens.fontSizeLabel
                 color:              Theme.textMuted
                 font.letterSpacing: 1.2
             }
@@ -299,7 +299,7 @@ Item {
                 property int liveVal: gpu.__gpu_freq__
                 text:           freqAnimator.displayedText
                 font.family:    Theme.fontMono
-                font.pixelSize: Theme.fontSizeSmall
+                font.pixelSize: Tokens.fontSizeSmall
                 color:          liveVal > 85 ? Theme.stateCritical
                                 : liveVal > 60 ? Theme.stateWarning
                                 : Theme.accent
@@ -370,7 +370,7 @@ Item {
                         Layout.alignment: Qt.AlignHCenter
                         text:               "USAGE"
                         font.family:        Theme.fontDisplay
-                        font.pixelSize:     Theme.fontSizeLabel
+                        font.pixelSize:     Tokens.fontSizeLabel
                         color:              Theme.textMuted
                         font.letterSpacing: 1.2
                     }
@@ -378,7 +378,7 @@ Item {
                         Layout.alignment: Qt.AlignHCenter
                         text:           usageBoxAnimator.displayedText
                         font.family:    Theme.fontMono
-                        font.pixelSize: Theme.fontSizeMedium
+                        font.pixelSize: Tokens.fontSizeMedium
                         font.bold:      true
                         color:          gpu.__gpu_usage__ > 85 ? Theme.stateCritical
                                         : gpu.__gpu_usage__ > 60 ? Theme.stateWarning
@@ -403,7 +403,7 @@ Item {
                         Layout.alignment: Qt.AlignHCenter
                         text:               "FREQUENCY"
                         font.family:        Theme.fontDisplay
-                        font.pixelSize:     Theme.fontSizeLabel
+                        font.pixelSize:     Tokens.fontSizeLabel
                         color:              Theme.textMuted
                         font.letterSpacing: 1.2
                     }
@@ -412,7 +412,7 @@ Item {
                         Layout.alignment: Qt.AlignHCenter
                         text:           freqBoxAnimator.displayedText
                         font.family:    Theme.fontMono
-                        font.pixelSize: Theme.fontSizeMedium
+                        font.pixelSize: Tokens.fontSizeMedium
                         font.bold:      true
                         color:          gpu.__gpu_freq__ > 1000 ? Theme.stateCritical
                                         : gpu.__gpu_freq__ > 600 ? Theme.stateWarning
@@ -429,17 +429,17 @@ Item {
             radius:                 6
             color:                  nvtopHover.containsMouse ? Theme.bgElevated : Theme.bgSurface
             border.color:           nvtopHover.containsMouse ? Theme.accent : Theme.borderIdle
-            border.width:           nvtopHover.containsMouse ? Theme.strokeWidthActive : Theme.strokeWidth
+            border.width:           nvtopHover.containsMouse ? Tokens.strokeWidthActive : Tokens.strokeWidth
 
             Behavior on color {
                 ColorAnimation {
-                    duration: Theme.animFast
+                    duration: Tokens.animFast
                 }
             }
 
             Behavior on border.color {
                 ColorAnimation {
-                    duration: Theme.animFast
+                    duration: Tokens.animFast
                 }
             }
 
@@ -447,10 +447,10 @@ Item {
                 anchors.centerIn:   parent
                 text:               "◈  LAUNCH NVTOP"
                 font.family:        Theme.fontDisplay
-                font.pixelSize:     Theme.fontSizeLabel
+                font.pixelSize:     Tokens.fontSizeLabel
                 font.letterSpacing: 1.5
                 color:              nvtopHover.containsMouse ? Theme.accent : Theme.textMuted
-                Behavior on color   { ColorAnimation { duration: Theme.animFast } }
+                Behavior on color   { ColorAnimation { duration: Tokens.animFast } }
             }
 
             MouseArea {

@@ -20,7 +20,7 @@ Item {
     property real barHeight:   75
     property real angleOffset: barHeight
 
-    property real fillOpacity:  Globals.barOpacity
+    property real fillOpacity:  Theme.barOpacity
     property color fillColor:   Theme.bgSurface
     property color strokeColor: Theme.accent
     property real strokeWidth:  1.5

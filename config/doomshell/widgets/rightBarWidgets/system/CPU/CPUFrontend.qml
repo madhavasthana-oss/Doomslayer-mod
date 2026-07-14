@@ -7,8 +7,8 @@ import "../../../.."
 Item {
     id: cpuFrontend
 
-    width:  Globals.rightWidth
-    height: Globals.rightWidth * 8 / 7
+    width:  Tokens.rightWidth
+    height: Tokens.rightWidth * 8 / 7
 
     opacity: Globals.activePanel === "cpu"
     // ---------------------------------------------------------
@@ -49,8 +49,8 @@ Item {
 
     ColumnLayout {
         anchors.fill:    parent
-        anchors.margins: Theme.paddingH 
-        spacing:         Globals.inMostSpacing * 2
+        anchors.margins: Tokens.paddingH 
+        spacing:         Tokens.inMostSpacing * 2
 
         // ---------------------------------------------------------
         //  BODY — core list (left) + detail panel (right)
@@ -71,7 +71,7 @@ Item {
                 color:                 Theme.bgSurface
                 radius:                6
                 border.color:          Theme.borderIdle
-                border.width:          Theme.strokeWidth
+                border.width:          Tokens.strokeWidth
 
                 Text {
                     id: coreListHeader
@@ -80,7 +80,7 @@ Item {
                     anchors.horizontalCenter: parent.horizontalCenter
                     text:                     "CORES"
                     font.family:              Theme.fontDisplay
-                    font.pixelSize:           Theme.fontSizeLabel
+                    font.pixelSize:           Tokens.fontSizeLabel
                     color:                    Theme.textMuted
                     font.letterSpacing:       1.5
                 }
@@ -126,7 +126,7 @@ Item {
                             anchors.leftMargin:     5
                             text:                   "C" + model.idx
                             font.family:            Theme.fontDisplay
-                            font.pixelSize:         Theme.fontSizeSmall
+                            font.pixelSize:         Tokens.fontSizeSmall
                             color:                  isSelected ? Theme.accent : Theme.textMuted
                         }
 
@@ -150,7 +150,7 @@ Item {
                                 height: parent.height
                                 radius: 2
                                 color:  usageColor
-                                Behavior on width { NumberAnimation { duration: Theme.animFast } }
+                                Behavior on width { NumberAnimation { duration: Tokens.animFast } }
                             }
                         }
 
@@ -161,7 +161,7 @@ Item {
                             anchors.rightMargin:    5
                             text:                   model.usage === -1 ? "--" : model.usage + "%"
                             font.family:            Theme.fontMono
-                            font.pixelSize:         Theme.fontSizeTiny
+                            font.pixelSize:         Tokens.fontSizeTiny
                             color:                  usageColor
                         }
 
@@ -180,7 +180,7 @@ Item {
             ColumnLayout {
                 Layout.fillWidth:  true
                 Layout.fillHeight: true
-                spacing:           Globals.inMostSpacing
+                spacing:           Tokens.inMostSpacing
 
                 // USAGE GRAPH
                 ColumnLayout {
@@ -193,7 +193,7 @@ Item {
                         Text {
                             text:               "USAGE"
                             font.family:        Theme.fontDisplay
-                            font.pixelSize:     Theme.fontSizeLabel
+                            font.pixelSize:     Tokens.fontSizeLabel
                             color:              Theme.textMuted
                             font.letterSpacing: 1.2
                         }
@@ -204,7 +204,7 @@ Item {
                                 ? (cpu.cores.get(cpuFrontend.selectedCore)?.usage ?? -1) : -1
                             text:           liveVal === -1 ? "--%"  : liveVal + "%"
                             font.family:    Theme.fontMono
-                            font.pixelSize: Theme.fontSizeSmall
+                            font.pixelSize: Tokens.fontSizeSmall
                             color:          liveVal > 85 ? Theme.stateCritical
                                           : liveVal > 60 ? Theme.stateWarning
                                           : Theme.accent
@@ -249,7 +249,7 @@ Item {
                                 ctx.globalAlpha = 1
 
                                 ctx.fillStyle = Theme.textDim
-                                ctx.font      = "bold " + Theme.fontSizeTiny + "px " + Theme.fontMono
+                                ctx.font      = "bold " + Tokens.fontSizeTiny + "px " + Theme.fontMono
                                 ctx.fillText("100", 3, 10)
                                 ctx.fillText("50",  3, h * 0.5 - 2)
                                 ctx.fillText("0",   3, h - 3)
@@ -313,7 +313,7 @@ Item {
                         Text {
                             text:               "TEMP"
                             font.family:        Theme.fontDisplay
-                            font.pixelSize:     Theme.fontSizeLabel
+                            font.pixelSize:     Tokens.fontSizeLabel
                             color:              Theme.textMuted
                             font.letterSpacing: 1.2
                         }
@@ -324,7 +324,7 @@ Item {
                                 ? (cpu.cores.get(cpuFrontend.selectedCore)?.temp ?? -1) : -1
                             text:           liveVal === -1 ? "--°C" : liveVal + "°C"
                             font.family:    Theme.fontMono
-                            font.pixelSize: Theme.fontSizeSmall
+                            font.pixelSize: Tokens.fontSizeSmall
                             color:          liveVal > 85 ? Theme.stateCritical
                                           : liveVal > 70 ? Theme.stateWarning
                                           : Theme.accentWarm
@@ -372,7 +372,7 @@ Item {
                                 ctx.globalAlpha = 1.0
 
                                 ctx.fillStyle = Theme.textDim
-                                ctx.font      = "bold " + Theme.fontSizeTiny + "px " + Theme.fontMono
+                                ctx.font      = "bold " + Tokens.fontSizeTiny + "px " + Theme.fontMono
                                 ctx.fillText(tMax + "°", 3, 10)
                                 ctx.fillText("75°",      3, h - ((75 - tMin) / (tMax - tMin)) * h - 3)
                                 ctx.fillText(tMin + "°", 3, h - 3)
@@ -461,7 +461,7 @@ Item {
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 text:               "USAGE"
                                 font.family:        Theme.fontDisplay
-                                font.pixelSize:     Theme.fontSizeLabel
+                                font.pixelSize:     Tokens.fontSizeLabel
                                 color:              Theme.textMuted
                                 font.letterSpacing: 1.2
                             }
@@ -470,7 +470,7 @@ Item {
                                 text:           parent.parent.liveUsage === -1 ? "--%"
                                                     : parent.parent.liveUsage + "%"
                                 font.family:    Theme.fontMono
-                                font.pixelSize: Theme.fontSizeMedium
+                                font.pixelSize: Tokens.fontSizeMedium
                                 font.bold:      true
                                 color:          parent.parent.liveUsage > 85 ? Theme.stateCritical
                                               : parent.parent.liveUsage > 60 ? Theme.stateWarning
@@ -498,7 +498,7 @@ Item {
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 text:               "TEMP"
                                 font.family:        Theme.fontDisplay
-                                font.pixelSize:     Theme.fontSizeLabel
+                                font.pixelSize:     Tokens.fontSizeLabel
                                 color:              Theme.textMuted
                                 font.letterSpacing: 1.2
                             }
@@ -507,7 +507,7 @@ Item {
                                 text:           parent.parent.liveTemp === -1 ? "--°C"
                                                     : parent.parent.liveTemp + "°C"
                                 font.family:    Theme.fontMono
-                                font.pixelSize: Theme.fontSizeMedium
+                                font.pixelSize: Tokens.fontSizeMedium
                                 font.bold:      true
                                 color:          parent.parent.liveTemp > 85 ? Theme.stateCritical
                                               : parent.parent.liveTemp > 70 ? Theme.stateWarning
@@ -530,19 +530,19 @@ Item {
             radius:                 6
             color:                  btopHover.containsMouse ? Theme.bgElevated : Theme.bgSurface
             border.color:           btopHover.containsMouse ? Theme.accent : Theme.borderIdle
-            border.width:           btopHover.containsMouse ? Theme.strokeWidthActive : Theme.strokeWidth
+            border.width:           btopHover.containsMouse ? Tokens.strokeWidthActive : Tokens.strokeWidth
 
-            Behavior on color        { ColorAnimation { duration: Theme.animFast } }
-            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+            Behavior on color        { ColorAnimation { duration: Tokens.animFast } }
+            Behavior on border.color { ColorAnimation { duration: Tokens.animFast } }
 
             Text {
                 anchors.centerIn:   parent
                 text:               "◈  LAUNCH BTOP"
                 font.family:        Theme.fontDisplay
-                font.pixelSize:     Theme.fontSizeLabel
+                font.pixelSize:     Tokens.fontSizeLabel
                 font.letterSpacing: 1.5
                 color:              btopHover.containsMouse ? Theme.accent : Theme.textMuted
-                Behavior on color   { ColorAnimation { duration: Theme.animFast } }
+                Behavior on color   { ColorAnimation { duration: Tokens.animFast } }
             }
 
             MouseArea {
