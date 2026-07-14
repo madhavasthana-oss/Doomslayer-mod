@@ -49,7 +49,7 @@ Item {
 
     ColumnLayout {
         anchors.fill:    parent
-        anchors.margins: Theme.paddingH
+        anchors.margins: Theme.paddingH 
         spacing:         Globals.inMostSpacing * 2
 
         // ---------------------------------------------------------

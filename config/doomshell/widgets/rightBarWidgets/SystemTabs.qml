@@ -60,7 +60,7 @@ Item {
         id: underline
         height: 1
         color: Theme.accent
-        opacity: 0.8
+        opacity: 1
         radius: 0.5
         y: parent.height - height
 
