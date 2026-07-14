@@ -31,8 +31,8 @@ ShellRoot {
     PanelWindow {
         id: dropdownWindow
         anchors { top: true; right: true }
-        implicitWidth:  350
-        implicitHeight: Globals.activePanel !== "" ? 430 : 0
+        implicitWidth:  Globals.rightWidth
+        implicitHeight: Globals.activePanel !== "" ? Globals.rightWidth * 43 / 35 : 0
 
         Behavior on implicitHeight {
             NumberAnimation { duration: 50; easing.type: Easing.OutQuart }
