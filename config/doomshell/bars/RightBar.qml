@@ -16,8 +16,8 @@ import "../widgets/rightBarWidgets/system/RAM"
 
 Item {
     id: rightBar
-    width: Globals.rightWidth
-    height: Globals.rightHeight
+    width: Tokens.rightWidth
+    height: Tokens.rightHeight
 
     // ---------------------------------------------------------
     //  GRADIENT HELPER
@@ -170,8 +170,8 @@ Item {
 
     RightTrapezoid {
         anchors.fill: parent
-        barWidth: Globals.rightWidth
-        barHeight: Globals.rightHeight
+        barWidth: Tokens.rightWidth
+        barHeight: Tokens.rightHeight
         alertActive: false
     }
 
@@ -181,9 +181,9 @@ Item {
 
     RowLayout {
         anchors.fill: parent
-        anchors.leftMargin: Globals.rightHeight + Globals.inMostSpacing
-        anchors.rightMargin: Globals.inMostSpacing
-        spacing: Globals.inMostSpacing
+        anchors.leftMargin: Tokens.rightHeight + Tokens.inMostSpacing
+        anchors.rightMargin: Tokens.inMostSpacing
+        spacing: Tokens.inMostSpacing
 
         // ---------------------------------------------------------
         //  ZONE 1 — Battery + Volume
@@ -202,7 +202,7 @@ Item {
                 id: batLabel
                 text: "BAT"
                 font.family: kogni.name
-                font.pixelSize: Theme.fontSizeLabel
+                font.pixelSize: Tokens.fontSizeLabel
                 color: Theme.textMuted
                 opacity: 0
                 Behavior on opacity {
@@ -218,7 +218,7 @@ Item {
                 id: batPercent
                 text: batStat.percentage + "%"
                 font.family: jetbrains.name
-                font.pixelSize: Theme.fontSizeLabel
+                font.pixelSize: Tokens.fontSizeLabel
                 color: Theme.textSecondary
                 opacity: 0
                 Behavior on opacity {
@@ -265,7 +265,7 @@ Item {
                 id: volLabel
                 text: "VOL"
                 font.family: kogni.name
-                font.pixelSize: Theme.fontSizeLabel
+                font.pixelSize: Tokens.fontSizeLabel
                 color: Theme.textMuted
                 opacity: 0
                 Behavior on opacity {
@@ -281,7 +281,7 @@ Item {
                 id: volPercent
                 text: audioStat.muted ? "M" : audioStat.volume + "%"
                 font.family: jetbrains.name
-                font.pixelSize: Theme.fontSizeLabel
+                font.pixelSize: Tokens.fontSizeLabel
                 color: audioStat.muted ? Theme.textMuted : Theme.textSecondary
                 opacity: 0
                 Behavior on opacity {
@@ -356,7 +356,7 @@ Item {
                 id: cpuLabel
                 text: "CPU"
                 font.family: kogni.name
-                font.pixelSize: Theme.fontSizeLabel
+                font.pixelSize: Tokens.fontSizeLabel
                 color: Theme.textMuted
                 opacity: 0
                 Behavior on opacity {
@@ -372,7 +372,7 @@ Item {
                 id: cpuPercent
                 text: cpuStat.averageUsage >= 0 ? cpuStat.averageUsage + "%" : "--%"
                 font.family: jetbrains.name
-                font.pixelSize: Theme.fontSizeLabel
+                font.pixelSize: Tokens.fontSizeLabel
                 color: Theme.textSecondary
                 opacity: 0
                 Behavior on opacity {
@@ -419,7 +419,7 @@ Item {
                 id: gpuLabel
                 text: "GPU"
                 font.family: kogni.name
-                font.pixelSize: Theme.fontSizeLabel
+                font.pixelSize: Tokens.fontSizeLabel
                 color: Theme.textMuted
                 opacity: 0
                 Behavior on opacity {
@@ -435,7 +435,7 @@ Item {
                 id: gpuPercent
                 text: gpuStat.__gpu_usage__ >= 0 ? gpuStat.__gpu_usage__ + "%" : "--%"
                 font.family: jetbrains.name
-                font.pixelSize: Theme.fontSizeLabel
+                font.pixelSize: Tokens.fontSizeLabel
                 color: Theme.textSecondary
                 opacity: 0
                 Behavior on opacity {
@@ -497,7 +497,7 @@ Item {
                 text: "RAM"
                 horizontalAlignment: Text.AlignHCenter
                 font.family: kogni.name
-                font.pixelSize: Theme.fontSizeBase
+                font.pixelSize: Tokens.fontSizeBase
                 color: Theme.textMuted
                 opacity: 0
                 Behavior on opacity {
@@ -515,8 +515,8 @@ Item {
                 text: ramStat.usageGiB
                 horizontalAlignment: Text.AlignHCenter
                 font.family: jetbrains.name
-                font.pixelSize: Theme.fontSizeLabel
-                color: Theme.textSecondary
+                font.pixelSize: Tokens.fontSizeLabel
+                color: Tokens.textSecondary
                 opacity: 0
                 Behavior on opacity {
                     NumberAnimation {

@@ -8,8 +8,8 @@ import "../utils"
 import ".."
 Item { 
     id: centerBar
-    width:  Globals.centerWidth
-    height: Globals.centerHeight
+    width:  Tokens.centerWidth
+    height: Tokens.centerHeight
     property var statusMessages: [
     "THE ONLY THING THEY FEAR IS YOU",
     "RIP AND TEAR",
@@ -81,8 +81,8 @@ Item {
         }
     CenterTrapezoid {
         anchors.fill: parent
-        barWidth:     Globals.centerWidth
-        barHeight:    Globals.centerHeight
+        barWidth:     Tokens.centerWidth
+        barHeight:    Tokens.centerHeight
         alertActive:  false
         expanded:     Globals.activePanel !== ""
     }
@@ -93,21 +93,21 @@ Item {
                 Layout.alignment: Qt.AlignHCenter
                 spacing: 1
                 Text {
-                    Layout.preferredWidth: Globals.greetingWidth
+                    Layout.preferredWidth: Tokens.greetingWidth
                     text: "<< " + messageAnimator.displayedText + " >>"
                     horizontalAlignment: Text.AlignHCenter
                     font.family: kogni.name
-                    font.pixelSize: Theme.fontSizeMedium
+                    font.pixelSize: Tokens.fontSizeMedium
                     color: Theme.textPrimary
             }
                 Text {
-                    Layout.preferredWidth: Globals.greetingWidth
+                    Layout.preferredWidth: Tokens.greetingWidth
                     id: timeText
                     Layout.alignment: Qt.AlignHCenter
                     text: Qt.formatDate(new Date(), "ddd") + " × " + Qt.formatDate(new Date(), "dd MMM") + " × " + Qt.formatTime(new Date(), "hh:mm")
                     horizontalAlignment: Text.AlignHCenter
                     font.family: jetbrains.name
-                    font.pixelSize: Theme.fontSizeSmall
+                    font.pixelSize: Tokens.fontSizeSmall
                     color: Theme.textSecondary
             }
         }

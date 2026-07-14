@@ -11,16 +11,15 @@ Item {
     id: root
     ColumnLayout{
         id: mainTelemetryLayout
-        spacing: Globals.inMostSpacing
         // 1. Shared tab bar (lives above everything)
         SystemTabs {
             id: tabs
             anchors.top: parent.top
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.leftMargin: Theme.paddingH
-            anchors.rightMargin: Theme.paddingH
-            anchors.topMargin: Theme.paddingH
+            anchors.leftMargin: Tokens.paddingH
+            anchors.rightMargin: Tokens.paddingH
+            anchors.topMargin: Tokens.paddingH
 
             active: Globals.activePanel
             onSwitched: (panel) => { Globals.activePanel = panel }   // ← this line
@@ -32,9 +31,9 @@ Item {
             anchors.top: tabs.bottom
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.topMargin: Globals.inMostSpacing
-            anchors.leftMargin: Theme.paddingH
-            anchors.rightMargin: Theme.paddingH
+            anchors.topMargin: Tokens.inMostSpacing
+            anchors.leftMargin: Tokens.paddingH
+            anchors.rightMargin: Tokens.paddingH
             height: 1
             color: Theme.borderIdle
             opacity: 0.5
@@ -47,14 +46,14 @@ Item {
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.bottom: parent.bottom
-            anchors.topMargin: Globals.inMostSpacing * 2
-            anchors.leftMargin: Theme.paddingH
-            anchors.rightMargin: Theme.paddingH
-            anchors.bottomMargin: Theme.paddingH
+            anchors.topMargin: Tokens.inMostSpacing * 2
+            anchors.leftMargin: Tokens.paddingH
+            anchors.rightMargin: Tokens.paddingH
+            anchors.bottomMargin: Tokens.paddingH
 
             currentIndex: {
                 let panels = ["cpu", "gpu", "ram"]
-                return panels.indexOf(Globals.activePanel)
+                return panels.indexOf(Tokens.activePanel)
             }
 
             CPUFrontend  { id: cpu }
