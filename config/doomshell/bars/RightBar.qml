@@ -516,7 +516,7 @@ Item {
                 horizontalAlignment: Text.AlignHCenter
                 font.family: jetbrains.name
                 font.pixelSize: Tokens.fontSizeLabel
-                color: Tokens.textSecondary
+                color: Theme.textSecondary
                 opacity: 0
                 Behavior on opacity {
                     NumberAnimation {
