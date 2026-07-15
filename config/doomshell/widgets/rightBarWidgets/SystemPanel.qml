@@ -53,7 +53,7 @@ Item {
 
             currentIndex: {
                 let panels = ["cpu", "gpu", "ram"]
-                return panels.indexOf(Tokens.activePanel)
+                return panels.indexOf(Globals.activePanel)
             }
 
             CPUFrontend  { id: cpu }
