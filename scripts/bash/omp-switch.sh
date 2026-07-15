@@ -1,20 +1,27 @@
 #!/usr/bin/env bash
-# omp-switch.sh — switch Doomslayer oh-my-posh themes
+# doom-omp-switch — switch Doomslayer oh-my-posh themes
 # Usage:
-#   ./omp-switch.sh                  # list themes
-#   ./omp-switch.sh --list
-#   ./omp-switch.sh --next           # cycle to next theme
-#   ./omp-switch.sh --set pill
-#   ./omp-switch.sh --set ribbon
-#   ./omp-switch.sh --set info-util
-#   ./omp-switch.sh --status
+#   ./doom-omp-switch                  # list themes
+#   ./doom-omp-switch --list
+#   ./doom-omp-switch --next           # cycle to next theme
+#   ./doom-omp-switch --set pill
+#   ./doom-omp-switch --set ribbon
+#   ./doom-omp-switch --set info-util
+#   ./doom-omp-switch --status
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Resolve symlinks so ~/.local/bin/doom-omp-switch still finds the mod root
+_src="${BASH_SOURCE[0]}"
+while [[ -L "$_src" ]]; do
+    _dir="$(cd -P "$(dirname "$_src")" && pwd)"
+    _src="$(readlink "$_src")"
+    [[ "$_src" != /* ]] && _src="$_dir/$_src"
+done
+SCRIPT_DIR="$(cd -P "$(dirname "$_src")" && pwd)"
 MOD_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 OMP_DIR="${MOD_ROOT}/config/CLI-HUD/oh-my-posh"
-PROMPT_ZSH="${XDG_CONFIG_HOME:-$HOME/.config}/zsh/prompt.zsh"
+PROMPT_ZSH="${MOD_ROOT}/config/CLI-HUD/zsh/prompt.zsh"
 
 # name → filename (without path)
 declare -A THEMES=(
@@ -28,7 +35,7 @@ usage() {
     cat <<EOF
 Usage: $0 [--list|--status|--next|--set <name>]
 
-Switch the active oh-my-posh theme used by ~/.config/zsh/prompt.zsh.
+Switch the active oh-my-posh theme used by Doomslayer-mod/config/CLI-HUD/zsh/prompt.zsh.
 
 Themes (from Doomslayer-mod):
   info-util   doomslayer-info-util.omp.json
