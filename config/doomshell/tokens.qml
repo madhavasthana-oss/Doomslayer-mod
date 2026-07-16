@@ -12,7 +12,17 @@ QtObject {
     //  Everything else that is a PIXEL VALUE lives here.
     // =========================================================
 
-    readonly property real scale: Globals.scaleFactor
+    property real customScale: 1
+
+    // ---- AUTO-COMPUTED SCALE ----
+    readonly property real resScale: primaryScreen ?
+        Math.min(primaryScreen.width / 1920, primaryScreen.height / 1080) : 1.0
+
+    readonly property real predefinedScale: primaryScreen ?
+        Math.max(0.65, Math.min(1.0, resScale * dpiScale)) : 1.0
+
+    // ---- RESOLVED SCALE ----
+    readonly property real scale: customScale > 0 ? customScale : predefinedScale
 
     // SPACING SCALE
     readonly property int spacingUnit: Math.round(4  * scale)

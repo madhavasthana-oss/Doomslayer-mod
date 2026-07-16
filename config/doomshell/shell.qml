@@ -14,7 +14,7 @@ import "widgets/centerBarWidgets/console"
 
 ShellRoot {
 
-    PanelWindow {
+    PanelWindow { 
         id: rightBarWindow
         anchors { top: true; right: true }
         implicitWidth:  Tokens.rightWidth
