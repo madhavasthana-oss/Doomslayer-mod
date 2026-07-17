@@ -158,7 +158,7 @@ Item {
     ColumnLayout {
         anchors.fill:    parent
         anchors.margins: Tokens.paddingH
-        spacing:         Tokens.inMostSpacing * 2
+        spacing:         Tokens.spacingXs * 2
         Text {
             id: gpuName
 

@@ -64,16 +64,16 @@ Item {
     RowLayout {
     anchors.fill:        parent
     anchors.leftMargin:  Tokens.workspaceToggleMargin
-    anchors.rightMargin: Tokens.leftHeight + Tokens.inMostSpacing 
-    spacing:             Tokens.inMostSpacing * 2
+    anchors.rightMargin: Tokens.leftHeight + Tokens.spacingXs 
+    spacing:             Tokens.spacingXs * 2
 
     // ---------------------------------------------------------
     //  ROW 1 — Workspace Numbers — FIXED WIDTH
     // ---------------------------------------------------------
     RowLayout {
-        Layout.preferredWidth: Globals.workspaceNumber * (Tokens.fontSizeSmall + Tokens.inMostSpacing)
+        Layout.preferredWidth: Globals.workspaceNumber * (Tokens.fontSizeSmall + Tokens.spacingXs)
         Layout.fillWidth:      false  // never grow or shrink
-        spacing:               Tokens.inMostSpacing 
+        spacing:               Tokens.spacingXs 
 
         Repeater {
             model: Array.from(

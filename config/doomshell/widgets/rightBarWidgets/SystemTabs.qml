@@ -9,14 +9,14 @@ Item {
     property string active: Globals.activePanel   // "cpu" | "gpu" | "ram"
     signal switched(string panel)
 
-    height: Tokens.inMostSpacing * 4
-    Layout.fillWidth: true
+    height: Tokens.spacingXl
+    Layout.fillWidth: true  
 
     // Tab labels
     RowLayout {
         id: tabRow
         anchors.fill: parent
-        spacing: 5
+        spacing: Tokens.spacingS
 
         Repeater {
             model: [

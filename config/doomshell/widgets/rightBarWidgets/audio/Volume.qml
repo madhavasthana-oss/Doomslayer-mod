@@ -52,7 +52,7 @@ Item {
     Connections {
        target: sinkTracker.objects[0] ?? null
 
-        function onAudioChanged() {
+        function onVolumeChanged() {
             audioStat.volume = Math.round(sinkTracker.objects[0].audio.volume * 100)
             audioStat.muted = sinkTracker.objects[0].audio.muted
         }

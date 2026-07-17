@@ -12,7 +12,7 @@ import "widgets/rightBarWidgets/system/GPU"
 import "widgets/rightBarWidgets/system/RAM"
 import "widgets/centerBarWidgets/console"     
 
-ShellRoot {
+ShellRoot { 
 
     PanelWindow { 
         id: rightBarWindow
@@ -31,9 +31,9 @@ ShellRoot {
     PanelWindow {
         id: dropdownWindow
         anchors { top: true; right: true }
-        implicitWidth:  Tokens.rightWidth
-        implicitHeight: Globals.activePanel !== "" ? Tokens.rightWidth * 43 / 35 : 0
-
+        implicitWidth:  sysPanel.implicitWidth
+        implicitHeight: Globals.activePanel !== "" ? sysPanel.implicitHeight : 0
+        
         Behavior on implicitHeight {
             NumberAnimation { duration: 50; easing.type: Easing.OutQuart }
         }
@@ -53,11 +53,11 @@ ShellRoot {
             color:        Theme.bgConsole
             opacity:      Theme.opacityConsole
             border.color: Theme.borderConsole
-            border.width: Theme.strokeWidth
+            border.width: Token.strokeWidth
         }
 
         SystemPanel {
-            anchors.fill: parent
+            id: sysPanel
         }
     }
         

@@ -9,17 +9,15 @@ import "."
 
 Item {
     id: root
+    implicitHeight: mainTelemetryLayout.implicitHeight
+    implicitWidth: mainTelemetryLayout.implicitWidth
     ColumnLayout{
         id: mainTelemetryLayout
         // 1. Shared tab bar (lives above everything)
         SystemTabs {
             id: tabs
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.leftMargin: Tokens.paddingH
-            anchors.rightMargin: Tokens.paddingH
-            anchors.topMargin: Tokens.paddingH
+            Layout.leftMargin: Tokens.paddingH
+            Layout.rightMargin: Tokens.paddingH
 
             active: Globals.activePanel
             onSwitched: (panel) => { Globals.activePanel = panel }   // ← this line
@@ -28,13 +26,10 @@ Item {
         // 2. Separator line
         Rectangle {
             id: sep
-            anchors.top: tabs.bottom
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.topMargin: Tokens.inMostSpacing
-            anchors.leftMargin: Tokens.paddingH
-            anchors.rightMargin: Tokens.paddingH
-            height: 1
+            Layout.leftMargin: Tokens.paddingH
+            Layout.rightMargin: Tokens.paddingH
+            Layout.preferredHeight: 1
+            Layout.fillWidth: true
             color: Theme.borderIdle
             opacity: 0.5
         }
@@ -42,14 +37,6 @@ Item {
         // 3. The three content panels (pure content now)
         StackLayout {
             id: stack
-            anchors.top: sep.bottom
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
-            anchors.topMargin: Tokens.inMostSpacing * 2
-            anchors.leftMargin: Tokens.paddingH
-            anchors.rightMargin: Tokens.paddingH
-            anchors.bottomMargin: Tokens.paddingH
 
             currentIndex: {
                 let panels = ["cpu", "gpu", "ram"]

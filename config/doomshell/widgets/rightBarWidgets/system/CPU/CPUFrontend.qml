@@ -2,13 +2,14 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import QtQuick.Layouts
+import QtQuick.Controls
 import "../../../.."
 
 Item {
     id: cpuFrontend
 
     width:  Tokens.rightWidth
-    height: Tokens.rightWidth * 8 / 7
+    height: Tokens.rightWidth 
 
     opacity: Globals.activePanel === "cpu"
     // ---------------------------------------------------------
@@ -50,7 +51,7 @@ Item {
     ColumnLayout {
         anchors.fill:    parent
         anchors.margins: Tokens.paddingH 
-        spacing:         Tokens.inMostSpacing * 2
+        spacing:         Tokens.spacingMd
 
         // ---------------------------------------------------------
         //  BODY — core list (left) + detail panel (right)
@@ -59,30 +60,30 @@ Item {
         RowLayout {
             Layout.fillWidth:  true
             Layout.fillHeight: true
-            spacing:           5
+            spacing:           Tokens.spacingXs
 
             // -------------------------------------------------
             //  LEFT — core list
             // -------------------------------------------------
 
             Rectangle {
-                Layout.preferredWidth: 108
+                Layout.preferredWidth: Tokens.listPanelWidth
                 Layout.fillHeight:     true
                 color:                 Theme.bgSurface
-                radius:                6
+                radius:                Tokens.radiusLg
                 border.color:          Theme.borderIdle
                 border.width:          Tokens.strokeWidth
 
-                Text {
+                Text { 
                     id: coreListHeader
                     anchors.top:              parent.top
-                    anchors.topMargin:        5
+                    anchors.topMargin:        Tokens.spacingXs
                     anchors.horizontalCenter: parent.horizontalCenter
                     text:                     "CORES"
                     font.family:              Theme.fontDisplay
                     font.pixelSize:           Tokens.fontSizeLabel
                     color:                    Theme.textMuted
-                    font.letterSpacing:       1.5
+                    font.letterSpacing:       Tokens.spacingS
                 }
 
                 ListView {
@@ -91,15 +92,19 @@ Item {
                     anchors.left:         parent.left
                     anchors.right:        parent.right
                     anchors.bottom:       parent.bottom
-                    anchors.topMargin:    4
-                    anchors.leftMargin:   4
-                    anchors.rightMargin:  4
-                    anchors.bottomMargin: 4
-                    spacing:              1
+                    anchors.topMargin:    Tokens.spacingXs
+                    anchors.leftMargin:   Tokens.spacingXs
+                    anchors.rightMargin:  Tokens.spacingXs
+                    anchors.bottomMargin: Tokens.spacingXs
+                    spacing:              Tokens.spacingS
                     clip:                 true
                     currentIndex:         cpuFrontend.selectedCore
 
                     model: cpu.cores
+
+                    ScrollBar.vertical: ScrollBar {
+                        policy: ScrollBar.AsNeeded
+                    }
 
                     delegate: Item {
                         width:  coreList.width
@@ -133,16 +138,16 @@ Item {
                         Item {
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left:           coreLabel.right
-                            anchors.leftMargin:     5
+                            anchors.leftMargin:     Tokens.spacingXs
                             anchors.right:          usagePct.left
-                            anchors.rightMargin:    3
-                            height:                 4
+                            anchors.rightMargin:    Tokens.spacingXs
+                            height:                 Tokens.spacingXs
 
                             Rectangle {
                                 anchors.fill: parent
-                                radius:       2
+                                radius:       Tokens.radiusSm
                                 color:        Theme.bgElevated
-                                opacity:      0.8
+                                opacity:      Theme.barOpacity
                             }
 
                             Rectangle {
@@ -180,13 +185,13 @@ Item {
             ColumnLayout {
                 Layout.fillWidth:  true
                 Layout.fillHeight: true
-                spacing:           Tokens.inMostSpacing
+                spacing:           Tokens.spacingXs
 
                 // USAGE GRAPH
                 ColumnLayout {
                     Layout.fillWidth:  true
                     Layout.fillHeight: true
-                    spacing:           3
+                    spacing:           Tokens.spacingXs
 
                     RowLayout {
                         Layout.fillWidth: true
@@ -280,7 +285,7 @@ Item {
                                 ctx.fill()
 
                                 ctx.strokeStyle = Theme.accent
-                                ctx.lineWidth   = 1.5
+                                ctx.lineWidth   = Tokens.strokeWidthActive
                                 ctx.beginPath()
                                 ctx.moveTo(xAt(0), yAt(buf[0]))
                                 for (let i = 1; i < pts; i++) {
@@ -315,7 +320,7 @@ Item {
                             font.family:        Theme.fontDisplay
                             font.pixelSize:     Tokens.fontSizeLabel
                             color:              Theme.textMuted
-                            font.letterSpacing: 1.2
+                            font.letterSpacing: Tokens.spacingS
                         }
                         Item { Layout.fillWidth: true }
                         Text {
@@ -335,7 +340,7 @@ Item {
                         Layout.fillWidth:  true
                         Layout.fillHeight: true
                         color:             Theme.bgElevated
-                        radius:            5
+                        radius:            Tokens.spacingMd
                         clip:              true
                         border.color:      Theme.borderIdle
                         border.width:      1
@@ -439,12 +444,12 @@ Item {
                 // STATS ROW
                 RowLayout {
                     Layout.fillWidth:       true
-                    Layout.preferredHeight: 40
-                    spacing:                8
+                    Layout.preferredHeight: Tokens.statBoxHeight
+                    spacing:                Tokens.radiusXl
 
                     Rectangle {
                         Layout.fillWidth: true
-                        height:           40
+                        implicitHeight:           Tokens.statBoxHeight
                         color:            Theme.bgElevated
                         radius:           5
                         border.color:     Theme.borderIdle
@@ -481,18 +486,16 @@ Item {
 
                     Rectangle {
                         Layout.fillWidth: true
-                        height:           40
+                        height:           Tokens.statBoxHeight
                         color:            Theme.bgElevated
-                        radius:           5
+                        radius:           Tokens.spacingSm
                         border.color:     Theme.borderIdle
-                        border.width:     1
 
                         property int liveTemp: cpu.cores.count > 0
                             ? (cpu.cores.get(cpuFrontend.selectedCore)?.temp ?? -1) : -1
 
                         Column {
                             anchors.centerIn: parent
-                            spacing:          1
 
                             Text {
                                 anchors.horizontalCenter: parent.horizontalCenter
@@ -500,7 +503,7 @@ Item {
                                 font.family:        Theme.fontDisplay
                                 font.pixelSize:     Tokens.fontSizeLabel
                                 color:              Theme.textMuted
-                                font.letterSpacing: 1.2
+                                font.letterSpacing: Tokens.spacingS
                             }
                             Text {
                                 anchors.horizontalCenter: parent.horizontalCenter
@@ -526,8 +529,8 @@ Item {
         Rectangle {
             id: btopBtn
             Layout.fillWidth:       true
-            Layout.preferredHeight: 28
-            radius:                 6
+            Layout.preferredHeight: Tokens.actionBtnHeight
+            radius:                 Tokens.spacingSm
             color:                  btopHover.containsMouse ? Theme.bgElevated : Theme.bgSurface
             border.color:           btopHover.containsMouse ? Theme.accent : Theme.borderIdle
             border.width:           btopHover.containsMouse ? Tokens.strokeWidthActive : Tokens.strokeWidth

@@ -6,16 +6,13 @@ import QtQuick.Layouts
 import "../../../.."
 import "../../../../utils"
 import "."
-Item {
+Item { 
     id: ramFrontend
 
     property int selectedProc: 0
     property var selectedProcData: (selectedProc >= 0 && selectedProc < ram.processes.count)
                                    ? ram.processes.get(selectedProc)
                                    : null
-
-    width:  Tokens.rightWidth
-    height: Tokens.rightWidth * 8 / 7
 
     RAMBackend {
         id: ram
@@ -24,7 +21,7 @@ Item {
     ColumnLayout {
         anchors.fill:    parent
         anchors.margins: Tokens.paddingH
-        spacing:         Tokens.inMostSpacing * 2
+        spacing:         Tokens.spacingXs * 2
 
         RowLayout {
             Text {
@@ -55,10 +52,10 @@ Item {
         RowLayout {
             Layout.fillWidth:  true
             Layout.fillHeight: true
-            spacing:           Tokens.inMostSpacing * 3 / 2
+            spacing:           Tokens.spacingXs * 3 / 2
             Rectangle {
                 id: procListPanel
-                Layout.preferredWidth: 108
+                Layout.preferredWidth: Tokens.listPanelWidth
                 Layout.fillHeight:     true
                 color:                  Theme.bgSurface
                 radius:                 6
@@ -172,7 +169,7 @@ Item {
                 Layout.fillHeight: true
                 Layout.fillWidth:  true
                 anchors.margins: Tokens.paddingH
-                spacing:         Tokens.inMostSpacing 
+                spacing:         Tokens.spacingXs 
                 Rectangle {
                     id: procDataBox
                     Layout.fillWidth:       true
@@ -189,7 +186,7 @@ Item {
                         spacing:            1
                         visible: ramFrontend.selectedProcData !== null
                         RowLayout{
-                            spacing: Tokens.inMostSpacing * 2 / 5
+                            spacing: Tokens.spacingXs * 2 / 5
                             Layout.alignment: Qt.AlignLeft
                             Text {
                                 Layout.alignment: Qt.AlignLeft
@@ -208,7 +205,7 @@ Item {
                             }
                         }
                         RowLayout{
-                            spacing: Tokens.inMostSpacing * 2 / 5
+                            spacing: Tokens.spacingXs * 2 / 5
                             Layout.alignment: Qt.AlignLeft
                             Text {
                                 Layout.alignment: Qt.AlignLeft
@@ -228,7 +225,7 @@ Item {
                         }
 
                         RowLayout{
-                            spacing: Tokens.inMostSpacing * 2 / 5
+                            spacing: Tokens.spacingXs * 2 / 5
                             Layout.alignment: Qt.AlignLeft
                             Text {
                                 Layout.alignment: Qt.AlignLeft
@@ -247,7 +244,7 @@ Item {
                         }
 
                         RowLayout{
-                            spacing: Tokens.inMostSpacing * 2 / 5
+                            spacing: Tokens.spacingXs * 2 / 5
                             Layout.alignment: Qt.AlignLeft
                             Text {
                                 Layout.alignment: Qt.AlignLeft
@@ -266,7 +263,7 @@ Item {
                         }
 
                         RowLayout{
-                            spacing: Tokens.inMostSpacing * 2 / 5
+                            spacing: Tokens.spacingXs * 2 / 5
                             Layout.alignment: Qt.AlignLeft
                             Text {
                                 Layout.alignment: Qt.AlignLeft
@@ -285,7 +282,7 @@ Item {
                         }
 
                         RowLayout{
-                            spacing: Tokens.inMostSpacing * 2 / 5
+                            spacing: Tokens.spacingXs * 2 / 5
                             Layout.alignment: Qt.AlignLeft
                             Text {
                                 Layout.alignment: Qt.AlignLeft
@@ -304,7 +301,7 @@ Item {
                         }
 
                         RowLayout{
-                            spacing: Tokens.inMostSpacing * 2 / 5
+                            spacing: Tokens.spacingXs * 2 / 5
                             Layout.alignment: Qt.AlignLeft
                                 
                             Text {
@@ -324,7 +321,7 @@ Item {
                         }
 
                         RowLayout{
-                            spacing: Tokens.inMostSpacing * 2 / 5
+                            spacing: Tokens.spacingXs * 2 / 5
                             Layout.alignment: Qt.AlignLeft
                             Text {
                                 Layout.alignment: Qt.AlignLeft

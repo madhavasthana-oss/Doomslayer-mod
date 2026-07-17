@@ -181,16 +181,16 @@ Item {
 
     RowLayout {
         anchors.fill: parent
-        anchors.leftMargin: Tokens.rightHeight + Tokens.inMostSpacing
-        anchors.rightMargin: Tokens.inMostSpacing
-        spacing: Tokens.inMostSpacing
+        anchors.leftMargin: Tokens.rightHeight + Tokens.spacingXs
+        anchors.rightMargin: Tokens.spacingXs
+        spacing: Tokens.spacingXs
 
         // ---------------------------------------------------------
         //  ZONE 1 — Battery + Volume
         // ---------------------------------------------------------
 
         GridLayout {
-            columns: 3
+            columns: 3 
             rows: 2
             rowSpacing: 2
             columnSpacing: 4
@@ -207,7 +207,7 @@ Item {
                 opacity: 0
                 Behavior on opacity {
                     NumberAnimation {
-                        duration: Globals.activeWindowAndBatteryAndVolumeAnim
+                        duration: Tokens.animFadeIn
                         easing.type: Easing.OutCubic
                     }
                 }
@@ -223,7 +223,7 @@ Item {
                 opacity: 0
                 Behavior on opacity {
                     NumberAnimation {
-                        duration: Globals.activeWindowAndBatteryAndVolumeAnim
+                        duration: Tokens.animFadeIn
                         easing.type: Easing.OutCubic
                     }
                 }
@@ -232,14 +232,14 @@ Item {
             // BAT bar
             Rectangle {
                 id: constBatBar
-                Layout.preferredWidth: 50
+                Layout.preferredWidth: Tokens.usageBarWidth
                 Layout.preferredHeight: 4
                 color: Theme.bgElevated
                 radius: 25
                 opacity: 0
                 Behavior on opacity {
                     NumberAnimation {
-                        duration: Globals.activeWindowAndBatteryAndVolumeAnim
+                        duration: Tokens.animFadeIn
                         easing.type: Easing.OutCubic
                     }
                 }
@@ -253,7 +253,7 @@ Item {
                     opacity: 0
                     Behavior on opacity {
                         NumberAnimation {
-                            duration: Globals.activeWindowAndBatteryAndVolumeAnim
+                            duration: Tokens.animFadeIn
                             easing.type: Easing.OutCubic
                         }
                     }
@@ -270,7 +270,7 @@ Item {
                 opacity: 0
                 Behavior on opacity {
                     NumberAnimation {
-                        duration: Globals.activeWindowAndBatteryAndVolumeAnim
+                        duration: Tokens.animFadeIn
                         easing.type: Easing.OutCubic
                     }
                 }
@@ -286,7 +286,7 @@ Item {
                 opacity: 0
                 Behavior on opacity {
                     NumberAnimation {
-                        duration: Globals.activeWindowAndBatteryAndVolumeAnim
+                        duration: Tokens.animFadeIn
                         easing.type: Easing.OutCubic
                     }
                 }
@@ -301,14 +301,14 @@ Item {
             // VOL bar
             Rectangle {
                 id: constVolBar
-                implicitWidth: 50
+                implicitWidth: Tokens.usageBarWidth
                 implicitHeight: 4
                 color: Theme.bgElevated
                 radius: 25
                 opacity: 0
                 Behavior on opacity {
                     NumberAnimation {
-                        duration: Globals.activeWindowAndBatteryAndVolumeAnim
+                        duration: Tokens.animFadeIn
                         easing.type: Easing.OutCubic
                     }
                 }
@@ -321,7 +321,7 @@ Item {
                     opacity: 0
                     Behavior on opacity {
                         NumberAnimation {
-                            duration: Globals.activeWindowAndBatteryAndVolumeAnim
+                            duration: Tokens.animFadeIn
                             easing.type: Easing.OutCubic
                         }
                     }
@@ -361,7 +361,7 @@ Item {
                 opacity: 0
                 Behavior on opacity {
                     NumberAnimation {
-                        duration: Globals.activeWindowAndBatteryAndVolumeAnim
+                        duration: Tokens.animFadeIn
                         easing.type: Easing.OutCubic
                     }
                 }
@@ -377,7 +377,7 @@ Item {
                 opacity: 0
                 Behavior on opacity {
                     NumberAnimation {
-                        duration: Globals.activeWindowAndBatteryAndVolumeAnim
+                        duration: Tokens.animFadeIn
                         easing.type: Easing.OutCubic
                     }
                 }
@@ -386,14 +386,14 @@ Item {
             // CPU bar
             Rectangle {
                 id: constCpuBar
-                Layout.preferredWidth: 50
+                Layout.preferredWidth: Tokens.usageBarWidth
                 Layout.preferredHeight: 4
                 color: Theme.bgElevated
                 radius: 25
                 opacity: 0
                 Behavior on opacity {
                     NumberAnimation {
-                        duration: Globals.activeWindowAndBatteryAndVolumeAnim
+                        duration: Tokens.animFadeIn
                         easing.type: Easing.OutCubic
                     }
                 }
@@ -407,7 +407,7 @@ Item {
                     opacity: 0
                     Behavior on opacity {
                         NumberAnimation {
-                            duration: Globals.activeWindowAndBatteryAndVolumeAnim
+                            duration: Tokens.animFadeIn
                             easing.type: Easing.OutCubic
                         }
                     }
@@ -424,7 +424,7 @@ Item {
                 opacity: 0
                 Behavior on opacity {
                     NumberAnimation {
-                        duration: Globals.activeWindowAndBatteryAndVolumeAnim
+                        duration: Tokens.animFadeIn
                         easing.type: Easing.OutCubic
                     }
                 }
@@ -440,7 +440,7 @@ Item {
                 opacity: 0
                 Behavior on opacity {
                     NumberAnimation {
-                        duration: Globals.activeWindowAndBatteryAndVolumeAnim
+                        duration: Tokens.animFadeIn
                         easing.type: Easing.OutCubic
                     }
                 }
@@ -449,14 +449,14 @@ Item {
             // GPU bar
             Rectangle {
                 id: constGpuBar
-                implicitWidth: 50
+                implicitWidth: Tokens.usageBarWidth
                 implicitHeight: 4
                 color: Theme.bgElevated
                 radius: 25
                 opacity: 0
                 Behavior on opacity {
                     NumberAnimation {
-                        duration: Globals.activeWindowAndBatteryAndVolumeAnim
+                        duration: Tokens.animFadeIn
                         easing.type: Easing.OutCubic
                     }
                 }
@@ -470,7 +470,7 @@ Item {
                     opacity: 0
                     Behavior on opacity {
                         NumberAnimation {
-                            duration: Globals.activeWindowAndBatteryAndVolumeAnim
+                            duration: Tokens.animFadeIn
                             easing.type: Easing.OutCubic
                         }
                     }
@@ -502,7 +502,7 @@ Item {
                 opacity: 0
                 Behavior on opacity {
                     NumberAnimation {
-                        duration: Globals.activeWindowAndBatteryAndVolumeAnim
+                        duration: Tokens.animFadeIn
                         easing.type: Easing.OutCubic
                     }
                 }
@@ -520,11 +520,15 @@ Item {
                 opacity: 0
                 Behavior on opacity {
                     NumberAnimation {
-                        duration: Globals.activeWindowAndBatteryAndVolumeAnim
+                        duration: Tokens.animFadeIn
                         easing.type: Easing.OutCubic
                     }
                 }
             }
+        }
+
+        Item {
+            Layout.fillWidth: true
         }
     }
         MouseArea {

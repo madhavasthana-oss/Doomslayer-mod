@@ -23,9 +23,9 @@ Item {
         id: mainLayout
         anchors.fill: parent
         anchors.margins: {
-            top: Globals.inMostSpacing * 2
+            top: Globals.spacingXs * 2
         }
-        spacing: Globals.inMostSpacing
+        spacing: Globals.spacingXs
 
         Text {
             id: headerText

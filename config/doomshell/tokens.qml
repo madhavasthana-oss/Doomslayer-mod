@@ -1,18 +1,19 @@
 pragma Singleton
+import Quickshell
 import QtQuick 2.15
 import "."
 
 QtObject {
 
-    // =========================================================
-    //  DOOMSHELL — TOKENS SINGLETON
-    //  Single source of truth for every scaled size/spacing value.
-    //  Globals owns screen detection + scaleFactor + app state.
-    //  Theme owns colors + font family names + opacity.
-    //  Everything else that is a PIXEL VALUE lives here.
-    // =========================================================
+    // ---- PRIMARY SCREEN ----
+    readonly property var primaryScreen: Qt.application.screens.length > 0 ? 
+                                        Qt.application.screens[0] : null
 
-    property real customScale: 1
+    // ---- DPI SCALE ----
+    readonly property real dpiScale: primaryScreen ? 
+                                         primaryScreen.devicePixelRatio : 1.0
+
+    property real customScale: 0.65
 
     // ---- AUTO-COMPUTED SCALE ----
     readonly property real resScale: primaryScreen ?
@@ -21,18 +22,16 @@ QtObject {
     readonly property real predefinedScale: primaryScreen ?
         Math.max(0.65, Math.min(1.0, resScale * dpiScale)) : 1.0
 
-    // ---- RESOLVED SCALE ----
     readonly property real scale: customScale > 0 ? customScale : predefinedScale
-
     // SPACING SCALE
-    readonly property int spacingUnit: Math.round(4  * scale)
+
+    readonly property int spacingS:    Math.round(2 * scale)
     readonly property int spacingXs:   Math.round(4  * scale)
     readonly property int spacingSm:   Math.round(6  * scale)
     readonly property int spacingMd:   Math.round(10 * scale)
     readonly property int spacingLg:   Math.round(16 * scale)
     readonly property int spacingXl:   Math.round(24 * scale)
-
-    readonly property int inMostSpacing: Math.round(5 * scale)
+    
     readonly property int columnSpacing: Math.round(4 * scale)
     readonly property int marginTop:     0
 
@@ -60,7 +59,7 @@ QtObject {
     readonly property int centerWidth:  Math.round(640 * scale)
     readonly property int centerHeight: Math.round(45  * scale)
 
-    readonly property int centerSmallerWidth: centerWidth - 2 * (centerHeight + inMostSpacing)
+    readonly property int centerSmallerWidth: centerWidth - 2 * (centerHeight + spacingXs)
 
     readonly property int preferredWidthNoGreeting: Math.round(80  * scale)
     readonly property int greetingWidth:            Math.round(204 * scale)
@@ -89,6 +88,7 @@ QtObject {
     readonly property int tabHeight:        Math.round(20  * scale)
     readonly property int sliderTrackWidth: Math.round(50  * scale)
     readonly property int sliderTrackDepth: Math.round(4   * scale)
+    readonly property int usageBarWidth:    Math.round(50  * scale)
     readonly property int usageBarHeight:   Math.round(4   * scale)
 
     // EDGE PANELS
@@ -97,20 +97,12 @@ QtObject {
     readonly property int edgeToggleHeight:   Math.round(48  * scale)
     readonly property int edgeHotzonePx:      Math.round(4   * scale)
 
-    // ICONS
-    // NOTE — UNRESOLVED CONFLICT, confirm manually:
-    // Globals had iconSizeSmall/Base/Medium/Large = 4/8/12/14 (scaled)
-    // Theme   had iconSizeSmall/Base/Large        = 4/8/10    (unscaled, no Medium)
-    // Kept Globals' 4-tier version below. Grep both `Theme.iconSize` and
-    // `Globals.iconSize` across your repo before deleting either source —
-    // whichever is actually driving your visible icons today is the one
-    // whose numbers you want here.
     readonly property int iconSizeSmall:  Math.round(4  * scale)
     readonly property int iconSizeBase:   Math.round(8  * scale)
     readonly property int iconSizeMedium: Math.round(12 * scale)
     readonly property int iconSizeLarge:  Math.round(14 * scale)
 
-    // TYPOGRAPHY (sizes only — Theme keeps font family + colors)
+
     readonly property int fontSizeTiny:    Math.round(9  * scale)
     readonly property int fontSizeSmall:   Math.round(11 * scale)
     readonly property int fontSizeBase:    Math.round(13 * scale)
@@ -125,21 +117,16 @@ QtObject {
     readonly property real kogniCharWidth: fontSizeBase   * 0.75
     readonly property real kogniMedWidth:  fontSizeMedium * 0.75
 
-    // STROKE / BORDER (moved from Theme — a stroke width is a size, not an identity)
     readonly property real strokeWidth:       1.0 * scale
     readonly property real strokeWidthActive: 1.5 * scale
 
-    // BLUR
     readonly property int blurRadius: Math.round(18 * scale)
 
-    // BAR VISUAL GEOMETRY (moved from Globals — spacing/inset, not state)
     readonly property int barInset: Math.round(6 * scale)
 
-    // WORKSPACE
     readonly property int workspaceToggleMargin: Math.round(10 * scale)
     readonly property int workspaceMargins:      Math.round(6  * scale)
 
-    // ANIMATION TIMINGS — deliberately NOT scaled, duration is perceptual not spatial
     readonly property int animFast:       120
     readonly property int animMedium:     220
     readonly property int animSlow:       400

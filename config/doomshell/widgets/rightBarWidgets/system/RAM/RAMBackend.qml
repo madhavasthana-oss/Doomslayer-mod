@@ -94,7 +94,6 @@ Item {
         running: true
         repeat: true
         onTriggered: {
-            console.log("timer fired, proc count:", procData.count)
             topProcProc.running = true
         }
     }
@@ -134,12 +133,11 @@ Item {
             "-axo",
             "pid,comm,rss,etimes,%cpu,%mem,nlwp,stat,pri,user,start,time,tty,state,cmd",
             "--sort=-rss"
-        ]
+        ] 
         stdout: StdioCollector {
             onStreamFinished: {
                 let lines = text.trim().split("\n").slice(0, __num_proc__)
                 for (let idx = 0; idx < __num_proc__; idx++) {
-                console.log("stream finished, lines:", text.trim().split("\n").length)
                     let fields = lines[idx].trim().split(/\s+/)
                     let pid    = parseInt(fields[0])
                     let name   = fields[1]
