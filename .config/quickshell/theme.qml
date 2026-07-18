@@ -34,7 +34,7 @@ QtObject {
     readonly property color glowConsole:   "#994400"
 
     // TYPOGRAPHY — family names only, sizes now live in Tokens
-    readonly property string fontMono:    "Fira Code"
+    readonly property string fontMono:    "JetBrains Mono"
     readonly property string fontDisplay: "KogniGear"
 
     // OPACITY — unitless, correctly does NOT scale with screen size

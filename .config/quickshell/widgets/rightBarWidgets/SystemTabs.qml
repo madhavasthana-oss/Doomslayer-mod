@@ -62,8 +62,8 @@ Item {
         radius: 0.5
         y: parent.height - height
 
-        Behavior on x     { NumberAnimation { duration: Theme.animFast; easing.type: Easing.OutCubic } }
-        Behavior on width { NumberAnimation { duration: Theme.animFast; easing.type: Easing.OutCubic } }
+        Behavior on x     { NumberAnimation { duration: Tokens.animFast; easing.type: Easing.OutCubic } }
+        Behavior on width { NumberAnimation { duration: Tokens.animFast; easing.type: Easing.OutCubic } }
 
         property Item activeTab: {
             for (let i = 0; i < tabRow.children.length; i++) {

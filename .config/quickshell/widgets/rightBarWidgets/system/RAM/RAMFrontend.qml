@@ -434,16 +434,16 @@ Item {
                         anchors.margins: -Tokens.spacingSm
                         radius:          Tokens.radiusXl
                         color:           "transparent"
-                        border.width:    2
+                        border.width:    Tokens.borderXs
                         border.color:    Qt.rgba(haltProcBtn.glowColor.r, haltProcBtn.glowColor.g, haltProcBtn.glowColor.b, haltProcBtn.isHovered ? 0.22 : 0)
                         Behavior on border.color { ColorAnimation { duration: Tokens.animMedium } }
                     }
                     Rectangle {
                         anchors.fill:    parent
-                        anchors.margins: -2
-                        radius:          8
+                        anchors.margins: -Tokens.spacingXss
+                        radius:          Tokens.spacingMd
                         color:           "transparent"
-                        border.width:    2
+                        border.width:    Tokens.spacingXss
                         border.color:    Qt.rgba(haltProcBtn.glowColor.r, haltProcBtn.glowColor.g, haltProcBtn.glowColor.b, haltProcBtn.isHovered ? 0.4 : 0)
                         Behavior on border.color { ColorAnimation { duration: Tokens.animMedium } }
                     }
@@ -465,7 +465,7 @@ Item {
                             id: haltProcAnimText
                             anchors.fill: parent
                             mode:         AnimatedText.Mode.Scramble
-                            duration:     280
+                            duration:     Tokens.animMedium
 
                             Text {
                                 anchors.fill:       parent
@@ -526,16 +526,16 @@ Item {
                         anchors.margins: -Tokens.spacingSm
                         radius:          Tokens.radiusXl
                         color:           "transparent"
-                        border.width:    2
+                        border.width:    Tokens.borderXss
                         border.color:    Qt.rgba(optimizeProcBtn.glowColor.r, optimizeProcBtn.glowColor.g, optimizeProcBtn.glowColor.b, optimizeProcBtn.isHovered ? 0.22 : 0)
                         Behavior on border.color { ColorAnimation { duration: Tokens.animMedium } }
                     }
                     Rectangle {
                         anchors.fill:    parent
-                        anchors.margins: -2
-                        radius:          8
+                        anchors.margins: -Tokens.spacingXss
+                        radius:          Tokens.radiusMd
                         color:           "transparent"
-                        border.width:    2
+                        border.width:    Tokens.borderXss
                         border.color:    Qt.rgba(optimizeProcBtn.glowColor.r, optimizeProcBtn.glowColor.g, optimizeProcBtn.glowColor.b, optimizeProcBtn.isHovered ? 0.4 : 0)
                         Behavior on border.color { ColorAnimation { duration: Tokens.animMedium } }
                     }
@@ -587,10 +587,10 @@ Item {
 
             Rectangle {
                 anchors.fill:    parent
-                anchors.margins: -10
-                radius:          14
+                anchors.margins: -Tokens.spacingMd
+                radius:          Tokens.radiusXl
                 color:           "transparent"
-                border.width:    2
+                border.width:    Tokens.borderMd
                 border.color:    Qt.rgba(ramTuiBtn.glowColor.r, ramTuiBtn.glowColor.g, ramTuiBtn.glowColor.b, ramTuiBtn.isHovered ? 0.10 : 0)
                 Behavior on border.color { ColorAnimation { duration: Tokens.animMedium } }
             }
@@ -599,16 +599,16 @@ Item {
                 anchors.margins: -Tokens.spacingSm
                 radius:          Tokens.radiusXl
                 color:           "transparent"
-                border.width:    2
+                border.width:    Tokens.borderXss
                 border.color:    Qt.rgba(ramTuiBtn.glowColor.r, ramTuiBtn.glowColor.g, ramTuiBtn.glowColor.b, ramTuiBtn.isHovered ? 0.22 : 0)
                 Behavior on border.color { ColorAnimation { duration: Tokens.animMedium } }
             }
             Rectangle {
                 anchors.fill:    parent
-                anchors.margins: -2
-                radius:          8
+                anchors.margins: -Tokens.spacingXss
+                radius:          Tokens.radiusLg
                 color:           "transparent"
-                border.width:    2
+                border.width:    Tokens.borderXss
                 border.color:    Qt.rgba(ramTuiBtn.glowColor.r, ramTuiBtn.glowColor.g, ramTuiBtn.glowColor.b, ramTuiBtn.isHovered ? 0.4 : 0)
                 Behavior on border.color { ColorAnimation { duration: Tokens.animMedium } }
             }
@@ -620,8 +620,8 @@ Item {
                 radius:       6
                 border.color: ramTuiBtn.isHovered ? ramTuiBtn.glowColor : Theme.borderIdle
                 border.width: ramTuiBtn.isHovered ? Tokens.strokeWidthActive : Tokens.strokeWidth
-                opacity:      ramTuiBtn.isAvailable ? 1.0 : 0.4
-                scale:        ramTuiBtn.isPressed ? 0.94 : 1.0
+                opacity:      ramTuiBtn.isAvailable ? 1.0 : Theme.opacityMuted
+                scale:        ramTuiBtn.isPressed ? Theme.opacityPanel : 1.0
 
                 Behavior on scale        { NumberAnimation { duration: Tokens.animFast; easing.type: Easing.OutCubic } }
                 Behavior on border.color { ColorAnimation { duration: Tokens.animMedium } }
