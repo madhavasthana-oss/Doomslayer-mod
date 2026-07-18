@@ -1,0 +1,30 @@
+# Ghostty config — colors and blur/opacity transferred from Kitty
+# Kitty sources:
+#   ~/.config/kitty/theme.conf      (Bad Blood colors)
+#   ~/.config/kitty/hyde.conf       (background_opacity 0.60)
+#   ~/.config/kitty/kitty.conf      (dynamic_background_opacity)
+# Hyprland blur is compositor-level; kitty uses window opacity 0.80 in windowrules.conf
+
+font-family = Fira Code
+font-feature = +calt
+font-feature = +liga
+font-feature = +dlig
+font-size = 9
+window-padding-x = 25
+window-padding-y = 25
+
+background-image = /home/yvon/Doomslayer-mod/Pictures/logos/ultraNightmare/ultra-nightmare-240-ascii.png
+background-image-opacity = 0.05
+background-image-position = center
+background-image-fit = contain
+
+# opacity is set to 0.7 instead
+background-opacity = 0.7
+background-blur = false
+background-opacity-cells = false
+
+# custom shaders (paths are relative to this config dir)
+# custom-shader = shaders/cursor_sweep.glsl
+
+# optional include (? = ignore if missing)
+config-file = ?~/.config/ghostty/theme.conf
