@@ -11,23 +11,8 @@ Item {
     implicitHeight:  Tokens.rightWidth
     implicitWidth:   Tokens.rightWidth 
 
-    opacity: Globals.activePanel === "cpu"
-    // ---------------------------------------------------------
-    //  BACKEND
-    // ---------------------------------------------------------
-
     CPUBackend { id: cpu }
-
-    // ---------------------------------------------------------
-    //  SELECTION STATE
-    // ---------------------------------------------------------
-
     property int selectedCore: 0
-
-    // ---------------------------------------------------------
-    //  REPAINT TRIGGER
-    // ---------------------------------------------------------
-
     Timer {
         id: repaintTimer
         interval: 150

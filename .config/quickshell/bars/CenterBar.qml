@@ -243,16 +243,16 @@ Item {
             }
         }
     }
-    //    MouseArea {
-    //         anchors.fill: parent
-    //         cursorShape: Qt.PointingHandCursor
+       MouseArea {
+            anchors.fill: parent
+            cursorShape: Qt.PointingHandCursor
 
-    //         onClicked: {
-    //             if (Globals.activeCenterPanel !== "") {
-    //                 Globals.lastCenterPanel = Globals.activeCenterPanel;
-    //                 Globals.activeCenterPanel = "";
-    //             } else
-    //                 Globals.activeCenterPanel = Globals.lastCenterPanel; 
-    //         }
-    //     }
+            onClicked: {
+                if (Globals.activeCenterPanel !== "") {
+                    Globals.lastCenterPanel = Globals.activeCenterPanel;
+                    Globals.activeCenterPanel = "";
+                } else
+                    Globals.activeCenterPanel = Globals.lastCenterPanel; 
+            }
+        }
 }

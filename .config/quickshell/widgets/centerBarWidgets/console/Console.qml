@@ -10,6 +10,7 @@ Item {
     implicitHeight: mainLayout.implicitHeight + 2 * Tokens.marginTop
     visible: Globals.activeCenterPanel !== ""
     Rectangle {
+        anchors.fill: parent
         id: bgDisplay
         radius: 10
         color:        Theme.bgConsole

@@ -3,10 +3,11 @@ import Quickshell
 import Quickshell.Wayland
 import "bars"
 import "widgets/rightBarWidgets"
-import "widgets/centerBarWidgets/console"     
+import "widgets/centerBarWidgets/console"
+import "widgets/centerBarWidgets"     
 
 ShellRoot {
-
+    id:shellRoot
     PanelWindow { 
         id: rightBarWindow
         anchors { top: true; right: true }

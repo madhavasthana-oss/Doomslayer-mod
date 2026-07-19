@@ -10,7 +10,7 @@ Item {
     signal switched(string panel)
 
     height: Tokens.spacingXl
-    Layout.fillWidth: true  
+    Layout.fillWidth: true
 
     // Tab labels
     RowLayout {
@@ -20,14 +20,23 @@ Item {
 
         Repeater {
             model: [
-                { id: "cpu", label: "CPU" },
-                { id: "gpu", label: "GPU" },
-                { id: "ram", label: "RAM" }
+                {
+                    id: "cpu",
+                    label: "CPU"
+                },
+                {
+                    id: "gpu",
+                    label: "GPU"
+                },
+                {
+                    id: "ram",
+                    label: "RAM"
+                }
             ]
 
             Item {
                 Layout.fillWidth: true
-                height: 20
+                height: Tokens.spacingXl
 
                 property bool isActive: modelData.id === root.active
                 property string panelId: modelData.id
@@ -38,7 +47,6 @@ Item {
                     font.family: Theme.fontDisplay
                     font.pixelSize: Tokens.fontSizeLabel
                     color: isActive ? Theme.accent : Theme.textDim
-                    font.letterSpacing: 1.2
                 }
 
                 MouseArea {
@@ -50,30 +58,36 @@ Item {
         }
     }
 
-    Item {
-        Layout.fillHeight: true
-    }
-
     Rectangle {
         id: underline
-        height: 1
+        height: Tokens.borderXss * 0.5
         color: Theme.accent
         opacity: 1
-        radius: 0.5
+        radius: Tokens.borderXss * 0.5
         y: parent.height - height
 
-        Behavior on x     { NumberAnimation { duration: Tokens.animFast; easing.type: Easing.OutCubic } }
-        Behavior on width { NumberAnimation { duration: Tokens.animFast; easing.type: Easing.OutCubic } }
+        Behavior on x {
+            NumberAnimation {
+                duration: Tokens.animFast
+                easing.type: Easing.OutCubic
+            }
+        }
+        Behavior on width {
+            NumberAnimation {
+                duration: Tokens.animFast
+                easing.type: Easing.OutCubic
+            }
+        }
 
         property Item activeTab: {
             for (let i = 0; i < tabRow.children.length; i++) {
                 if (tabRow.children[i].panelId === root.active)
-                    return tabRow.children[i]
+                    return tabRow.children[i];
             }
-            return null
+            return null;
         }
 
-        x:     activeTab ? activeTab.x  : 0
+        x: activeTab ? activeTab.x : 0
         width: activeTab ? activeTab.width : 0
     }
 }
