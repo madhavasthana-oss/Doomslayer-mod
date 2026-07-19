@@ -8,8 +8,8 @@ import "../../../.."
 Item {
     id: cpuFrontend
 
-    width:  Tokens.rightWidth
-    height: Tokens.rightWidth 
+    implicitHeight:  Tokens.rightWidth
+    implicitWidth:   Tokens.rightWidth 
 
     opacity: Globals.activePanel === "cpu"
     // ---------------------------------------------------------
@@ -49,6 +49,7 @@ Item {
     // ---------------------------------------------------------
 
     ColumnLayout {
+        id: mainLayout
         anchors.fill:    parent
         anchors.margins: Tokens.paddingH 
         spacing:         Tokens.spacingMd

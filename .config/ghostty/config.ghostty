@@ -10,8 +10,8 @@ font-feature = +calt
 font-feature = +liga
 font-feature = +dlig
 font-size = 9
-window-padding-x = 25
-window-padding-y = 25
+window-padding-x = 15
+window-padding-y = 15
 
 background-image = /home/yvon/Doomslayer-mod/Pictures/logos/ultraNightmare/ultra-nightmare-240-ascii.png
 background-image-opacity = 0.05

@@ -17,7 +17,7 @@ fastfetch --config hyde/*.jsonc
     {
       "type": "custom",
       //"key": "  ",
-      "key": "𒉭",
+      "key": "  𒉭",
       "keyColor": "blue",
       "format": "Rip and tear, until it is done."
     },

@@ -5,17 +5,14 @@ import "."
 
 QtObject {
 
-    // ---- PRIMARY SCREEN ----
     readonly property var primaryScreen: Qt.application.screens.length > 0 ? 
                                         Qt.application.screens[0] : null
 
-    // ---- DPI SCALE ----
     readonly property real dpiScale: primaryScreen ? 
                                          primaryScreen.devicePixelRatio : 1.0
 
-    property real customScale: 1
+    property real customScale: -1
 
-    // ---- AUTO-COMPUTED SCALE ----
     readonly property real resScale: primaryScreen ?
         Math.min(primaryScreen.width / 1920, primaryScreen.height / 1080) : 1.0
 
@@ -54,10 +51,6 @@ QtObject {
     readonly property int radiusXl: Math.round(10 * scale)
 
     // BAR GEOMETRY
-    // NOTE: Theme had barHeightSide=20 / barHeightCenter=30 (stale, unused).
-    // Globals had leftHeight=rightHeight=35 / centerHeight=45 (actually driving
-    // shell.qml). Kept Globals numbers as canonical — verify before deleting
-    // the old Theme copies.
     readonly property int leftWidth:    Math.round(350 * scale)
     readonly property int leftHeight:   Math.round(35  * scale)
     readonly property int rightWidth:   Math.round(350 * scale)

@@ -7,6 +7,9 @@ import "."
 Item { 
     id: ramFrontend
 
+    implicitHeight:  Tokens.rightWidth
+    implicitWidth:   Tokens.rightWidth 
+    
     property int selectedProc: 0
     property var selectedProcData: (selectedProc >= 0 && selectedProc < ram.processes.count)
                                    ? ram.processes.get(selectedProc)

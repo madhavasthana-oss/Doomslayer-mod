@@ -10,6 +10,9 @@ Item {
 
     id: gpuFrontend
 
+    implicitHeight:  Tokens.rightWidth
+    implicitWidth:   Tokens.rightWidth 
+
     property var freqBars: []
     property var freqTargets: []
     property real freqFrame: 0

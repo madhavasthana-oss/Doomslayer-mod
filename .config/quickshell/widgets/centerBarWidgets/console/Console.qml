@@ -8,7 +8,7 @@ Item {
     id: root
     implicitWidth: mainLayout.implicitWidth + 2 * Tokens.marginTop
     implicitHeight: mainLayout.implicitHeight + 2 * Tokens.marginTop
-    visible: Globals.activeCenterPanel
+    visible: Globals.activeCenterPanel !== ""
     Rectangle {
         id: bgDisplay
         radius: 10

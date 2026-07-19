@@ -164,10 +164,7 @@ Item {
         }
     }
 
-    // ---------------------------------------------------------
     //  SHAPE
-    // ---------------------------------------------------------
-
     RightTrapezoid {
         anchors.fill: parent
         barWidth: Tokens.rightWidth
@@ -175,20 +172,14 @@ Item {
         alertActive: false
     }
 
-    // ---------------------------------------------------------
     //  CONTENT ROW
-    // ---------------------------------------------------------
-
     RowLayout {
         anchors.fill: parent
         anchors.leftMargin: Tokens.rightHeight + Tokens.spacingXs
         anchors.rightMargin: Tokens.spacingXs
         spacing: Tokens.spacingXs
 
-        // ---------------------------------------------------------
         //  ZONE 1 — Battery + Volume
-        // ---------------------------------------------------------
-
         GridLayout {
             columns: 3 
             rows: 2
@@ -339,10 +330,7 @@ Item {
             Layout.fillWidth: true
         }
 
-        // ---------------------------------------------------------
         //  ZONE 2 — CPU + GPU (bar style, matches BAT/VOL)
-        // ---------------------------------------------------------
-
         GridLayout {
             columns: 3
             rows: 2
@@ -482,10 +470,7 @@ Item {
             Layout.fillWidth: true
         }
 
-        // ---------------------------------------------------------
         //  ZONE 3 — RAM
-        // ---------------------------------------------------------
-
         ColumnLayout {
             id: sysGrid
             Layout.alignment: Qt.AlignVCenter

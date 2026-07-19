@@ -10,12 +10,11 @@ Item {
     property bool __ready__           : false
     property int  __core_count__      : -1
     property int  historyLength       : 20
-    property int intervalLength       : 500
+    property int  intervalLength      : 500
 
     // WARNING --- THIS IS HARDCODED!! YOU NEED TO UPDATE THIS YOURSELF FOR ACCURATE READING
     property var __core_id_map__: [0, 0, 4, 4, 8, 9, 10, 11, 12, 13, 14, 15]
 
-    // Plain JS store — keyed by core index
     // history[i] = { usage: [...], temp: [...] }
     property var history: ({})
 
@@ -81,10 +80,6 @@ Item {
         h[coreIdx] = { usage: uBuf, temp: tBuf }
         history = h
     }
-
-    // ---------------------------------------------------------
-    //  USAGE — polls every 1s via /proc/stat
-    // ---------------------------------------------------------
 
     Timer {
         id: detector
@@ -174,10 +169,6 @@ Item {
             }
         }
     }
-
-    // ---------------------------------------------------------
-    //  TEMPERATURE — polls every 4s via lm-sensors
-    // ---------------------------------------------------------
 
     Timer {
         id: tempDetector
