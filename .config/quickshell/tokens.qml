@@ -11,7 +11,7 @@ QtObject {
     readonly property real dpiScale: primaryScreen ? 
                                          primaryScreen.devicePixelRatio : 1.0
 
-    property real customScale: -1
+    property real customScale: 1.5
 
     readonly property real resScale: primaryScreen ?
         Math.min(primaryScreen.width / 1920, primaryScreen.height / 1080) : 1.0
@@ -58,7 +58,7 @@ QtObject {
     readonly property int centerWidth:  Math.round(640 * scale)
     readonly property int centerHeight: Math.round(45  * scale)
 
-    readonly property int centerSmallerWidth: centerWidth - 2 * (centerHeight + spacingXs)
+    readonly property int centerSmallerWidth: centerWidth - 2 * (centerHeight)
 
     readonly property int preferredWidthNoGreeting: Math.round(80  * scale)
     readonly property int greetingWidth:            Math.round(204 * scale)
@@ -69,7 +69,7 @@ QtObject {
     readonly property int centerCollapsedWidth:  Math.round(640 * scale)
     readonly property int centerCollapsedHeight: Math.round(30  * scale)
     readonly property int centerExpandedWidth:   Math.round(580 * scale)
-    readonly property int centerExpandedHeight:  Math.round(220 * scale)
+    readonly property int centerExpandedHeight:  Math.round(550 * scale)
 
     readonly property int angleOffsetCollapsed: Math.round(30 * scale)
     readonly property int angleOffsetExpanded:  0
@@ -91,15 +91,43 @@ QtObject {
     readonly property int usageBarHeight:   Math.round(4   * scale)
 
     // EDGE PANELS
-    readonly property int edgeHoverZoneWidth: Math.round(40  * scale)
+    readonly property int edgeHoverZoneWidth: Math.round(45  * scale)
     readonly property int edgePanelWidth:     Math.round(280 * scale)
     readonly property int edgeToggleHeight:   Math.round(48  * scale)
     readonly property int edgeHotzonePx:      Math.round(4   * scale)
+
+    // SCREEN GEOMETRY — centers & edge midpoints
+    readonly property int screenWidth:  primaryScreen ? primaryScreen.width  : 0
+    readonly property int screenHeight: primaryScreen ? primaryScreen.height : 0
+
+    readonly property int screenCenterX: Math.round(screenWidth  / 2)
+    readonly property int screenCenterY: Math.round(screenHeight / 2)
+
+    readonly property int screenTopCenterX:    screenCenterX
+    readonly property int screenBottomCenterX: screenCenterX
+    readonly property int screenLeftCenterY:   screenCenterY
+    readonly property int screenRightCenterY:  screenCenterY
+
+    readonly property int screenTopY:    0
+    readonly property int screenBottomY: screenHeight
+    readonly property int screenLeftX:   0
+    readonly property int screenRightX:  screenWidth
+
+    // BOTTOM POWER BAR — width tracks centerSmallerWidth, height tracks center bar
+    readonly property int bottomBarWidth:  centerSmallerWidth
+    readonly property int bottomBarHeight: centerHeight
+    readonly property int bottomBarOriginX: screenBottomCenterX - Math.round(bottomBarWidth / 2)
+    // Slightly taller than a pure 1–4px edge so hover isn't lost to jitter,
+    // still small enough to stay out of the way when collapsed.
+    readonly property int bottomHoverZoneHeight: Math.max(edgeHotzonePx, barInset)
+    readonly property int bottomBarMargin: barMarginTop
+    readonly property int bottomHideDelay: animMedium
 
     readonly property int iconSizeSmall:  Math.round(4  * scale)
     readonly property int iconSizeBase:   Math.round(8  * scale)
     readonly property int iconSizeMedium: Math.round(12 * scale)
     readonly property int iconSizeLarge:  Math.round(14 * scale)
+    readonly property int iconSizeBottom: Math.max(iconSizeLarge, bottomBarHeight - 2 * paddingV)
 
 
     readonly property int fontSizeTiny:    Math.round(9  * scale)
@@ -126,6 +154,7 @@ QtObject {
     readonly property int workspaceToggleMargin: Math.round(10 * scale)
     readonly property int workspaceMargins:      Math.round(6  * scale)
 
+    readonly property int animInstant:    60
     readonly property int animFast:       120
     readonly property int animMedium:     220
     readonly property int animSlow:       400

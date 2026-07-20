@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 source "$(dirname "$0")/colors.sh"
 
-LOGO_PATH="/home/yvon/Doomslayer-mod/config/logos/mark-img.png"
+LOGO_PATH="~/Doomslayer-mod/config/logos/mark-img.png"
 
 # ─── Helpers ──────────────────────────────────────────────────────────────────
 

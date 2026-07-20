@@ -71,6 +71,7 @@ Item {
     //  ROW 1 — Workspace Numbers — FIXED WIDTH
     // ---------------------------------------------------------
     RowLayout {
+      Layout.alignment: Qt.AlignJustify
         Layout.preferredWidth: Globals.workspaceNumber * (Tokens.fontSizeSmall + Tokens.spacingXs)
         Layout.fillWidth:      false  // never grow or shrink
         spacing:               Tokens.spacingXs 
@@ -101,7 +102,10 @@ Item {
             }
         }
     }
-
+      
+    Item {
+      Layout.fillWidth: true 
+    }
     // Separator — now always at fixed position
         Rectangle {
             Layout.preferredWidth:  1
@@ -109,7 +113,11 @@ Item {
             Layout.fillWidth:       false
             Layout.alignment:       Qt.AlignVCenter
             color:                  Theme.borderIdle
-        }
+          }
+
+    Item {
+      Layout.fillWidth: true 
+    }
 
     // ---------------------------------------------------------
     //  ROW 2 — Active Window Name

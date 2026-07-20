@@ -5,7 +5,7 @@
 #   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 # fi
 
-export PATH="${PATH}:/home/yvon/.local/bin"
+export PATH="${PATH}:~/.local/bin"
 
 # Path to your oh-my-zsh installation.
 export ZSH="/usr/share/oh-my-zsh"

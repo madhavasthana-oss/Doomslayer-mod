@@ -12,7 +12,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MOD_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
-WALL_DIR="${MOD_ROOT}/config/wallpapers"
+WALL_DIR="${MOD_ROOT}/Pictures/Wallpapers"
 STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/doomslayer"
 STATE_FILE="$STATE_DIR/wallpaper-slayer.state"
 LIVE=false

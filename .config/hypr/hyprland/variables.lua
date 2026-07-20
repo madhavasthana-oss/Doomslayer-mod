@@ -17,3 +17,9 @@ settingsApp = "XDG_CURRENT_DESKTOP=gnome ~/.config/hypr/hyprland/scripts/launch_
 taskManager = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'gnome-system-monitor' 'plasma-systemmonitor --page-name Processes' 'command -v btop && kitty -1 fish -c btop'"
 
 workspaceGroupSize = 10
+
+-- Animation preset (hyprland/animations/*.lua)
+-- Options: end4, impulse, theme, classic, standard, fast, high, dynamic,
+--   optimized, moving, vertical, diablo-1, diablo-2, me-1, me-2,
+--   minimal-1, minimal-2, ja, LimeFrenzy, disable
+animationPreset = "impulse"

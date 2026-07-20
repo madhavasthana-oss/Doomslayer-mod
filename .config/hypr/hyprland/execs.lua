@@ -25,9 +25,6 @@ hl.on("hyprland.start", function ()
     -- Cursor
     hl.exec_cmd("hyprctl setcursor Bibata-Modern-Classic 24")
 
-    -- kill noctalia
-    hl.exec_cmd("pkill -f noctalia")
-
     -- load wallpaper
     hl.exec_cmd(string.format("bash %s %q", wallpaper_script_path, wallpaper))
 

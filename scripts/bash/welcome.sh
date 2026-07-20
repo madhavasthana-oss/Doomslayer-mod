@@ -31,7 +31,7 @@ sleep 0.3
 
 kitty +kitten icat \
   --align center \
-  /home/yvon/Doomslayer-mod/config/logos/mark-img.png 2>/dev/null
+  ~/Doomslayer-mod/config/logos/mark-img.png 2>/dev/null
 
 echo ""
 echo -e "${DRED}[$(date '+%m/%d/%Y @ %I:%M:%S %p %Z')]${RESET}"

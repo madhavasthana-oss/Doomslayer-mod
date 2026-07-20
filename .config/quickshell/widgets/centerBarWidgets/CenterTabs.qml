@@ -1,22 +1,93 @@
+// CenterTabs.qml
 import QtQuick
-import Quickshell
 import QtQuick.Layouts
-import QtQuick.Controls
-import Quickshell.Wayland
-import Quickshell.Hyprland
 import "../.."
 
 Item {
- id: root
+    id: root
 
- property string active: Globals.activeCenterPanel
+    property string active: Globals.activeCenterPanel   // "dashboard" | "media" | "console"
+    signal switched(string panel)
 
- implicitHeight:   Tokens.spacingXl
- Layout.fillWidth: true
+    height: Tokens.spacingXl
+    Layout.fillWidth: true
 
- signal switched(string panel)
+    // Tab labels
+    RowLayout {
+        id: tabRow
+        anchors.fill: parent
+        spacing: Tokens.spacingXss
 
- RowLayout{
-    
- }
+        Repeater {
+            model: [
+                {
+                    id: "dashboard",
+                    label: "DASHBOARD"
+                },
+                {
+                    id: "console",
+                    label: "CONSOLE"
+                },
+                {
+                    id: "media",
+                    label: "MEDIA"
+                }
+            ]
+
+            Item {
+                Layout.fillWidth: true
+                height: Tokens.spacingXl
+
+                property bool isActive: modelData.id === root.active
+                property string panelId: modelData.id
+
+                Text {
+                    anchors.centerIn: parent
+                    text: modelData.label
+                    font.family: Theme.fontDisplay
+                    font.pixelSize: Tokens.fontSizeLabel
+                    color: isActive ? Theme.accent : Theme.textDim
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: root.switched(modelData.id)
+                }
+            }
+        }
+    }
+
+    Rectangle {
+        id: underline
+        height: Tokens.borderXss * 0.5
+        color: Theme.accent
+        opacity: 1
+        radius: Tokens.borderXss * 0.5
+        y: parent.height - height
+
+        Behavior on x {
+            NumberAnimation {
+                duration: Tokens.animFast
+                easing.type: Easing.OutCubic
+            }
+        }
+        Behavior on width {
+            NumberAnimation {
+                duration: Tokens.animFast
+                easing.type: Easing.OutCubic
+            }
+        }
+
+        property Item activeTab: {
+            for (let i = 0; i < tabRow.children.length; i++) {
+                if (tabRow.children[i].panelId === root.active)
+                    return tabRow.children[i];
+            }
+            return null;
+        }
+
+        x: activeTab ? activeTab.x : 0
+        width: activeTab ? activeTab.width : 0
+    }
 }

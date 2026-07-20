@@ -25,7 +25,9 @@ Item {
         anchors.margins: {
             top: Tokens.spacingXss
         }
-        
+        Text{
+            text: "This is the console"
+        }
         Item {
             Layout.fillHeight: true
         }

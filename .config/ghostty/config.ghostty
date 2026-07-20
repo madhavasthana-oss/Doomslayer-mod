@@ -13,7 +13,7 @@ font-size = 9
 window-padding-x = 15
 window-padding-y = 15
 
-background-image = /home/yvon/Doomslayer-mod/Pictures/logos/ultraNightmare/ultra-nightmare-240-ascii.png
+background-image = ~/Doomslayer-mod/Pictures/logos/ultraNightmare/ultra-nightmare-240-ascii.png
 background-image-opacity = 0.05
 background-image-position = center
 background-image-fit = contain

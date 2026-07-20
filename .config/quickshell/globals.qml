@@ -10,5 +10,5 @@ QtObject {
 
 
     property string activeCenterPanel : ""
-    property string lastCenterPanel   : "console"
+    property string lastCenterPanel   : "dashboard"
 }

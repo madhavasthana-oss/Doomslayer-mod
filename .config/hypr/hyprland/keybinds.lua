@@ -263,3 +263,41 @@ hl.bind("CTRL + SHIFT + Escape", hl.dsp.exec_cmd(taskManager), { description = "
 --# Cursed stuff
 --## Make window not amogus large
 hl.bind("CTRL + SUPER + Backslash", hl.dsp.window.resize({ x = 640, y = 480, "exact" }))
+
+--##! Clipboard history
+-- Needs: cliphist, wl-clipboard, fuzzel; daemon started in execs.lua
+hl.bind("SUPER + V",
+    hl.dsp.exec_cmd("cliphist list | fuzzel --dmenu | cliphist decode | wl-copy"),
+    { description = "Clipboard: history picker" })
+hl.bind("SUPER + SHIFT + V",
+    hl.dsp.exec_cmd("cliphist wipe && notify-send -a Hyprland 'Clipboard' 'History wiped'"),
+    { description = "Clipboard: wipe history" })
+
+--##! Screenshots
+-- Needs: grim, slurp, satty, wl-clipboard
+local screenshot_dir = "$HOME/Pictures/Screenshots"
+hl.bind("Print",
+    hl.dsp.exec_cmd("grim - | wl-copy && notify-send -a Hyprland 'Screenshot' 'Full screen → clipboard'"),
+    { description = "Screenshot: full → clipboard" })
+hl.bind("SUPER + Print",
+    hl.dsp.exec_cmd("mkdir -p " .. screenshot_dir .. " && grim \"" .. screenshot_dir .. "/$(date +%Y-%m-%d_%H-%M-%S).png\" && notify-send -a Hyprland 'Screenshot' 'Full screen saved'"),
+    { description = "Screenshot: full → file" })
+hl.bind("SUPER + SHIFT + S",
+    hl.dsp.exec_cmd("grim -g \"$(slurp)\" - | wl-copy && notify-send -a Hyprland 'Screenshot' 'Region → clipboard'"),
+    { description = "Screenshot: region → clipboard" })
+hl.bind("SUPER + SHIFT + Print",
+    hl.dsp.exec_cmd("grim -g \"$(slurp)\" - | satty -f - --copy-command wl-copy --output-filename \"" .. screenshot_dir .. "/$(date +%Y-%m-%d_%H-%M-%S).png\""),
+    { description = "Screenshot: region → satty annotate" })
+
+--##! Screen recording
+-- Needs: wf-recorder, slurp; stop with pkill
+local record_dir = "$HOME/Videos/Recordings"
+hl.bind("SUPER + SHIFT + R",
+    hl.dsp.exec_cmd("mkdir -p " .. record_dir .. " && notify-send -a Hyprland 'Recording' 'Full screen started' && wf-recorder -f \"" .. record_dir .. "/rec-$(date +%Y%m%d-%H%M%S).mp4\""),
+    { description = "Record: start full screen" })
+hl.bind("SUPER + ALT + R",
+    hl.dsp.exec_cmd("mkdir -p " .. record_dir .. " && notify-send -a Hyprland 'Recording' 'Region started' && wf-recorder -g \"$(slurp)\" -f \"" .. record_dir .. "/rec-$(date +%Y%m%d-%H%M%S).mp4\""),
+    { description = "Record: start region" })
+hl.bind("SUPER + SHIFT + ALT + R",
+    hl.dsp.exec_cmd("pkill -INT wf-recorder && notify-send -a Hyprland 'Recording' 'Stopped'"),
+    { description = "Record: stop" })

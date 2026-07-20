@@ -3,8 +3,8 @@ import Quickshell
 import Quickshell.Wayland
 import "bars"
 import "widgets/rightBarWidgets"
-import "widgets/centerBarWidgets/console"
-import "widgets/centerBarWidgets"     
+import "widgets/centerBarWidgets"
+import "bottom"
 
 ShellRoot {
     id:shellRoot
@@ -20,7 +20,7 @@ ShellRoot {
 
         RightBar { anchors.fill: parent }
     }
- 
+    
     PanelWindow {
         id: dropdownWindow
         anchors { top: true; right: true }
@@ -81,10 +81,10 @@ ShellRoot {
     }
 
     PanelWindow {
-        id: consoleDropdownWindow
+        id: centerDropdownWindow
         anchors { top: true }
-        implicitWidth:  Tokens.centerWidth - 2 * Tokens.centerHeight
-        implicitHeight: !Globals.activeCenterPanel ? 0 : Tokens.centerWidth * 3 / 4
+        implicitWidth:  centerPanel.implicitWidth
+        implicitHeight: Globals.activeCenterPanel !== "" ? centerPanel.implicitHeight : 0
 
         Behavior on implicitHeight {
             NumberAnimation { duration: 50; easing.type: Easing.OutQuart }
@@ -93,13 +93,66 @@ ShellRoot {
         color:         "transparent"
         exclusiveZone: 0
         WlrLayershell.layer:         WlrLayer.Top
-        WlrLayershell.namespace:     "doomshell-console-dropdown"
+        WlrLayershell.namespace:     "doomshell-center-dropdown"
         WlrLayershell.margins.top:   5
-        WlrLayershell.margins.right: 5
-        visible: Globals.activeCenterPanel
+        visible: Globals.activeCenterPanel !== ""
 
-        Console {
-            anchors.fill: parent 
+        Rectangle {
+            id: centerPanelBg
+            anchors.fill: parent
+            radius:       10
+            color:        Theme.bgConsole
+            opacity:      Theme.opacityConsole
+            border.color: Theme.borderConsole
+            border.width: Tokens.strokeWidth
+        }
+
+        CenterPanel {
+            id: centerPanel
+        }
+    }
+
+    // Bottom power bar — dormant hotzone at bottom-center, expands on hover.
+    // Height follows sticky `revealed` (grace-period close) so edge hover
+    // doesn't thrash open/closed while the window resizes under the cursor.
+    PanelWindow {
+        id: bottomBarWindow
+        anchors {
+            left:   true
+            right:  true
+            bottom: true
+        }
+        margins.left:  Tokens.bottomBarOriginX
+        margins.right: Tokens.bottomBarOriginX
+
+        implicitWidth: Tokens.bottomBarWidth
+        // Height snaps with sticky revealed state (no Behavior) — animating
+        // the layer-shell window under the cursor was the thrash source.
+        implicitHeight: bottomPanel.revealed
+            ? Tokens.bottomBarHeight
+            : Tokens.bottomHoverZoneHeight
+
+        color:         "transparent"
+        exclusiveZone: 0
+        WlrLayershell.layer:     WlrLayer.Top
+        WlrLayershell.namespace: "doomshell-bottom"
+
+        BottomPanel {
+            id: bottomPanel
+            anchors.bottom: parent.bottom
+            anchors.horizontalCenter: parent.horizontalCenter
+            width:  Tokens.bottomBarWidth
+            height: Tokens.bottomBarHeight
+            opacity: bottomPanel.revealed
+                ? Theme.opacityVisible
+                : Theme.opacityHidden
+
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: Tokens.animFast
+                    easing.type: Easing.OutCubic
+                }
+            }
         }
     }
 }

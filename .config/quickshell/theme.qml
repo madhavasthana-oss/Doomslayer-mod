@@ -33,8 +33,16 @@ QtObject {
     readonly property color borderConsole: "#CC2200"
     readonly property color glowConsole:   "#994400"
 
+    // SYSTEM ICONS — breeze symbolic, tinted at use site to theme colors
+    readonly property string iconThemeActions: "file:///usr/share/icons/breeze/actions/22/"
+    readonly property string iconPoweroff: iconThemeActions + "system-shutdown-symbolic.svg"
+    readonly property string iconReboot:   iconThemeActions + "system-reboot-symbolic.svg"
+    readonly property string iconLogout:   iconThemeActions + "system-log-out-symbolic.svg"
+    readonly property string iconSleep:    iconThemeActions + "system-suspend-symbolic.svg"
+    readonly property string iconLock:     iconThemeActions + "system-lock-screen-symbolic.svg"
+
     // TYPOGRAPHY — family names only, sizes now live in Tokens
-    readonly property string fontMono:    "JetBrains Mono"
+    readonly property string fontMono:    "Fira Code"
     readonly property string fontDisplay: "KogniGear"
 
     // OPACITY — unitless, correctly does NOT scale with screen size
