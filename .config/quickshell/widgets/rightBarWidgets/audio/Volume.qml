@@ -1,4 +1,4 @@
-// Volume.qml — resilient PipeWire default-sink binding
+// Volume.qml --- resilient PipeWire default-sink binding
 //
 // Why this used to die on boot:
 //   Pipewire.defaultAudioSink is often null (or briefly null) until WirePlumber
@@ -9,7 +9,7 @@
 // Approach (same idea as end-4 / caelestia audio services):
 //   1. Wait for Pipewire.ready (initial server sync).
 //   2. Track defaultAudioSink with PwObjectTracker so node metadata is live.
-//   3. Never permanently give up — fast retries, then slow forever.
+//   3. Never permanently give up --- fast retries, then slow forever.
 //   4. Re-arm on ready / default-sink / node-ready / audio changes.
 import Quickshell.Services.Pipewire
 import QtQuick
@@ -32,7 +32,7 @@ Item {
     signal volumeModified(int volume, bool muted)
     signal becameReady()
 
-    // Keep the tracked object list reactive — null when no sink so the tracker
+    // Keep the tracked object list reactive --- null when no sink so the tracker
     // fully drops the old node, then rebinds when WP picks a default.
     readonly property var trackedSink: Pipewire.defaultAudioSink
 
@@ -55,7 +55,7 @@ Item {
         if (!audio)
             return false
 
-        // Node may exist before audio is populated — treat as not ready yet.
+        // Node may exist before audio is populated --- treat as not ready yet.
         const vol = Math.round((audio.volume ?? 0) * 100)
         const isMuted = !!audio.muted
 
@@ -90,7 +90,7 @@ Item {
     }
 
     function tick() {
-        // Still syncing the graph — stay in fast mode
+        // Still syncing the graph --- stay in fast mode
         if (!Pipewire.ready) {
             markUnready()
             scheduleRetry()

@@ -29,9 +29,9 @@ Item {
         tempCanvas.requestPaint()
     }
 
-    // ---------------------------------------------------------
+    // ---
     //  MAIN LAYOUT
-    // ---------------------------------------------------------
+    // ---
 
     ColumnLayout {
         id: mainLayout
@@ -39,18 +39,18 @@ Item {
         anchors.margins: Tokens.paddingH 
         spacing:         Tokens.spacingMd
 
-        // ---------------------------------------------------------
-        //  BODY — core list (left) + detail panel (right)
-        // ---------------------------------------------------------
+        // ---
+        //  BODY --- core list (left) + detail panel (right)
+        // ---
 
         RowLayout {
             Layout.fillWidth:  true
             Layout.fillHeight: true
             spacing:           Tokens.spacingXs
 
-            // -------------------------------------------------
-            //  LEFT — core list
-            // -------------------------------------------------
+            // ---
+            //  LEFT --- core list
+            // ---
 
             Rectangle {
                 Layout.preferredWidth: Tokens.listPanelWidth
@@ -164,9 +164,9 @@ Item {
                 }
             }
 
-            // -------------------------------------------------
-            //  RIGHT — detail panel
-            // -------------------------------------------------
+            // ---
+            //  RIGHT --- detail panel
+            // ---
 
             ColumnLayout {
                 Layout.fillWidth:  true
@@ -508,9 +508,9 @@ Item {
             }
         }
 
-        // ---------------------------------------------------------
+        // ---
         //  LAUNCH BTOP BUTTON
-        // ---------------------------------------------------------
+        // ---
 
         Rectangle {
             id: btopBtn

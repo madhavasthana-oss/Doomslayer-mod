@@ -1,4 +1,4 @@
-// CalendarCard.qml — month grid, pure QML
+// CalendarCard.qml --- month grid, pure QML
 import QtQuick
 import QtQuick.Layouts
 import "../../.."
@@ -24,7 +24,7 @@ Rectangle {
         return new Date(y, m + 1, 0).getDate()
     }
 
-    // JS: 0=Sun … 6=Sat — convert so week starts Monday
+    // JS: 0=Sun ... 6=Sat --- convert so week starts Monday
     function leadingBlanks(y, m) {
         const dow = new Date(y, m, 1).getDay() // 0 Sun
         return (dow + 6) % 7 // Mon=0

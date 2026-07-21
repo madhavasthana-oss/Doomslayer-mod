@@ -1,4 +1,4 @@
-// MediaBackend.qml — playerctl metadata (art/title) + cava overlay
+// MediaBackend.qml --- playerctl metadata (art/title) + cava overlay
 import QtQuick
 import Quickshell
 import Quickshell.Io
@@ -24,7 +24,7 @@ Item {
         return home + "/Doomslayer-mod/scripts/bash/cava-overlay.sh"
     }
 
-    // Unit separator — titles/artists can contain | and commas
+    // Unit separator --- titles/artists can contain | and commas
     readonly property string sep: "\x1f"
 
     function normalizeArt(url) {

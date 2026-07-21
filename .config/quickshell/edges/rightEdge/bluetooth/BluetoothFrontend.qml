@@ -1,4 +1,4 @@
-// BluetoothFrontend.qml — device list + power/scan (T.S.S content)
+// BluetoothFrontend.qml --- device list + power/scan (T.S.S content)
 import QtQuick
 import QtQuick.Layouts
 import Qt5Compat.GraphicalEffects
@@ -136,7 +136,7 @@ Item {
                                 if (modelData.batteryAvailable)
                                     bits.push(Math.round(modelData.battery * 100) + "%")
                                 bits.push(modelData.address)
-                                return bits.join("  ·  ")
+                                return bits.join("  *  ")
                             }
                             font.family: Theme.fontMono
                             font.pixelSize: Tokens.fontSizeTiny
@@ -177,7 +177,7 @@ Item {
 
         Text {
             Layout.fillWidth: true
-            text: "LMB connect · RMB forget"
+            text: "LMB connect * RMB forget"
             font.family: Theme.fontMono
             font.pixelSize: Tokens.fontSizeTiny
             color: Theme.textDim

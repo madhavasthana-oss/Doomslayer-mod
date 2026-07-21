@@ -1,4 +1,4 @@
-// MediaWidget.qml — YT Music priority, Spotify/spotatui secondary, cava overlay toggle
+// MediaWidget.qml --- YT Music priority, Spotify/spotatui secondary, cava overlay toggle
 // Art + transport driven by MediaBackend (playerctl) for reliable Spotify art URLs.
 import QtQuick
 import QtQuick.Layouts
@@ -49,7 +49,7 @@ Item {
         anchors.margins: Tokens.paddingH
         spacing: Tokens.spacingMd
 
-        // ── LEFT: art + transport ─────────────────────────────
+        // -- LEFT: art + transport ---
         ColumnLayout {
             Layout.preferredWidth: 1
             Layout.fillWidth: true
@@ -124,13 +124,13 @@ Item {
                 Layout.fillWidth: true
                 text: {
                     if (!backend.hasTrack && !backend.hasPlayer)
-                        return "Play in YT Music or Spotify · MPRIS feeds this panel"
+                        return "Play in YT Music or Spotify * MPRIS feeds this panel"
                     const bits = []
                     if (backend.artist.length)
                         bits.push(backend.artist)
                     if (backend.album.length)
                         bits.push(backend.album)
-                    return bits.length ? bits.join(" · ") : backend.playerName
+                    return bits.length ? bits.join(" * ") : backend.playerName
                 }
                 font.family: Theme.fontMono
                 font.pixelSize: Tokens.fontSizeTiny
@@ -195,7 +195,7 @@ Item {
             opacity: Theme.opacityMuted
         }
 
-        // ── RIGHT: sources + cava ────────────────────────────
+        // -- RIGHT: sources + cava ---
         ColumnLayout {
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -238,7 +238,7 @@ Item {
                         }
                         Text {
                             Layout.fillWidth: true
-                            text: "PRIMARY · youtube-music-desktop-app · Super+M"
+                            text: "PRIMARY * youtube-music-desktop-app * Super+M"
                             font.family: Theme.fontMono
                             font.pixelSize: Tokens.fontSizeTiny
                             color: Theme.textDim
@@ -284,7 +284,7 @@ Item {
                         }
                         Text {
                             Layout.fillWidth: true
-                            text: "SECONDARY · native client (MPRIS) · spotatui fallback"
+                            text: "SECONDARY * native client (MPRIS) * spotatui fallback"
                             font.family: Theme.fontMono
                             font.pixelSize: Tokens.fontSizeTiny
                             color: Theme.textDim
@@ -331,8 +331,8 @@ Item {
                         Text {
                             Layout.fillWidth: true
                             text: backend.cavaOn
-                                ? "ON · desktop visualizer pinned"
-                                : "OFF · toggle audio bars on desktop"
+                                ? "ON * desktop visualizer pinned"
+                                : "OFF * toggle audio bars on desktop"
                             font.family: Theme.fontMono
                             font.pixelSize: Tokens.fontSizeTiny
                             color: Theme.textDim
@@ -369,7 +369,7 @@ Item {
                     }
                     Text {
                         Layout.fillWidth: true
-                        text: backend.hasPlayer ? backend.playerName : "None — hit play in Spotify/YTM"
+                        text: backend.hasPlayer ? backend.playerName : "None --- hit play in Spotify/YTM"
                         font.family: Theme.fontMono
                         font.pixelSize: Tokens.fontSizeSmall
                         color: Theme.textPrimary
@@ -377,7 +377,7 @@ Item {
                     }
                     Text {
                         Layout.fillWidth: true
-                        text: "STATUS · " + (backend.status || "IDLE").toUpperCase()
+                        text: "STATUS * " + (backend.status || "IDLE").toUpperCase()
                         font.family: Theme.fontMono
                         font.pixelSize: Tokens.fontSizeTiny
                         color: backend.isPlaying ? Theme.stateSafe : Theme.textDim

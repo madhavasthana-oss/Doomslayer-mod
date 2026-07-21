@@ -1,4 +1,4 @@
-// NetworkFrontend.qml — wifi list + password + rescan (T.S.S content)
+// NetworkFrontend.qml --- wifi list + password + rescan (T.S.S content)
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
@@ -233,7 +233,7 @@ Item {
                         }
                         Text {
                             Layout.fillWidth: true
-                            text: model.security + (model.inUse ? "  ·  LINKED" : "")
+                            text: model.security + (model.inUse ? "  *  LINKED" : "")
                             font.family: Theme.fontMono
                             font.pixelSize: Tokens.fontSizeTiny
                             color: Theme.textDim

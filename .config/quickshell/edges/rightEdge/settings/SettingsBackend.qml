@@ -1,4 +1,4 @@
-// SettingsBackend.qml — brightness, kbd, audio, capture tools, nwg-look
+// SettingsBackend.qml --- brightness, kbd, audio, capture tools, nwg-look
 import QtQuick
 import Quickshell
 import Quickshell.Io
@@ -8,8 +8,8 @@ import "../../.."
 Item {
     id: root
 
-    property int brightness: 50       // percent 0–100
-    property int kbdBrightness: 0     // 0–max
+    property int brightness: 50       // percent 0-100
+    property int kbdBrightness: 0     // 0-max
     property int kbdMax: 2
     property int volume: 0
     property bool muted: false
@@ -19,7 +19,7 @@ Item {
 
     signal requestClose()   // parent should collapse edge panel
 
-    // ─── PipeWire sink (same resilience as Volume.qml) ───────
+    // --- PipeWire sink (same resilience as Volume.qml) ---
     readonly property var trackedSink: Pipewire.defaultAudioSink
     PwObjectTracker {
         id: sinkTracker
@@ -71,7 +71,7 @@ Item {
             return
         }
         root.audioAttempts++
-        // never give up — WirePlumber can export the default sink late
+        // never give up --- WirePlumber can export the default sink late
         if (root.audioAttempts <= Tokens.audioRetryFastCount) {
             audioSlowRetry.running = false
             if (!audioFastRetry.running)
@@ -128,7 +128,7 @@ Item {
         root.tickAudio()
     }
 
-    // ─── Screen brightness ───────────────────────────────────
+    // --- Screen brightness ---
     function setBrightness(pct) {
         const v = Math.max(1, Math.min(100, Math.round(pct)))
         brightSet.pct = String(v) + "%"
@@ -160,7 +160,7 @@ Item {
         onExited: brightQuery.running = true
     }
 
-    // ─── Keyboard backlight ──────────────────────────────────
+    // --- Keyboard backlight ---
     function setKbd(level) {
         const v = Math.max(0, Math.min(root.kbdMax, Math.round(level)))
         kbdSet.level = String(v)
@@ -194,7 +194,7 @@ Item {
         onExited: kbdQuery.running = true
     }
 
-    // ─── Appearance (nwg-look) ───────────────────────────────
+    // --- Appearance (nwg-look) ---
     function launchLook() {
         root.statusMsg = "LAUNCHING NWG-LOOK"
         root.requestClose()
@@ -208,7 +208,7 @@ Item {
         onTriggered: Quickshell.execDetached(["nwg-look"])
     }
 
-    // ─── Screenshot (grim + slurp) ───────────────────────────
+    // --- Screenshot (grim + slurp) ---
     function screenshot() {
         root.statusMsg = "SELECT REGION"
         root.requestClose()
@@ -228,7 +228,7 @@ Item {
         }
     }
 
-    // ─── Screen record (wf-recorder + slurp) ─────────────────
+    // --- Screen record (wf-recorder + slurp) ---
     function toggleRecord() {
         if (Globals.screenRecording) {
             stopRecord.running = true

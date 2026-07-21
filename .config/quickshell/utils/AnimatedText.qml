@@ -78,13 +78,13 @@ Item {
         targetText = text
 
         if (displayedText === "") {
-            // Nothing on screen yet — no exit needed, just enter.
+            // Nothing on screen yet --- no exit needed, just enter.
             enterWithMode()
             return
         }
 
         if (text === "") {
-            // Caller wants a hard clear — exit only, no re-entry.
+            // Caller wants a hard clear --- exit only, no re-entry.
             transitionFrom("")
             return
         }

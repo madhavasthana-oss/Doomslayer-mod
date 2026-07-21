@@ -1,9 +1,9 @@
-// =============================================================
+// ---
 //  RightTrapezoid.qml
-//  DOOMSHELL — Oracle
+//  DOOMSHELL --- Oracle
 //  Semi 45° trapezoid. Flat right, angled left.
 //  Mirror of LeftTrapezoid.
-// =============================================================
+// ---
 
 import QtQuick 2.15
 import QtQuick.Shapes 2.15
@@ -12,9 +12,9 @@ import ".."
 Item {
     id: root
 
-    // ---------------------------------------------------------
+    // ---
     //  PROPERTIES
-    // ---------------------------------------------------------
+    // ---
 
     property real barWidth:    Tokens.centerExpandedWidth
     property real barHeight:   Tokens.edgeToggleHeight
@@ -31,15 +31,15 @@ Item {
     width:  barWidth
     height: barHeight
 
-    // ---------------------------------------------------------
+    // ---
     //  TRAPEZOID SHAPE
     //
-    //  /____________]
+    //  /---]
     //
-    //  startX: angleOffset   → top-left pulled RIGHT
-    //  bottom-left: x=0      → kicks OUT left
+    //  startX: angleOffset   -> top-left pulled RIGHT
+    //  bottom-left: x=0      -> kicks OUT left
     //  right edge: flat
-    // ---------------------------------------------------------
+    // ---
 
     Shape {
         id: trapShape
@@ -79,10 +79,10 @@ Item {
         }
     }
 
-    // ---------------------------------------------------------
+    // ---
     //  INNER EMBER GLOW
     //  inset referenced as parent.inset inside PathLine children
-    // ---------------------------------------------------------
+    // ---
 
     // Shape {
     //     id: innerGlow
@@ -112,9 +112,9 @@ Item {
     //     }
     // }
 
-    // ---------------------------------------------------------
+    // ---
     //  ALERT PULSE
-    // ---------------------------------------------------------
+    // ---
 
     SequentialAnimation {
         id: alertPulse
@@ -143,9 +143,9 @@ Item {
         if (!alertActive) trapShape.opacity = 1.0
     }
 
-    // ---------------------------------------------------------
+    // ---
     //  HOVER DETECTION
-    // ---------------------------------------------------------
+    // ---
 
     MouseArea {
         anchors.fill: parent

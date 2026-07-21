@@ -1,4 +1,4 @@
-// BluetoothBackend.qml — Quickshell.Bluetooth + bluetoothctl fallbacks
+// BluetoothBackend.qml --- Quickshell.Bluetooth + bluetoothctl fallbacks
 import QtQuick
 import Quickshell
 import Quickshell.Bluetooth
@@ -41,7 +41,7 @@ Item {
             dev.connect()
         } else {
             dev.pair()
-            // connect after pair — device signals will update UI
+            // connect after pair --- device signals will update UI
             pairThenConnect.target = dev
         }
     }

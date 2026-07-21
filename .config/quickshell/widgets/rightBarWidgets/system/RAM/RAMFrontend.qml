@@ -198,7 +198,7 @@ Item {
                             
                             Text {
                                 Layout.alignment: Qt.AlignLeft
-                                text:   ramFrontend.selectedProcData?.name   ?? "—"
+                                text:   ramFrontend.selectedProcData?.name   ?? "---"
                                 font.family:    Theme.fontMono
                                 font.pixelSize: Tokens.fontSizeTiny
                                 color:          Theme.textSecondary
@@ -217,7 +217,7 @@ Item {
                             
                             Text {
                                 Layout.alignment: Qt.AlignLeft
-                                text:           ramFrontend.selectedProcData?.pid    ?? "—"
+                                text:           ramFrontend.selectedProcData?.pid    ?? "---"
                                 font.family:    Theme.fontMono
                                 font.pixelSize: Tokens.fontSizeTiny
                                 color:          Theme.textSecondary
@@ -236,7 +236,7 @@ Item {
                             }
                             
                             Text {
-                                text:           (ramFrontend.selectedProcData?.ramMb ?? "—") + " MB"
+                                text:           (ramFrontend.selectedProcData?.ramMb ?? "---") + " MB"
                                 font.family:    Theme.fontMono
                                 font.pixelSize: Tokens.fontSizeTiny
                                 color:          Theme.textSecondary
@@ -255,7 +255,7 @@ Item {
                             }
                             
                             Text {
-                                text:           (ramFrontend.selectedProcData?.cpu ?? "—") + " %"
+                                text:           (ramFrontend.selectedProcData?.cpu ?? "---") + " %"
                                 font.family:    Theme.fontMono
                                 font.pixelSize: Tokens.fontSizeTiny
                                 color:          Theme.textSecondary
@@ -274,7 +274,7 @@ Item {
                             }
                             
                             Text {
-                                text:           (ramFrontend.selectedProcData?.uptime ?? "—") + " s"
+                                text:           (ramFrontend.selectedProcData?.uptime ?? "---") + " s"
                                 font.family:    Theme.fontMono
                                 font.pixelSize: Tokens.fontSizeTiny
                                 color:          Theme.textSecondary
@@ -293,7 +293,7 @@ Item {
                             }
 
                             Text {
-                                text:           ramFrontend.selectedProcData?.threads ?? "—"
+                                text:           ramFrontend.selectedProcData?.threads ?? "---"
                                 font.family:    Theme.fontMono
                                 font.pixelSize: Tokens.fontSizeTiny
                                 color:          Theme.textSecondary
@@ -313,7 +313,7 @@ Item {
                             }
 
                             Text {
-                                text: ramFrontend.selectedProcData?.stateDesc ?? "—"
+                                text: ramFrontend.selectedProcData?.stateDesc ?? "---"
                                 font.family:    Theme.fontMono
                                 font.pixelSize: Tokens.fontSizeTiny
                                 color:          Theme.textSecondary
@@ -332,7 +332,7 @@ Item {
                             }
 
                             Text {
-                                text:           ramFrontend.selectedProcData?.user ?? "—"
+                                text:           ramFrontend.selectedProcData?.user ?? "---"
                                 font.family:    Theme.fontMono
                                 font.pixelSize: Tokens.fontSizeTiny
                                 color:          Theme.textSecondary
@@ -350,7 +350,7 @@ Item {
                     property bool  isHovered: killProcMouse.containsMouse
                     property bool  isPressed: killProcMouse.pressed
 
-                    // Soft glow — three stacked, widening, fading rectangles behind the button.
+                    // Soft glow --- three stacked, widening, fading rectangles behind the button.
                     Rectangle {
                         anchors.fill:    parent
                         anchors.margins: -Tokens.spacingMd 

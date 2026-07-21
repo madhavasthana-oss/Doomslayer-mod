@@ -1,4 +1,4 @@
-// UptimeCard.qml — host uptime from /proc/uptime
+// UptimeCard.qml --- host uptime from /proc/uptime
 import QtQuick
 import QtQuick.Layouts
 import Quickshell

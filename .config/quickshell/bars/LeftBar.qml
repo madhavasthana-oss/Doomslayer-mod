@@ -21,15 +21,15 @@ Item {
             var id = Hyprland.focusedWorkspace?.id ?? 1
             leftBar.focusedId = id
 
-            // hit right boundary — shift forward
+            // hit right boundary --- shift forward
             if (id >= leftBar.windowStart + leftBar.visibleCount) {
                 leftBar.windowStart = id - leftBar.visibleCount + 1
             }
-            // hit left boundary — shift backward
+            // hit left boundary --- shift backward
             else if (id < leftBar.windowStart) {
                 leftBar.windowStart = id
             }
-            // within range — don't touch windowStart
+            // within range --- don't touch windowStart
         }
     }
     //  FONTS
@@ -54,12 +54,12 @@ Item {
     }
 
 
-    // ---------------------------------------------------------
+    // ---
     //  CONTENT
     //  Two RowLayouts side by side:
-    //  Left  → workspace numbers
-    //  Right → active window icons in current workspace
-    // ---------------------------------------------------------
+    //  Left  -> workspace numbers
+    //  Right -> active window icons in current workspace
+    // ---
 
     RowLayout {
     anchors.fill:        parent
@@ -67,9 +67,9 @@ Item {
     anchors.rightMargin: Tokens.leftHeight + Tokens.spacingXs 
     spacing:             Tokens.barMarginTop
 
-    // ---------------------------------------------------------
-    //  ROW 1 — Workspace Numbers — FIXED WIDTH
-    // ---------------------------------------------------------
+    // ---
+    //  ROW 1 --- Workspace Numbers --- FIXED WIDTH
+    // ---
     RowLayout {
       Layout.alignment: Qt.AlignJustify
         Layout.preferredWidth: Globals.workspaceNumber * (Tokens.fontSizeSmall + Tokens.spacingXs)
@@ -106,7 +106,7 @@ Item {
     Item {
       Layout.fillWidth: true 
     }
-    // Separator — now always at fixed position
+    // Separator --- now always at fixed position
         Rectangle {
             Layout.preferredWidth:  Tokens.strokeWidth
             Layout.preferredHeight: parent.height * 0.5
@@ -119,9 +119,9 @@ Item {
       Layout.fillWidth: true 
     }
 
-    // ---------------------------------------------------------
-    //  ROW 2 — Active Window Name
-    // ---------------------------------------------------------
+    // ---
+    //  ROW 2 --- Active Window Name
+    // ---
         Text {
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignVCenter

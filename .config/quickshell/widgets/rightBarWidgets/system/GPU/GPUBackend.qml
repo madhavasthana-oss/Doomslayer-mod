@@ -6,9 +6,9 @@ import "../../../.."
 Item {
     id: gpuBackend
 
-    // -------------------------------------------------
+    // ---
     //  Public API
-    // -------------------------------------------------
+    // ---
 
     property bool   isReady   : false
     property bool   nameFound : false
@@ -21,9 +21,9 @@ Item {
     property var gpuUsageHistory: new Array(historyLength).fill(undefined)
     property var gpuFreqHistory:  new Array(historyLength).fill(undefined)
 
-    // -------------------------------------------------
+    // ---
     //  Sliding window helpers
-    // -------------------------------------------------
+    // ---
 
     function getEarliestUndefined(buffer) {
         let nextEntry = 1
@@ -53,9 +53,9 @@ Item {
         gpuBackend[propertyName] = buf
     }
 
-    // -------------------------------------------------
+    // ---
     //  Startup GPU name detection (fires once on login)
-    // -------------------------------------------------
+    // ---
 
     Timer {
         id:       nameDetectTimer
@@ -85,9 +85,9 @@ Item {
         }
     }
 
-    // -------------------------------------------------
+    // ---
     //  Polling
-    // -------------------------------------------------
+    // ---
 
     Timer {
         id:       detector
@@ -100,9 +100,9 @@ Item {
         }
     }
 
-    // -------------------------------------------------
+    // ---
     //  Telemetry
-    // -------------------------------------------------
+    // ---
 
     Process {
         id:      gpuProc

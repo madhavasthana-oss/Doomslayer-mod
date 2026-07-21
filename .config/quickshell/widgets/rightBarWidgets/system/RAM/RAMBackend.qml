@@ -47,7 +47,7 @@ Item {
     }
 
     // "Optimize": lower CPU + IO scheduling priority so the process competes less
-    // for resources. This is the honest real-world lever available here — there is
+    // for resources. This is the honest real-world lever available here --- there is
     // no generic external call that shrinks a process's memory footprint on demand.
     function optimizeProcess(pid) {
         if (!pid || pid <= 0) return
@@ -57,9 +57,9 @@ Item {
         ioniceProc.running = true
     }
 
-    // ---------------------------------------------------------
+    // ---
     //  RAM MANAGEMENT TUI LAUNCHER
-    // ---------------------------------------------------------
+    // ---
     // Set this to whatever RAM-management TUI you use, e.g. "btop" or a
     // custom script. Left blank -> button stays disabled.
     property string ramTuiCommand: "btm"

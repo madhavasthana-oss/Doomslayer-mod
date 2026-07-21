@@ -1,9 +1,9 @@
-// =============================================================
+// ---
 //  LeftTrapezoid.qml
-//  DOOMSHELL — Command Throne
+//  DOOMSHELL --- Command Throne
 //  Semi 45° trapezoid. angleOffset == barHeight always.
 //  Wider at top on one side, pinched at bottom. Parallel seam edges.
-// =============================================================
+// ---
 
 import QtQuick 2.15
 import QtQuick.Shapes 1.15
@@ -11,15 +11,15 @@ import ".."
 Item {
     id: root
 
-    // ---------------------------------------------------------
+    // ---
     //  PROPERTIES
-    // ---------------------------------------------------------
+    // ---
 
     property real barWidth:    Tokens.centerExpandedWidth
     property real barHeight:   Tokens.edgeToggleHeight
     property real inset: Tokens.barInset
 
-    // True 45° — offset equals height exactly
+    // True 45° --- offset equals height exactly
     // Do not override this unless you want a different angle
     property real angleOffset: barHeight
 
@@ -41,7 +41,7 @@ Item {
         layer.samples: 4
 
         ShapePath {
-            // === FILL (this is what makes the trapezoid filled) ===
+            // --- FILL (this is what makes the trapezoid filled) ---
             fillColor: Qt.rgba(
                 root.fillColor.r,
                 root.fillColor.g,
@@ -49,7 +49,7 @@ Item {
                 root.fillOpacity
             )
 
-            // === STROKE ===
+            // --- STROKE ---
             strokeColor: root.alertActive
                              ? "#CC2200"
                              : root.hovered
@@ -77,12 +77,12 @@ Item {
         }
     }
 
-    // ---------------------------------------------------------
+    // ---
     //  INNER EMBER GLOW
     //  Inset 6px parallel to outer stroke.
     //  Gives the bar a heated-edge quality.
     //  Fades out when alert is active.
-    // ---------------------------------------------------------
+    // ---
 
     // Shape {
     //     id: innerGlow
@@ -113,11 +113,11 @@ Item {
     //     }
     // }
 
-    // ---------------------------------------------------------
+    // ---
     //  ALERT PULSE
     //  Breathes when alertActive is true.
-    //  Slow, deliberate — not a frantic flash.
-    // ---------------------------------------------------------
+    //  Slow, deliberate --- not a frantic flash.
+    // ---
 
     SequentialAnimation {
         id: alertPulse
@@ -146,9 +146,9 @@ Item {
         if (!alertActive) trapShape.opacity = 1.0
     }
 
-    // ---------------------------------------------------------
+    // ---
     //  HOVER DETECTION
-    // ---------------------------------------------------------
+    // ---
 
     MouseArea {
         anchors.fill: parent

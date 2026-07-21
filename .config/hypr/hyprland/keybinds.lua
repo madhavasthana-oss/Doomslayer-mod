@@ -285,7 +285,6 @@ hl.bind("SUPER + SHIFT + V",
     { description = "Clipboard: wipe history" })
 
 --##! Screenshots
--- Needs: grim, slurp, satty, wl-clipboard
 local screenshot_dir = "$HOME/Pictures/Screenshots"
 hl.bind("Print",
     hl.dsp.exec_cmd("grim - | wl-copy && notify-send -a Hyprland 'Screenshot' 'Full screen → clipboard'"),
@@ -301,7 +300,6 @@ hl.bind("SUPER + SHIFT + Print",
     { description = "Screenshot: region → satty annotate" })
 
 --##! Screen recording
--- Needs: wf-recorder, slurp; stop with pkill
 local record_dir = "$HOME/Videos/Recordings"
 hl.bind("SUPER + SHIFT + R",
     hl.dsp.exec_cmd("mkdir -p " .. record_dir .. " && notify-send -a Hyprland 'Recording' 'Full screen started' && wf-recorder -f \"" .. record_dir .. "/rec-$(date +%Y%m%d-%H%M%S).mp4\""),

@@ -1,4 +1,4 @@
-// RightEdgePanel.qml — T.S.S host: tiles → separator → stack
+// RightEdgePanel.qml --- T.S.S host: tiles -> separator -> stack
 import QtQuick
 import QtQuick.Layouts
 import Quickshell

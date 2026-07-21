@@ -1,4 +1,4 @@
-// DashboardWidget.qml — nested Row/ColumnLayouts; right column fully utilized
+// DashboardWidget.qml --- nested Row/ColumnLayouts; right column fully utilized
 import QtQuick
 import QtQuick.Layouts
 import "../.."
@@ -17,7 +17,7 @@ Item {
         anchors.margins: Tokens.paddingH
         spacing: Tokens.spacingMd
 
-        // ── LEFT: time + calendar ────────────────────────────
+        // -- LEFT: time + calendar ---
         ColumnLayout {
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -35,7 +35,7 @@ Item {
             }
         }
 
-        // ── MID: todo + notes ────────────────────────────────
+        // -- MID: todo + notes ---
         ColumnLayout {
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -56,8 +56,8 @@ Item {
             }
         }
 
-        // ── RIGHT: weather (week, fills) + uptime ────────────
-        // No spacer — weather claim the remaining vertical space.
+        // -- RIGHT: weather (week, fills) + uptime ---
+        // No spacer --- weather claim the remaining vertical space.
         ColumnLayout {
             Layout.fillWidth: true
             Layout.fillHeight: true

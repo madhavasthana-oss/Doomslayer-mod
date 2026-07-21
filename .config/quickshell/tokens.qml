@@ -155,7 +155,7 @@ QtObject {
     // Collapsed hotzone stays flush to the physical right edge.
     readonly property int edgeHoverZoneCollapsed: Math.max(edgeHotzonePx, barInset)
 
-    // Slightly taller than a pure 1–4px edge so hover isn't lost to jitter,
+    // Slightly taller than a pure 1-4px edge so hover isn't lost to jitter,
     // still small enough to stay out of the way when collapsed.
     readonly property int bottomHoverZoneHeight: Math.max(edgeHotzonePx, barInset)
     readonly property int bottomBarMargin: barMarginTop

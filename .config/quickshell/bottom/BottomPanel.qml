@@ -38,7 +38,7 @@ Item {
         }
     }
 
-    // ─── Shape ───────────────────────────────────────────────
+    // --- Shape ---
     Rectangle {
         id: panelBg
         anchors.fill: parent
@@ -49,8 +49,8 @@ Item {
         border.width: Tokens.strokeWidth
     }
 
-    // ─── Power actions (left -> right) ────────────────────────
-    // poweroff · reboot · logout · sleep · lock
+    // --- Power actions (left -> right) ---
+    // poweroff * reboot * logout * sleep * lock
     RowLayout {
         id: actionRow
         anchors.fill:    parent

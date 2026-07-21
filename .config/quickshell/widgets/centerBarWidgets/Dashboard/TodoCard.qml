@@ -1,4 +1,4 @@
-// TodoCard.qml — lightweight mission checklist
+// TodoCard.qml --- lightweight mission checklist
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls

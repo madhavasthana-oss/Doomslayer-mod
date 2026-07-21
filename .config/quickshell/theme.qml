@@ -33,7 +33,7 @@ QtObject {
     readonly property color borderConsole: "#CC2200"
     readonly property color glowConsole:   "#994400"
 
-    // SYSTEM ICONS — breeze symbolic, tinted at use site to theme colors
+    // SYSTEM ICONS --- breeze symbolic, tinted at use site to theme colors
     readonly property string iconThemeActions: "file:///usr/share/icons/breeze/actions/22/"
     readonly property string iconPoweroff: iconThemeActions + "system-shutdown-symbolic.svg"
     readonly property string iconReboot:   iconThemeActions + "system-reboot-symbolic.svg"
@@ -41,7 +41,7 @@ QtObject {
     readonly property string iconSleep:    iconThemeActions + "system-suspend-symbolic.svg"
     readonly property string iconLock:     iconThemeActions + "system-lock-screen-symbolic.svg"
 
-    // Edge panel tiles — full file URIs (icons live in actions/status/devices)
+    // Edge panel tiles --- full file URIs (icons live in actions/status/devices)
     readonly property string iconThemeStatus:  "file:///usr/share/icons/breeze/status/22/"
     readonly property string iconThemeDevices: "file:///usr/share/icons/breeze/devices/22/"
     readonly property string iconWifi:       iconThemeDevices + "network-wireless-symbolic.svg"
@@ -56,11 +56,11 @@ QtObject {
     readonly property string iconRecord:     iconThemeActions  + "media-record-symbolic.svg"
     readonly property string iconThemeApp:   iconThemeActions  + "games-config-theme-symbolic.svg"
 
-    // TYPOGRAPHY — family names only, sizes now live in Tokens
+    // TYPOGRAPHY --- family names only, sizes now live in Tokens
     readonly property string fontMono:    "Fira Code"
     readonly property string fontDisplay: "KogniGear"
 
-    // OPACITY — unitless, correctly does NOT scale with screen size
+    // OPACITY --- unitless, correctly does NOT scale with screen size
     readonly property real opacityBar:    0.8
     readonly property real opacityPanel:  0.96
     readonly property real opacityMuted:  0.45
@@ -68,10 +68,10 @@ QtObject {
     readonly property real opacityHidden:  0.0
     readonly property real opacityConsole: 0.95
 
-    // ---------------------------------------------------------
+    // ---
     //  ANIMATION EASING NOTES
-    // ---------------------------------------------------------
-    //  Straighten phase: Easing.InOutCubic  — mechanical, deliberate
-    //  Expand phase:     Easing.OutCubic    — decisive deployment
-    //  Fade phase:       Easing.InQuad      — content materializes
+    // ---
+    //  Straighten phase: Easing.InOutCubic  --- mechanical, deliberate
+    //  Expand phase:     Easing.OutCubic    --- decisive deployment
+    //  Fade phase:       Easing.InQuad      --- content materializes
 }

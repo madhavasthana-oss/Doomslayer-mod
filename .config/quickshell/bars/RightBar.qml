@@ -19,9 +19,9 @@ Item {
     width: Tokens.rightWidth
     height: Tokens.rightHeight
 
-    // ---------------------------------------------------------
+    // ---
     //  GRADIENT HELPER
-    // ---------------------------------------------------------
+    // ---
     // Blends from color1 -> color2 as alpha goes 0 -> 1.
     // Callers must pass alpha such that alpha=1 means "critical".
 
@@ -37,9 +37,9 @@ Item {
         return "#" + Math.round((1 - alpha) * r1 + alpha * r2).toString(16).padStart(2, "0") + Math.round((1 - alpha) * g1 + alpha * g2).toString(16).padStart(2, "0") + Math.round((1 - alpha) * b1 + alpha * b2).toString(16).padStart(2, "0");
     }
 
-    // ---------------------------------------------------------
+    // ---
     //  GiB FORMAT HELPER
-    // ---------------------------------------------------------
+    // ---
     // RAMBackend already computes ramInUse / ramTotal in GiB
     // (kB from /proc/meminfo divided by 1024**2), so we just format here.
 
@@ -49,9 +49,9 @@ Item {
 
 
 
-    // ---------------------------------------------------------
+    // ---
     //  STAT LOADERS
-    // ---------------------------------------------------------
+    // ---
 
     BATStats {
         id: batStat
@@ -154,7 +154,7 @@ Item {
             return __fmtGiB__(ramInUse) + "/" + __fmtGiB__(ramTotal) + " GiB";
         }
 
-        // isReady is a plain property on RAMBackend, not a signal —
+        // isReady is a plain property on RAMBackend, not a signal ---
         // same rule: onIsReadyChanged, not onIsReadyChanged.
         onIsReadyChanged: {
             if (isReady) {
@@ -179,7 +179,7 @@ Item {
         anchors.rightMargin: Tokens.spacingXs
         spacing: Tokens.spacingXs
 
-        //  ZONE 1 — Battery + Volume
+        //  ZONE 1 --- Battery + Volume
         GridLayout {
             columns: 3 
             rows: 2
@@ -330,7 +330,7 @@ Item {
             Layout.fillWidth: true
         }
 
-        //  ZONE 2 — CPU + GPU (bar style, matches BAT/VOL)
+        //  ZONE 2 --- CPU + GPU (bar style, matches BAT/VOL)
         GridLayout {
             columns: 3
             rows: 2
@@ -470,12 +470,12 @@ Item {
             Layout.fillWidth: true
         }
 
-        //  ZONE 3 — RAM
+        //  ZONE 3 --- RAM
         ColumnLayout {
             id: sysGrid
             Layout.alignment: Qt.AlignVCenter
             spacing: Tokens.spacingXss
-            // Row 1 — labels
+            // Row 1 --- labels
             Text {
                 id: ramLabel
                 Layout.alignment: Qt.AlignHCenter
@@ -493,7 +493,7 @@ Item {
                 }
             }
 
-            // Row 2 — live values
+            // Row 2 --- live values
             Text {
                 id: ramValue
                 Layout.alignment: Qt.AlignHCenter

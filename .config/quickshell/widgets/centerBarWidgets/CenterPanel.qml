@@ -35,7 +35,7 @@ Item {
             opacity: 0.5
         }
 
-        // 3. Content panels — fixed token footprint so token height toggles
+        // 3. Content panels --- fixed token footprint so token height toggles
         // stay consistent across tabs (no implicit-size thrash in StackLayout)
         StackLayout {
             id: stack

@@ -20,7 +20,7 @@ Item {
             Layout.rightMargin: Tokens.paddingH
 
             active: Globals.activePanel
-            onSwitched: (panel) => { Globals.activePanel = panel }   // ← this line
+            onSwitched: (panel) => { Globals.activePanel = panel }   // <- this line
         }
 
         // 2. Separator line

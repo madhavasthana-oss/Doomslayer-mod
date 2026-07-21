@@ -1,4 +1,4 @@
-// SettingsFrontend.qml — doom-flavored quick settings (T.S.S content)
+// SettingsFrontend.qml --- doom-flavored quick settings (T.S.S content)
 import QtQuick
 import QtQuick.Layouts
 import Qt5Compat.GraphicalEffects

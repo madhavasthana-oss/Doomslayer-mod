@@ -1,4 +1,4 @@
-// WeatherCard.qml — current conditions + scrollable week forecast (token-driven)
+// WeatherCard.qml --- current conditions + scrollable week forecast (token-driven)
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
@@ -31,7 +31,7 @@ Rectangle {
     function weatherEmoji(code) {
         const c = parseInt(code)
         if (isNaN(c))
-            return "·"
+            return "*"
         if (c === 113)
             return "☀"
         if (c === 116)
@@ -50,7 +50,7 @@ Rectangle {
             return "🌧"
         if (c >= 386 && c <= 395)
             return "⛈"
-        return "·"
+        return "*"
     }
 
     function parseForecast(text) {
@@ -68,7 +68,7 @@ Rectangle {
                     feels ? ("feels " + feels) : "",
                     cur.humidity ? (cur.humidity + "% rh") : "",
                     cur.windspeedKmph ? (cur.windspeedKmph + " km/h") : ""
-                ].filter(s => s.length).join(" · ")
+                ].filter(s => s.length).join(" * ")
             }
 
             const days = data.weather || []
@@ -210,7 +210,7 @@ Rectangle {
             color: Theme.textMuted
         }
 
-        // Fixed row height + scroll — never squeeze days to fit
+        // Fixed row height + scroll --- never squeeze days to fit
         ListView {
             id: weekList
             Layout.fillWidth: true
@@ -240,7 +240,7 @@ Rectangle {
             }
 
             delegate: Rectangle {
-                // Gutter for scrollbar — sizes from tokens only
+                // Gutter for scrollbar --- sizes from tokens only
                 width: weekList.width - Tokens.borderXs - Tokens.spacingXss
                 height: Tokens.forecastRowHeight
                 radius: Tokens.radiusSm

@@ -1,4 +1,4 @@
-// NotifBackend.qml — mako list / dismiss / silent / dnd
+// NotifBackend.qml --- mako list / dismiss / silent / dnd
 import QtQuick
 import Quickshell
 import Quickshell.Io

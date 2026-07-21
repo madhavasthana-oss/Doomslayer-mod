@@ -1,4 +1,4 @@
-// NotifFrontend.qml — notification inbox + silent/dnd (T.S.S content)
+// NotifFrontend.qml --- notification inbox + silent/dnd (T.S.S content)
 import QtQuick
 import QtQuick.Layouts
 import "../../.."

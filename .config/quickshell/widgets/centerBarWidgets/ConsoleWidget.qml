@@ -1,4 +1,4 @@
-// ConsoleWidget.qml — app codex: ListView + AnimatedText briefing (once per boot)
+// ConsoleWidget.qml --- app codex: ListView + AnimatedText briefing (once per boot)
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
@@ -27,7 +27,7 @@ Item {
         const desc = row.description
 
         if (root.typedOnce[key]) {
-            // Already briefed this boot — snap text, no re-type
+            // Already briefed this boot --- snap text, no re-type
             descAnim.stop()
             descAnim.displayedText = desc
             descAnim.targetText = desc
@@ -44,12 +44,12 @@ Item {
         const row = codex.codexModel.get(selectedIndex)
         if (!row)
             return
-        // execCmd may contain args — run via bash -lc for "ghostty -e nvim"
+        // execCmd may contain args --- run via bash -lc for "ghostty -e nvim"
         Quickshell.execDetached(["bash", "-lc", row.execCmd])
     }
 
     function iconSource(name) {
-        // theme icon name → file path; fall back to empty
+        // theme icon name -> file path; fall back to empty
         const p = Quickshell.iconPath(name, true)
         return p && p.length ? p : ""
     }
@@ -62,7 +62,7 @@ Item {
         anchors.margins: Tokens.paddingH
         spacing: Tokens.spacingMd
 
-        // ── LEFT: application list ───────────────────────────
+        // -- LEFT: application list ---
         ColumnLayout {
             Layout.preferredWidth: Tokens.listPanelWidth * 1.6
             Layout.fillHeight: true
@@ -138,7 +138,7 @@ Item {
             }
         }
 
-        // ── RIGHT: name + class + animated description ───────
+        // -- RIGHT: name + class + animated description ---
         ColumnLayout {
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -191,8 +191,8 @@ Item {
                         Layout.fillWidth: true
                         text: {
                             const row = codex.codexModel.get(root.selectedIndex)
-                            // e.g. A reliable… style classification line
-                            return row ? ("« " + row.classification + " »") : ""
+                            // e.g. A reliable... style classification line
+                            return row ? ("<< " + row.classification + " >>") : ""
                         }
                         font.family: Theme.fontMono
                         font.pixelSize: Tokens.fontSizeSmall

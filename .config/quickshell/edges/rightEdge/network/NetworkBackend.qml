@@ -1,4 +1,4 @@
-// NetworkBackend.qml — nmcli scan / connect / radio
+// NetworkBackend.qml --- nmcli scan / connect / radio
 import QtQuick
 import Quickshell
 import Quickshell.Io
@@ -78,7 +78,7 @@ Item {
             if (!line.length)
                 continue
             // fields: SSID:SIGNAL:SECURITY:IN-USE:BSSID  (BSSID has escaped colons)
-            // Use split with limit — BSSID is last and contains \:
+            // Use split with limit --- BSSID is last and contains \:
             const parts = line.split(":")
             if (parts.length < 4)
                 continue
@@ -100,7 +100,7 @@ Item {
             })
         }
         // connected first, then by signal
-        // ListModel has no sort — rebuild sorted
+        // ListModel has no sort --- rebuild sorted
         let rows = []
         for (let j = 0; j < netModel.count; j++)
             rows.push(JSON.parse(JSON.stringify(netModel.get(j))))

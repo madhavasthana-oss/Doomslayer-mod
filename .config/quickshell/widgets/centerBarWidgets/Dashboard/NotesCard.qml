@@ -1,4 +1,4 @@
-// NotesCard.qml — freeform notes, persisted
+// NotesCard.qml --- freeform notes, persisted
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls

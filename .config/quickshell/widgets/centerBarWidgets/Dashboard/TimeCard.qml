@@ -1,4 +1,4 @@
-// TimeCard.qml — live clock + date
+// TimeCard.qml --- live clock + date
 import QtQuick
 import QtQuick.Layouts
 import "../../.."
@@ -13,7 +13,7 @@ Rectangle {
     border.width: Tokens.strokeWidth
 
     property string clockText: Qt.formatTime(new Date(), "hh:mm:ss")
-    property string dateText:  Qt.formatDate(new Date(), "ddd · dd MMM yyyy")
+    property string dateText:  Qt.formatDate(new Date(), "ddd * dd MMM yyyy")
 
     Timer {
         interval: 1000
@@ -21,7 +21,7 @@ Rectangle {
         repeat: true
         onTriggered: {
             root.clockText = Qt.formatTime(new Date(), "hh:mm:ss")
-            root.dateText  = Qt.formatDate(new Date(), "ddd · dd MMM yyyy")
+            root.dateText  = Qt.formatDate(new Date(), "ddd * dd MMM yyyy")
         }
     }
 
