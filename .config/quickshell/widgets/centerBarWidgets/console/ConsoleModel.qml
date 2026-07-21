@@ -50,7 +50,7 @@ Item {
             classification: "Combat Audio System"
             description: "Every Slayer marches to a soundtrack. Arm the battlefield with music worthy of the coming war."
             icon: "multimedia-audio-player"
-            execCmd: "xdg-open https://music.youtube.com"
+            execCmd: "youtube-music-desktop-app"
         }
 
         ListElement {
@@ -58,15 +58,15 @@ Item {
             classification: "Weapon Development Interface"
             description: "Forged from Neovim and tempered by the Slayer. The remnants of an ancient virus still stain its crimson shell, but the corruption has long since been purged. Only steel, code, and purpose remain."
             icon: "nvim"
-            execCmd: "ghostty -e nvim"
+            execCmd: "kitty -e nvim"
         }
 
         ListElement {
             title: "VEGA"
             classification: "Sentinel Artificial Intelligence"
             description: "Mission analysis. Strategic planning. System diagnostics. Awaiting authorization to interface with the Slayer."
-            icon: "applications-science"
-            execCmd: "xdg-open https://grok.com"
+            icon: "grok"
+            execCmd: "kitty -e grok"
         }
     }
 }

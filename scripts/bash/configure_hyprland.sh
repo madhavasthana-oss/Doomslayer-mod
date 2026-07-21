@@ -12,7 +12,7 @@ fi
 
 echo "--> syncing (mod --> live)"
 echo "    $SRC/"
-echo "    ==>=>=> $DST/"
+echo "    ==> $DST/"
 mkdir -p "$DST"
 rsync -a --delete "$SRC/" "$DST/"
 

@@ -1,9 +1,3 @@
--- Default variables
--- Copy these to ~/.config/hypr/custom/variables.lua to make changes in a dotfiles-update-friendly manner
-
--- The folder within ~/.config/quickshell containing the config
--- hl.env("qsConfig", "ii")
-
 -- Apps
 -- PULL REQUESTS ADDING MORE WILL NOT BE ACCEPTED, CONFIG FOR YOURSELF
 terminal = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'foot' 'ghostty' 'kitty -1' 'alacritty' 'wezterm' 'konsole' 'kgx' 'uxterm' 'xterm'"
