@@ -5,8 +5,8 @@ import "../../../.."
 
 Item{
     id: tempStatsWindow
-    property double __temp__
-    property bool __is_ready__: false
+    property double temp
+    property bool isReady: false
 
     Timer{
         interval: 1000
@@ -24,9 +24,9 @@ Item{
         ]
         stdout: StdioCollector{
             onStreamFinished: {
-                __temp__ = parseFloat(parseInt(text, 10) / 1000)
-                if(!tempStatsWindow.__is_ready__){
-                    tempStatsWindow.__is_ready__ = true
+                temp = parseFloat(parseInt(text, 10) / 1000)
+                if(!tempStatsWindow.isReady){
+                    tempStatsWindow.isReady = true
                 }
             }
         }

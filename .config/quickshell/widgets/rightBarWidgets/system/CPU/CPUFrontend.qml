@@ -16,14 +16,14 @@ Item {
     Timer {
         id: repaintTimer
         interval: 150
-        running:  cpu.__ready__
+        running:  cpu.ready
         repeat:   true
         onTriggered: {
             usageCanvas.requestPaint()
             tempCanvas.requestPaint()
         }
     }
-
+    
     onSelectedCoreChanged: {
         usageCanvas.requestPaint()
         tempCanvas.requestPaint()
@@ -94,7 +94,7 @@ Item {
 
                     delegate: Item {
                         width:  coreList.width
-                        height: 22
+                        height: Tokens.actionBtnHeight
 
                         property int   coreUsage: model.usage === -1 ? 0 : model.usage
                         property bool  isSelected: index === cpuFrontend.selectedCore
@@ -105,16 +105,16 @@ Item {
                         Rectangle {
                             anchors.fill: parent
                             color:        isSelected ? Qt.rgba(1, 0.27, 0, 0.18) : "transparent"
-                            radius:       3
+                            radius:       Tokens.radiusSm
                             border.color: isSelected ? Theme.accent : "transparent"
-                            border.width: isSelected ? 1 : 0
+                            border.width: isSelected ? Tokens.strokeWidth : 0
                         }
 
                         Text {
                             id: coreLabel
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left:           parent.left
-                            anchors.leftMargin:     5
+                            anchors.leftMargin:     Tokens.spacingXs
                             text:                   "C" + model.idx
                             font.family:            Theme.fontDisplay
                             font.pixelSize:         Tokens.fontSizeSmall
@@ -127,7 +127,7 @@ Item {
                             anchors.leftMargin:     Tokens.spacingXs
                             anchors.right:          usagePct.left
                             anchors.rightMargin:    Tokens.spacingXs
-                            height:                 Tokens.spacingXs
+                            height:                 Tokens.usageBarHeight
 
                             Rectangle {
                                 anchors.fill: parent
@@ -137,9 +137,9 @@ Item {
                             }
 
                             Rectangle {
-                                width:  Math.max(2, parent.width * (coreUsage / 100))
+                                width:  Math.max(Tokens.borderXss, parent.width * (coreUsage / 100))
                                 height: parent.height
-                                radius: 2
+                                radius: Tokens.radiusSm
                                 color:  usageColor
                                 Behavior on width { NumberAnimation { duration: Tokens.animFast } }
                             }
@@ -149,7 +149,7 @@ Item {
                             id: usagePct
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.right:          parent.right
-                            anchors.rightMargin:    5
+                            anchors.rightMargin:    Tokens.spacingXs
                             text:                   model.usage === -1 ? "--" : model.usage + "%"
                             font.family:            Theme.fontMono
                             font.pixelSize:         Tokens.fontSizeTiny
@@ -186,7 +186,7 @@ Item {
                             font.family:        Theme.fontDisplay
                             font.pixelSize:     Tokens.fontSizeLabel
                             color:              Theme.textMuted
-                            font.letterSpacing: 1.2
+                            font.letterSpacing: Tokens.spacingXss
                         }
                         Item { Layout.fillWidth: true }
                         Text {
@@ -206,10 +206,10 @@ Item {
                         Layout.fillWidth:  true
                         Layout.fillHeight: true
                         color:             Theme.bgElevated
-                        radius:            5
+                        radius:            Tokens.radiusMd
                         clip:              true
                         border.color:      Theme.borderIdle
-                        border.width:      1
+                        border.width:      Tokens.strokeWidth
 
                         Canvas {
                             id: usageCanvas
@@ -227,8 +227,8 @@ Item {
                                 ctx.clearRect(0, 0, w, h)
 
                                 ctx.strokeStyle = Theme.borderIdle
-                                ctx.lineWidth   = 0.5
-                                ctx.setLineDash([2, 5])
+                                ctx.lineWidth   = Tokens.strokeWidth / 2
+                                ctx.setLineDash([Tokens.spacingXss, Tokens.spacingXs])
                                 ctx.globalAlpha = 0.5
                                 for (let pct of [0.25, 0.5, 0.75]) {
                                     ctx.beginPath()
@@ -241,9 +241,9 @@ Item {
 
                                 ctx.fillStyle = Theme.textDim
                                 ctx.font      = "bold " + Tokens.fontSizeTiny + "px " + Theme.fontMono
-                                ctx.fillText("100", 3, 10)
-                                ctx.fillText("50",  3, h * 0.5 - 2)
-                                ctx.fillText("0",   3, h - 3)
+                                ctx.fillText("100", Tokens.radiusSm, Tokens.radiusXl)
+                                ctx.fillText("50",  Tokens.radiusSm, h * 0.5 - Tokens.spacingXss)
+                                ctx.fillText("0",   Tokens.radiusSm, h - Tokens.radiusSm)
 
                                 if (buf.length < 2) return
 
@@ -285,7 +285,7 @@ Item {
                                 let lastX = xAt(pts - 1)
                                 let lastY = yAt(buf[pts - 1])
                                 ctx.beginPath()
-                                ctx.arc(lastX, lastY, 3, 0, Math.PI * 2)
+                                ctx.arc(lastX, lastY, Tokens.radiusSm, 0, Math.PI * 2)
                                 ctx.fillStyle = Theme.accent
                                 ctx.fill()
                             }
@@ -297,7 +297,7 @@ Item {
                 ColumnLayout {
                     Layout.fillWidth:  true
                     Layout.fillHeight: true
-                    spacing:           3
+                    spacing:           Tokens.spacingXss
 
                     RowLayout {
                         Layout.fillWidth: true
@@ -326,10 +326,10 @@ Item {
                         Layout.fillWidth:  true
                         Layout.fillHeight: true
                         color:             Theme.bgElevated
-                        radius:            Tokens.spacingMd
+                        radius:            Tokens.radiusXl
                         clip:              true
                         border.color:      Theme.borderIdle
-                        border.width:      1
+                        border.width:      Tokens.strokeWidth
 
                         Canvas {
                             id: tempCanvas
@@ -349,8 +349,8 @@ Item {
                                 ctx.clearRect(0, 0, w, h)
 
                                 ctx.strokeStyle = Theme.borderIdle
-                                ctx.lineWidth   = 0.5
-                                ctx.setLineDash([2, 5])
+                                ctx.lineWidth   = Tokens.strokeWidth / 2
+                                ctx.setLineDash([Tokens.spacingXss, Tokens.spacingXs])
                                 ctx.globalAlpha = 0.5
                                 for (let t of [50, 75]) {
                                     let gy = h - ((t - tMin) / (tMax - tMin)) * h
@@ -364,9 +364,9 @@ Item {
 
                                 ctx.fillStyle = Theme.textDim
                                 ctx.font      = "bold " + Tokens.fontSizeTiny + "px " + Theme.fontMono
-                                ctx.fillText(tMax + "°", 3, 10)
-                                ctx.fillText("75°",      3, h - ((75 - tMin) / (tMax - tMin)) * h - 3)
-                                ctx.fillText(tMin + "°", 3, h - 3)
+                                ctx.fillText(tMax + "°", Tokens.radiusSm, Tokens.radiusXl)
+                                ctx.fillText("75°",      Tokens.radiusSm, h - ((75 - tMin) / (tMax - tMin)) * h - Tokens.radiusSm)
+                                ctx.fillText(tMin + "°", Tokens.radiusSm, h - Tokens.radiusSm)
 
                                 if (buf.length < 2) return
 
@@ -407,7 +407,7 @@ Item {
                                 ctx.fill()
 
                                 ctx.strokeStyle = lineColor
-                                ctx.lineWidth   = 1.5
+                                ctx.lineWidth   = Tokens.strokeWidthActive
                                 ctx.beginPath()
                                 ctx.moveTo(xAt(0), yAt(buf[0]))
                                 for (let i = 1; i < pts; i++) {
@@ -419,7 +419,7 @@ Item {
                                 ctx.stroke()
 
                                 ctx.beginPath()
-                                ctx.arc(xAt(pts - 1), yAt(latest), 3, 0, Math.PI * 2)
+                                ctx.arc(xAt(pts - 1), yAt(latest), Tokens.radiusSm, 0, Math.PI * 2)
                                 ctx.fillStyle = lineColor
                                 ctx.fill()
                             }
@@ -431,22 +431,22 @@ Item {
                 RowLayout {
                     Layout.fillWidth:       true
                     Layout.preferredHeight: Tokens.statBoxHeight
-                    spacing:                Tokens.radiusXl
+                    spacing:                Tokens.spacingMd
 
                     Rectangle {
                         Layout.fillWidth: true
                         implicitHeight:           Tokens.statBoxHeight
                         color:            Theme.bgElevated
-                        radius:           5
+                        radius:           Tokens.radiusMd
                         border.color:     Theme.borderIdle
-                        border.width:     1
+                        border.width:     Tokens.strokeWidth
 
                         property int liveUsage: cpu.cores.count > 0
                             ? (cpu.cores.get(cpuFrontend.selectedCore)?.usage ?? -1) : -1
 
                         Column {
                             anchors.centerIn: parent 
-                            spacing:          1
+                            spacing:          Tokens.spacingXss
 
                             Text {
                                 anchors.horizontalCenter: parent.horizontalCenter
@@ -454,7 +454,7 @@ Item {
                                 font.family:        Theme.fontDisplay
                                 font.pixelSize:     Tokens.fontSizeLabel
                                 color:              Theme.textMuted
-                                font.letterSpacing: 1.2
+                                font.letterSpacing: Tokens.spacingXss
                             }
                             Text {
                                 anchors.horizontalCenter: parent.horizontalCenter
@@ -474,7 +474,7 @@ Item {
                         Layout.fillWidth: true
                         height:           Tokens.statBoxHeight
                         color:            Theme.bgElevated
-                        radius:           Tokens.spacingSm
+                        radius:           Tokens.radiusLg
                         border.color:     Theme.borderIdle
 
                         property int liveTemp: cpu.cores.count > 0
@@ -516,7 +516,7 @@ Item {
             id: btopBtn
             Layout.fillWidth:       true
             Layout.preferredHeight: Tokens.actionBtnHeight
-            radius:                 Tokens.spacingSm
+            radius:                 Tokens.radiusLg
             color:                  btopHover.containsMouse ? Theme.bgElevated : Theme.bgSurface
             border.color:           btopHover.containsMouse ? Theme.accent : Theme.borderIdle
             border.width:           btopHover.containsMouse ? Tokens.strokeWidthActive : Tokens.strokeWidth
@@ -529,7 +529,7 @@ Item {
                 text:               "◈  LAUNCH BTOP"
                 font.family:        Theme.fontDisplay
                 font.pixelSize:     Tokens.fontSizeLabel
-                font.letterSpacing: 1.5
+                font.letterSpacing: Tokens.spacingXss
                 color:              btopHover.containsMouse ? Theme.accent : Theme.textMuted
                 Behavior on color   { ColorAnimation { duration: Tokens.animFast } }
             }

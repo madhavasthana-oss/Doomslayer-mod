@@ -41,6 +41,21 @@ QtObject {
     readonly property string iconSleep:    iconThemeActions + "system-suspend-symbolic.svg"
     readonly property string iconLock:     iconThemeActions + "system-lock-screen-symbolic.svg"
 
+    // Edge panel tiles — full file URIs (icons live in actions/status/devices)
+    readonly property string iconThemeStatus:  "file:///usr/share/icons/breeze/status/22/"
+    readonly property string iconThemeDevices: "file:///usr/share/icons/breeze/devices/22/"
+    readonly property string iconWifi:       iconThemeDevices + "network-wireless-symbolic.svg"
+    readonly property string iconBluetooth:  iconThemeStatus  + "network-bluetooth-symbolic.svg"
+    readonly property string iconSettings:   iconThemeActions  + "configure-symbolic.svg"
+    readonly property string iconNotif:      iconThemeActions  + "notifications-symbolic.svg"
+    readonly property string iconRefresh:    iconThemeActions  + "view-refresh-symbolic.svg"
+    readonly property string iconBrightness: iconThemeActions  + "brightness-high-symbolic.svg"
+    readonly property string iconAudio:      iconThemeStatus  + "audio-volume-high-symbolic.svg"
+    readonly property string iconKbd:        iconThemeDevices + "input-keyboard-symbolic.svg"
+    readonly property string iconScreenshot: iconThemeActions  + "view-fullscreen-symbolic.svg"
+    readonly property string iconRecord:     iconThemeActions  + "media-record-symbolic.svg"
+    readonly property string iconThemeApp:   iconThemeActions  + "games-config-theme-symbolic.svg"
+
     // TYPOGRAPHY — family names only, sizes now live in Tokens
     readonly property string fontMono:    "Fira Code"
     readonly property string fontDisplay: "KogniGear"

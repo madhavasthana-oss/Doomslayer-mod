@@ -12,7 +12,7 @@ Item {
     Rectangle {
         anchors.fill: parent
         id: bgDisplay
-        radius: 10
+        radius: Tokens.radiusXl
         color:        Theme.bgConsole
         opacity:      Theme.opacityConsole
         border.color: Theme.borderConsole

@@ -9,7 +9,7 @@ Item {
     property string active: Globals.activePanel   // "cpu" | "gpu" | "ram"
     signal switched(string panel)
 
-    height: Tokens.spacingXl
+    height: Tokens.listRowHeight
     Layout.fillWidth: true
 
     // Tab labels
@@ -36,7 +36,7 @@ Item {
 
             Item {
                 Layout.fillWidth: true
-                height: Tokens.spacingXl
+                height: Tokens.listRowHeight
 
                 property bool isActive: modelData.id === root.active
                 property string panelId: modelData.id
@@ -60,10 +60,10 @@ Item {
 
     Rectangle {
         id: underline
-        height: Tokens.borderXss * 0.5
+        height: Tokens.strokeWidth
         color: Theme.accent
         opacity: 1
-        radius: Tokens.borderXss * 0.5
+        radius: Tokens.radiusSm
         y: parent.height - height
 
         Behavior on x {

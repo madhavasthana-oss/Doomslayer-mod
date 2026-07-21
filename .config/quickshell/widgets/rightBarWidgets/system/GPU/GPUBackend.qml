@@ -10,16 +10,16 @@ Item {
     //  Public API
     // -------------------------------------------------
 
-    property bool   __is_ready__   : false
-    property bool   __name_found__ : false
-    property string __gpu_name__   : "Loading GPU" 
-    property int    __gpu_usage__  : -1
-    property int    __gpu_freq__   : -1
+    property bool   isReady   : false
+    property bool   nameFound : false
+    property string gpuName   : "Loading GPU" 
+    property int    gpuUsage  : -1
+    property int    gpuFreq   : -1
 
     readonly property int historyLength: 20
 
-    property var __gpu_usage_history__: new Array(historyLength).fill(undefined)
-    property var __gpu_freq_history__:  new Array(historyLength).fill(undefined)
+    property var gpuUsageHistory: new Array(historyLength).fill(undefined)
+    property var gpuFreqHistory:  new Array(historyLength).fill(undefined)
 
     // -------------------------------------------------
     //  Sliding window helpers
@@ -60,10 +60,10 @@ Item {
     Timer {
         id:       nameDetectTimer
         interval: 100
-        running:  !gpuBackend.__name_found__
+        running:  !gpuBackend.nameFound
         repeat:   false
         onTriggered: {
-            if (!gpuBackend.__name_found__)
+            if (!gpuBackend.nameFound)
                 gpuNameProc.running = true
         }
     }
@@ -76,10 +76,10 @@ Item {
             onStreamFinished: {
                 let output = text.trim()
                 if (output.length > 0) {
-                    let fragmented_data    = output.split(":")
-                    gpuBackend.__gpu_name__ = fragmented_data.slice(2).join(":").trim()
+                    let fragmentedData    = output.split(":")
+                    gpuBackend.gpuName = fragmentedData.slice(2).join(":").trim()
                 }
-                gpuBackend.__name_found__ = true
+                gpuBackend.nameFound = true
                 gpuNameProc.running       = false
             }
         }
@@ -130,16 +130,16 @@ Item {
 
                 let usage = Math.max(0, Math.min(100, Math.round(100 - rc6)))
 
-                gpuBackend.__gpu_usage__ = usage
+                gpuBackend.gpuUsage = usage
 
                 if (!isNaN(freq))
-                    gpuBackend.__gpu_freq__ = freq
+                    gpuBackend.gpuFreq = freq
 
-                gpuBackend.pushHistory(usage, "__gpu_usage_history__")
-                gpuBackend.pushHistory(freq, "__gpu_freq_history__")
+                gpuBackend.pushHistory(usage, "gpuUsageHistory")
+                gpuBackend.pushHistory(freq, "gpuFreqHistory")
 
-                if (!gpuBackend.__is_ready__)
-                    gpuBackend.__is_ready__ = true
+                if (!gpuBackend.isReady)
+                    gpuBackend.isReady = true
             }
         }
     }

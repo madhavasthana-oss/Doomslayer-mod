@@ -1,4 +1,5 @@
 import QtQuick
+import ".."
 
 Item {
     id: root
@@ -8,7 +9,7 @@ Item {
     property string displayedText: ""
     property string targetText: ""
     property int mode: AnimatedText.Mode.Typewriter
-    property int duration: 500
+    property int duration: Tokens.animFadeDelay
     property string scrambleChars: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*"
 
     // zoomIn specific: binary search style convergence

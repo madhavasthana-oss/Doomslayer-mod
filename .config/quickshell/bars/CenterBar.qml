@@ -219,10 +219,10 @@ Item {
 
     RowLayout {
         anchors.centerIn: parent
-        spacing: 12
+        spacing: Tokens.spacingMd
         ColumnLayout {
             Layout.alignment: Qt.AlignHCenter
-            spacing: 1
+            spacing: Tokens.spacingXss
             Text {
                 Layout.preferredWidth: Tokens.greetingWidth
                 text: "<< " + messageAnimator.displayedText + " >>"

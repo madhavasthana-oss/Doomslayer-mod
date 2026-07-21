@@ -5,28 +5,28 @@ import "../../../.."
 Item {
     id: ramBackend
 
-    property int     __num_proc__ : 10
-    property double __ram_in_use__: -1.00
-    property double __ram_total__ : -1.00
+    property int     numProc : 10
+    property double ramInUse: -1.00
+    property double ramTotal : -1.00
 
     ListModel {
         id: procData
     }
 
     property alias processes: procData
-    property bool __is_ready__: false
+    property bool isReady: false
 
     // Tracks pids we've frozen with SIGSTOP so the UI can toggle Halt/Resume correctly.
-    property var __halted_pids__: ({})
+    property var haltedPids: ({})
 
     function isHalted(pid) {
-        return __halted_pids__[pid] === true
+        return haltedPids[pid] === true
     }
 
     function killProcess(pid) {
         if (!pid || pid <= 0) return
-        delete __halted_pids__[pid]
-        __halted_pids__ = __halted_pids__
+        delete haltedPids[pid]
+        haltedPids = haltedPids
         killProc.pidArg = String(pid)
         killProc.running = true
     }
@@ -36,13 +36,13 @@ Item {
         if (isHalted(pid)) {
             resumeProc.pidArg = String(pid)
             resumeProc.running = true
-            delete __halted_pids__[pid]
-            __halted_pids__ = __halted_pids__
+            delete haltedPids[pid]
+            haltedPids = haltedPids
         } else {
             haltProc.pidArg = String(pid)
             haltProc.running = true
-            __halted_pids__[pid] = true
-            __halted_pids__ = __halted_pids__
+            haltedPids[pid] = true
+            haltedPids = haltedPids
         }
     }
 
@@ -62,21 +62,21 @@ Item {
     // ---------------------------------------------------------
     // Set this to whatever RAM-management TUI you use, e.g. "btop" or a
     // custom script. Left blank -> button stays disabled.
-    property string __ram_tui_command__: "btm"
-    property bool   __ram_tui_available__: true
+    property string ramTuiCommand: "btm"
+    property bool   ramTuiAvailable: true
 
     function checkRamTuiAvailable() {
-        if (__ram_tui_command__.trim() === "") {
-            __ram_tui_available__ = false
+        if (ramTuiCommand.trim() === "") {
+            ramTuiAvailable = false
             return
         }
         // Only check the first token (the actual binary), not any args.
-        tuiCheckProc.binArg = __ram_tui_command__.trim().split(/\s+/)[0]
+        tuiCheckProc.binArg = ramTuiCommand.trim().split(/\s+/)[0]
         tuiCheckProc.running = true
     }
 
     function launchRamTui() {
-        if (!__ram_tui_available__ || __ram_tui_command__.trim() === "") return
+        if (!ramTuiAvailable || ramTuiCommand.trim() === "") return
         ramTuiProc.running = true
     }
 
@@ -111,16 +111,16 @@ Item {
                     line => line.startsWith("MemTotal")
                 ).trim().match(/^MemTotal:\s*([\d]+)\s*kB/i)
                 let memTotal = parseInt(memTotalInfo[1])
-                __ram_total__ = parseFloat(memTotal / 1024**2).toFixed(2)
-                if (!ramBackend.__is_ready__) {
-                    ramBackend.__is_ready__ = true
+                ramTotal = parseFloat(memTotal / 1024**2).toFixed(2)
+                if (!ramBackend.isReady) {
+                    ramBackend.isReady = true
                 }
                 let memAvailableInfo = data.find(
                     line => line.startsWith("MemAvailable")
                 ).trim().match(/^MemAvailable:\s*([\d]+)\s*kB/i)
                 let memAvailable = parseInt(memAvailableInfo[1])
                 let memUsed = memTotal - memAvailable
-                __ram_in_use__ = parseFloat(memUsed / 1024**2).toFixed(2)
+                ramInUse = parseFloat(memUsed / 1024**2).toFixed(2)
             }
         }
     }
@@ -136,8 +136,8 @@ Item {
         ] 
         stdout: StdioCollector {
             onStreamFinished: {
-                let lines = text.trim().split("\n").slice(0, __num_proc__)
-                for (let idx = 0; idx < __num_proc__; idx++) {
+                let lines = text.trim().split("\n").slice(0, numProc)
+                for (let idx = 0; idx < numProc; idx++) {
                     let fields = lines[idx].trim().split(/\s+/)
                     let pid    = parseInt(fields[0])
                     let name   = fields[1]
@@ -159,7 +159,7 @@ Item {
                         idx:    idx,
                         pid:    pid,
                         name:   name,
-                        ram_mb: parseFloat(rssKb / 1024).toFixed(2),
+                        ramMb: parseFloat(rssKb / 1024).toFixed(2),
                         uptime: formatUptime(upSecs),
                         cpu:    cpu,
                         mem:    mem,
@@ -224,13 +224,13 @@ Item {
         property string binArg: ""
         command: ["which", binArg]
         onExited: (exitCode, exitStatus) => {
-            ramBackend.__ram_tui_available__ = (exitCode === 0)
+            ramBackend.ramTuiAvailable = (exitCode === 0)
         }
     }
 
     Process {
         id: ramTuiProc
-        command: ["ghostty", "-e", "sh", "-c", __ram_tui_command__]
+        command: ["ghostty", "-e", "sh", "-c", ramTuiCommand]
     }
 
     Component.onCompleted: checkRamTuiAvailable()

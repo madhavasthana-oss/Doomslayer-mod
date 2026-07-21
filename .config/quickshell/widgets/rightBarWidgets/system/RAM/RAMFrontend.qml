@@ -22,7 +22,7 @@ Item {
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: Tokens.paddingH
-        spacing: Tokens.spacingXs * 2
+        spacing: Tokens.barMarginTop
 
         RowLayout {
             Text {
@@ -41,9 +41,9 @@ Item {
                 Layout.fillWidth:      true
                 Layout.alignment:      Qt.AlignHCenter
                 horizontalAlignment:   Text.AlignHCenter
-                text: (ram.__ram_in_use__ < 0 || ram.__ram_total__ < 0)
+                text: (ram.ramInUse < 0 || ram.ramTotal < 0)
                     ? "-- / -- GB"
-                    : ram.__ram_in_use__ + " / " + ram.__ram_total__ + " GB"
+                    : ram.ramInUse + " / " + ram.ramTotal + " GB"
                 font.family:    Theme.fontMono
                 font.pixelSize: Tokens.fontSizeBase
                 color:          Theme.accentWarm
@@ -100,14 +100,14 @@ Item {
 
                         property int   pid:        model.pid
                         property bool  isSelected: index === ramFrontend.selectedProc
-                        property color usageColor: model.ram_mb > 1000 ? Theme.stateCritical
-                                                 : model.ram_mb > 500 ? Theme.stateWarning
+                        property color usageColor: model.ramMb > 1000 ? Theme.stateCritical
+                                                 : model.ramMb > 500 ? Theme.stateWarning
                                                  : Theme.stateSafe
 
                         Rectangle {
                             anchors.fill: parent
                             color:        isSelected ? Qt.rgba(1, 0.27, 0, 0.18) : "transparent"
-                            radius:       3
+                            radius:       Tokens.radiusSm
                             border.color: isSelected ? Theme.accent : "transparent"
                             border.width: isSelected ? Tokens.borderXss : 0
                         }
@@ -129,7 +129,7 @@ Item {
                             anchors.leftMargin:     Tokens.spacingSm
                             anchors.right:          ramUsage.left
                             anchors.rightMargin:    Tokens.spacingXss
-                            height:                 Tokens.spacingXs
+                            height:                 Tokens.usageBarHeight
 
                             Rectangle {
                                 anchors.fill: parent
@@ -139,9 +139,9 @@ Item {
                             }
 
                             Rectangle {
-                                width:  Math.max(2, parent.width * (model.ram_mb / (ram.__ram_total__  * 1024)))
+                                width:  Math.max(Tokens.borderXss, parent.width * (model.ramMb / (ram.ramTotal  * 1024)))
                                 height: parent.height
-                                radius: 2
+                                radius: Tokens.radiusSm
                                 color:  usageColor
                                 Behavior on width { NumberAnimation { duration: Tokens.animFast } }
                             }
@@ -152,7 +152,7 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.right:          parent.right
                             anchors.rightMargin:    Tokens.spacingXs
-                            text:                   model.ram_mb === -1 ? "--" : model.ram_mb
+                            text:                   model.ramMb === -1 ? "--" : model.ramMb
                             font.family:            Theme.fontMono
                             font.pixelSize:         Tokens.fontSizeTiny
                             color:                  usageColor
@@ -176,7 +176,7 @@ Item {
                     Layout.fillWidth:       true
                     Layout.fillHeight:      true
                     color:             Theme.bgSurface
-                    radius:            Tokens.spacingSm
+                    radius:            Tokens.radiusLg
                     border.color:      Theme.borderIdle
                     border.width:      Tokens.strokeWidth
 
@@ -236,7 +236,7 @@ Item {
                             }
                             
                             Text {
-                                text:           (ramFrontend.selectedProcData?.ram_mb ?? "—") + " MB"
+                                text:           (ramFrontend.selectedProcData?.ramMb ?? "—") + " MB"
                                 font.family:    Theme.fontMono
                                 font.pixelSize: Tokens.fontSizeTiny
                                 color:          Theme.textSecondary
@@ -356,7 +356,7 @@ Item {
                         anchors.margins: -Tokens.spacingMd 
                         radius:          Tokens.radiusLg
                         color:           "transparent"
-                        border.width:    Tokens.spacingXss
+                        border.width:    Tokens.borderXss
                         border.color:    Qt.rgba(killProcBtn.glowColor.r, killProcBtn.glowColor.g, killProcBtn.glowColor.b, killProcBtn.isHovered ? 0.10 : 0)
                         Behavior on border.color { ColorAnimation { duration: Tokens.animMedium } }
                     }
@@ -421,14 +421,14 @@ Item {
                     property bool  isHovered: haltProcMouse.containsMouse
                     property bool  isPressed: haltProcMouse.pressed
                     property bool  isHalted:  ramFrontend.selectedProcData !== null
-                                               && ram.__halted_pids__[ramFrontend.selectedProcData.pid] === true
+                                               && ram.haltedPids[ramFrontend.selectedProcData.pid] === true
 
                     Rectangle {
                         anchors.fill:    parent
                         anchors.margins: -Tokens.spacingMd
                         radius:          Tokens.radiusLg
                         color:           "transparent"
-                        border.width:    Tokens.spacingXss
+                        border.width:    Tokens.borderXss
                         border.color:    Qt.rgba(haltProcBtn.glowColor.r, haltProcBtn.glowColor.g, haltProcBtn.glowColor.b, haltProcBtn.isHovered ? 0.10 : 0)
                         Behavior on border.color { ColorAnimation { duration: Tokens.animMedium } }
                     }
@@ -444,9 +444,9 @@ Item {
                     Rectangle {
                         anchors.fill:    parent
                         anchors.margins: -Tokens.spacingXss
-                        radius:          Tokens.spacingMd
+                        radius:          Tokens.radiusXl
                         color:           "transparent"
-                        border.width:    Tokens.spacingXss
+                        border.width:    Tokens.borderXss
                         border.color:    Qt.rgba(haltProcBtn.glowColor.r, haltProcBtn.glowColor.g, haltProcBtn.glowColor.b, haltProcBtn.isHovered ? 0.4 : 0)
                         Behavior on border.color { ColorAnimation { duration: Tokens.animMedium } }
                     }
@@ -520,7 +520,7 @@ Item {
                         anchors.margins: -Tokens.spacingMd
                         radius:          Tokens.radiusLg
                         color:           "transparent"
-                        border.width:    Tokens.spacingXss
+                        border.width:    Tokens.borderXss
                         border.color:    Qt.rgba(optimizeProcBtn.glowColor.r, optimizeProcBtn.glowColor.g, optimizeProcBtn.glowColor.b, optimizeProcBtn.isHovered ? 0.10 : 0)
                         Behavior on border.color { ColorAnimation { duration: Tokens.animMedium } }
                     }
@@ -581,12 +581,12 @@ Item {
         Item {
             id: ramTuiBtn
             Layout.fillWidth:       true
-            Layout.preferredHeight: 30
+            Layout.preferredHeight: Tokens.centerCollapsedHeight
 
             property color glowColor: Theme.accentSoft
             property bool  isHovered: ramTuiMouse.containsMouse
             property bool  isPressed: ramTuiMouse.pressed
-            property bool  isAvailable: ram.__ram_tui_available__
+            property bool  isAvailable: ram.ramTuiAvailable
 
             Rectangle {
                 anchors.fill:    parent
@@ -620,7 +620,7 @@ Item {
                 id: ramTuiRect
                 anchors.fill: parent
                 color:        Theme.bgSurface
-                radius:       6
+                radius:       Tokens.radiusLg
                 border.color: ramTuiBtn.isHovered ? ramTuiBtn.glowColor : Theme.borderIdle
                 border.width: ramTuiBtn.isHovered ? Tokens.strokeWidthActive : Tokens.strokeWidth
                 opacity:      ramTuiBtn.isAvailable ? 1.0 : Theme.opacityMuted

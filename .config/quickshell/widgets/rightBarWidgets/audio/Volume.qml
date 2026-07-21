@@ -35,8 +35,11 @@ Item {
         const vol = Math.round(audio.volume * 100)
         const isMuted = audio.muted
 
-        if (vol <= 0)
-            return false
+        // NOTE: we used to bail out here if vol <= 0, treating that as
+        // "PipeWire isn't ready yet". That's wrong: a sink can legitimately
+        // report 0% volume (or 0 while muted) while being perfectly valid
+        // and ready. Readiness is determined by `audio` existing at all
+        // (checked above), not by what value it currently holds.
 
         const changed = (vol !== audioStat.volume) || (isMuted !== audioStat.muted)
 

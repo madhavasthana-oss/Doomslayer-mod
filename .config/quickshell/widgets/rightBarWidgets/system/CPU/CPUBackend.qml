@@ -6,14 +6,14 @@ import "../../../.."
 Item {
     id: cpuBackend
 
-    property bool __core_initialized__: false
-    property bool __ready__           : false
-    property int  __core_count__      : -1
+    property bool coreInitialized: false
+    property bool ready           : false
+    property int  coreCount      : -1
     property int  historyLength       : 20
     property int  intervalLength      : 500
 
     // WARNING --- THIS IS HARDCODED!! YOU NEED TO UPDATE THIS YOURSELF FOR ACCURATE READING
-    property var __core_id_map__: [0, 0, 4, 4, 8, 9, 10, 11, 12, 13, 14, 15]
+    property var coreIdMap: [0, 0, 4, 4, 8, 9, 10, 11, 12, 13, 14, 15]
 
     // history[i] = { usage: [...], temp: [...] }
     property var history: ({})
@@ -87,10 +87,10 @@ Item {
         running:  true
         repeat:   true
         onTriggered: {
-            if (cpuBackend.__core_count__ === -1 && !cpuBackend.__core_initialized__) {
-                cpuBackend.__core_initialized__ = true
+            if (cpuBackend.coreCount === -1 && !cpuBackend.coreInitialized) {
+                cpuBackend.coreInitialized = true
                 coreInitializer.running = true
-            } else if (cpuBackend.__core_count__ !== -1) {
+            } else if (cpuBackend.coreCount !== -1) {
                 cpuProc.running = true
             }
         }
@@ -101,9 +101,9 @@ Item {
         command: ["nproc", "--all"]
         stdout: StdioCollector {
             onStreamFinished: {
-                if (cpuBackend.__core_count__ === -1) {
+                if (cpuBackend.coreCount === -1) {
                     let count = parseInt(text.trim())
-                    cpuBackend.__core_count__ = count
+                    cpuBackend.coreCount = count
 
                     for (let i = 0; i < count; i++) {
                         coreData.append({
@@ -127,11 +127,11 @@ Item {
         command: ["cat", "/proc/stat"]
         stdout: StdioCollector {
             onStreamFinished: {
-                if (cpuBackend.__core_count__ === -1) return;
+                if (cpuBackend.coreCount === -1) return;
 
                 let lines = text.trim().split("\n")
 
-                for (let core = 0; core < cpuBackend.__core_count__; core++) {
+                for (let core = 0; core < cpuBackend.coreCount; core++) {
                     let line = lines[core + 1]
                     if (!line) continue
 
@@ -163,8 +163,8 @@ Item {
                     }
                 }
 
-                if (!cpuBackend.__ready__) {
-                    cpuBackend.__ready__ = true
+                if (!cpuBackend.ready) {
+                    cpuBackend.ready = true
                 }
             }
         }
@@ -183,7 +183,7 @@ Item {
         command: ["sensors", "-j", "coretemp-isa-0000"]
         stdout: StdioCollector {
             onStreamFinished: {
-                if (cpuBackend.__core_count__ === -1) return;
+                if (cpuBackend.coreCount === -1) return;
 
                 let parsed;
                 try {
@@ -195,8 +195,8 @@ Item {
                 let coretemp = parsed["coretemp-isa-0000"]
                 if (!coretemp) return;
 
-                for (let core = 0; core < cpuBackend.__core_count__; core++) {
-                    let sensorLabel = "Core " + cpuBackend.__core_id_map__[core]
+                for (let core = 0; core < cpuBackend.coreCount; core++) {
+                    let sensorLabel = "Core " + cpuBackend.coreIdMap[core]
                     let sensorObj   = coretemp[sensorLabel]
                     if (!sensorObj) continue;
 

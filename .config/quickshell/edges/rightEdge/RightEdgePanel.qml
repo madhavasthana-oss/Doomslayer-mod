@@ -1,107 +1,117 @@
-// RightEdgePanel.qml
+// RightEdgePanel.qml — T.S.S host: tiles → separator → stack
 import QtQuick
 import QtQuick.Layouts
-import ".."
 import Quickshell
-import Quickshell.Wayland
+import "../.."
+import "network"
+import "bluetooth"
+import "settings"
+import "notifications"
 
 Item {
     id: root
 
-    // ─── Size & Position Settings ─────────────────────
-    property int panelWidth:  280
-    property int panelHeight: 420
-    property int edgeMargin:  5
+    implicitWidth:  Tokens.edgeWindowWidth
+    implicitHeight: Tokens.edgeWindowHeight
 
-    // Hover detection zone (thin strip on the right edge)
-    MouseArea {
-        id: hoverTrigger
-        anchors.right: parent.right
-        width: 40          // how wide the hover zone is
-        height: panelHeight
-        hoverEnabled: true
-        onEntered: powerPanel.state = "visible"
-        onExited:  powerPanel.state = "hidden"
+    property bool open: false
+    readonly property bool revealed: open
+
+    // Allow children (settings) to force-collapse before launching tools
+    function collapse() {
+        hideTimer.stop()
+        root.open = false
     }
- 
-    // The actual sliding panel
-    Rectangle {
-        id: powerPanel
 
-        width:  panelWidth
-        height: panelHeight
-        radius: 12
-        color:  Theme.bgConsole
-        opacity: Theme.opacityConsole
-        border.color: Theme.borderConsole
-        border.width: Theme.strokeWidth
-
-        // Position: center of right edge with margin
-        anchors.right: parent.right
-        anchors.rightMargin: edgeMargin
-        anchors.verticalCenter: parent.verticalCenter
-
-        // Animation state
-        state: "hidden"
-        states: [
-            State {
-                name: "hidden"
-                PropertyChanges { target: powerPanel; x: parent.width + 20 }   // off-screen
-            },
-            State {
-                name: "visible"
-                PropertyChanges { target: powerPanel; x: parent.width - panelWidth - edgeMargin }
+    HoverHandler {
+        id: hoverHandler
+        onHoveredChanged: {
+            if (hovered) {
+                hideTimer.stop()
+                root.open = true
+            } else {
+                hideTimer.restart()
             }
-        ]
+        }
+    }
 
-        transitions: Transition {
-            NumberAnimation {
-                properties: "x"
-                duration: 220
-                easing.type: Easing.OutCubic
+    Timer {
+        id: hideTimer
+        interval: Tokens.edgeHideDelay
+        repeat: false
+        onTriggered: {
+            if (!hoverHandler.hovered)
+                root.open = false
+        }
+    }
+
+    Rectangle {
+        id: panelBg
+        anchors.fill:    parent
+        anchors.margins: Tokens.edgePanelPad
+        radius:          Tokens.radiusXl
+        color: Qt.rgba(
+            Theme.bgConsole.r,
+            Theme.bgConsole.g,
+            Theme.bgConsole.b,
+            Theme.opacityConsole
+        )
+        border.color: Theme.borderActive
+        border.width: Math.max(Tokens.borderXss, Math.round(Tokens.strokeWidthActive))
+        antialiasing: true
+    }
+
+    ColumnLayout {
+        id: mainLayout
+        anchors.fill:    panelBg
+        anchors.margins: Tokens.paddingH
+        spacing:         Tokens.spacingSm
+
+        // 1. Tile grid
+        EdgeTabs {
+            id: tabs
+            Layout.fillWidth: true
+            active: Globals.activeEdgePanel
+            onSwitched: (panel) => {
+                Globals.activeEdgePanel = panel
+                Globals.lastEdgePanel = panel
             }
         }
 
-        // ─── Power Controls Content ─────────────────────
-        ColumnLayout {
-            anchors.fill: parent
-            anchors.margins: 16
-            spacing: 16
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.preferredHeight: Tokens.strokeWidth
+            color: Theme.borderIdle
+            opacity: 0.5
+        }
 
-            Text {
-                text: "POWER"
-                font.family: Theme.fontDisplay
-                font.pixelSize: Theme.fontSizeLarge
-                color: Theme.accent
+        StackLayout {
+            id: stack
+            Layout.fillWidth:  true
+            Layout.fillHeight: true
+
+            currentIndex: {
+                const panels = ["wifi", "bluetooth", "settings", "notifications"]
+                const idx = panels.indexOf(Globals.activeEdgePanel)
+                return idx < 0 ? 0 : idx
             }
 
-            // Power menu button
-            Rectangle {
-                Layout.fillWidth: true
-                height: 48
-                radius: 8
-                color: powerMouse.containsMouse ? Theme.stateCritical : Theme.bgSurface
-                border.color: Theme.borderIdle
-
-                Text {
-                    anchors.centerIn: parent
-                    text: "Power Menu"
-                    font.family: Theme.fontDisplay
-                    color: powerMouse.containsMouse ? Theme.accent : Theme.textMuted
-                }
-
-                MouseArea {
-                    id: powerMouse
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    onClicked: {
-                        // Example: launch your power script
-                        Quickshell.execDetached(["bash", "-c", "~/.config/doomshell/scripts/bash/power-menu.sh"])
-                    }
-                }
+            NetworkFrontend {
+                id: wifiPage
             }
 
-            Item { Layout.fillHeight: true } // spacer
+            BluetoothFrontend {
+                id: btPage
+            }
+
+            SettingsFrontend {
+                id: settingsPage
+                onRequestClose: root.collapse()
+            }
+
+            NotifFrontend {
+                id: notifPage
+            }
         }
     }
 }

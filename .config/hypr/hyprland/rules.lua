@@ -167,3 +167,15 @@ hl.layer_rule({ match = { namespace = "quickshell:wTaskView" }, no_anim = true})
 
 -- Launchers need to be FAST
 hl.layer_rule({ match = { namespace = "gtk4-layer-shell" }, no_anim = true})
+
+-- Doomslayer cava desktop overlay (kitty --class doomshell-cava)
+-- border_size = 0 only (no no_border / no_focus — those throw).
+hl.window_rule({ match = { class = "^(doomshell-cava)$" }, float = true })
+hl.window_rule({ match = { class = "^(doomshell-cava)$" }, pin = true })
+hl.window_rule({ match = { class = "^(doomshell-cava)$" }, no_shadow = true })
+hl.window_rule({ match = { class = "^(doomshell-cava)$" }, border_size = 0 })
+hl.window_rule({ match = { class = "^(doomshell-cava)$" }, no_initial_focus = true })
+hl.window_rule({ match = { class = "^(doomshell-cava)$" }, size = { "100%", "22%" } })
+hl.window_rule({ match = { class = "^(doomshell-cava)$" }, move = { "0", "78%" } })
+
+

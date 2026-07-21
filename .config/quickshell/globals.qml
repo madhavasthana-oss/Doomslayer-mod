@@ -11,4 +11,18 @@ QtObject {
 
     property string activeCenterPanel : ""
     property string lastCenterPanel   : "dashboard"
+
+    // Right-edge trifold (T.S.S) — which stack page is active
+    property string activeEdgePanel : "wifi"   // "wifi" | "bluetooth" | "settings" | "notifications"
+    property string lastEdgePanel   : "wifi"
+
+    // Notification modes (mako)
+    property bool notifSilent : false
+    property bool notifDnd    : false
+
+    // Screen capture — edge panel closes itself before launching tools
+    property bool screenRecording : false
+
+    // Cava desktop overlay (toggled from Media panel)
+    property bool cavaOverlay : false
 }

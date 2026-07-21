@@ -40,25 +40,14 @@ Item {
     // ---------------------------------------------------------
     //  GiB FORMAT HELPER
     // ---------------------------------------------------------
-    // RAMBackend already computes __ram_in_use__ / __ram_total__ in GiB
+    // RAMBackend already computes ramInUse / ramTotal in GiB
     // (kB from /proc/meminfo divided by 1024**2), so we just format here.
 
     function __fmtGiB__(value) {
         return Number(value).toFixed(2);
     }
 
-    // ---------------------------------------------------------
-    //  FONTS
-    // ---------------------------------------------------------
 
-    FontLoader {
-        id: kogni
-        source: "../assets/fonts/KogniGear.ttf"
-    }
-    FontLoader {
-        id: jetbrains
-        source: "../assets/fonts/JetBrainsMonoNerdFontMono-Regular.ttf"
-    }
 
     // ---------------------------------------------------------
     //  STAT LOADERS
@@ -97,7 +86,7 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
 
         readonly property int averageUsage: {
-            if (!__ready__ || cores.count === 0)
+            if (!ready || cores.count === 0)
                 return -1;
             let sum = 0;
             let counted = 0;
@@ -111,11 +100,8 @@ Item {
             return counted > 0 ? Math.round(sum / counted) : -1;
         }
 
-        // __ready__ is a plain property on CPUBackend, not a signal —
-        // QML's auto-generated changed-signal preserves the literal
-        // property name (including underscores): on__Ready__Changed.
-        on__Ready__Changed: {
-            if (__ready__) {
+        onReadyChanged: {
+            if (ready) {
                 cpuLabel.opacity = 1;
                 cpuPercent.opacity = 1;
                 constCpuBar.opacity = 1;
@@ -130,10 +116,8 @@ Item {
         anchors.top: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
 
-        // __is_ready__ is a plain property on GPUBackend, not a signal —
-        // same rule: on__Is_ready__Changed, not onIsReadyChanged.
-        on__Is_ready__Changed: {
-            if (__is_ready__) {
+        onIsReadyChanged: {
+            if (isReady) {
                 gpuLabel.opacity = 1;
                 gpuPercent.opacity = 1;
                 constGpuBar.opacity = 1;
@@ -149,15 +133,15 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
 
         readonly property string usageGiB: {
-            if (__ram_total__ < 0 || __ram_in_use__ < 0)
+            if (ramTotal < 0 || ramInUse < 0)
                 return "--/--";
-            return __fmtGiB__(__ram_in_use__) + "/" + __fmtGiB__(__ram_total__) + " GiB";
+            return __fmtGiB__(ramInUse) + "/" + __fmtGiB__(ramTotal) + " GiB";
         }
 
-        // __is_ready__ is a plain property on RAMBackend, not a signal —
-        // same rule: on__Is_ready__Changed, not onIsReadyChanged.
-        on__Is_ready__Changed: {
-            if (__is_ready__) {
+        // isReady is a plain property on RAMBackend, not a signal —
+        // same rule: onIsReadyChanged, not onIsReadyChanged.
+        onIsReadyChanged: {
+            if (isReady) {
                 ramLabel.opacity = 1;
                 ramValue.opacity = 1;
             }
@@ -183,8 +167,8 @@ Item {
         GridLayout {
             columns: 3 
             rows: 2
-            rowSpacing: 2
-            columnSpacing: 4
+            rowSpacing: Tokens.spacingXss
+            columnSpacing: Tokens.columnSpacing
             Layout.alignment: Qt.AlignHCenter
             Layout.fillWidth: false
 
@@ -192,7 +176,7 @@ Item {
             Text {
                 id: batLabel
                 text: "BAT"
-                font.family: kogni.name
+                font.family: Theme.fontDisplay
                 font.pixelSize: Tokens.fontSizeLabel
                 color: Theme.textMuted
                 opacity: 0
@@ -208,7 +192,7 @@ Item {
             Text {
                 id: batPercent
                 text: batStat.percentage + "%"
-                font.family: jetbrains.name
+                font.family: Theme.fontMono
                 font.pixelSize: Tokens.fontSizeLabel
                 color: Theme.textSecondary
                 opacity: 0
@@ -224,9 +208,9 @@ Item {
             Rectangle {
                 id: constBatBar
                 Layout.preferredWidth: Tokens.usageBarWidth
-                Layout.preferredHeight: 4
+                Layout.preferredHeight: Tokens.usageBarHeight
                 color: Theme.bgElevated
-                radius: 25
+                radius: Tokens.radiusXl
                 opacity: 0
                 Behavior on opacity {
                     NumberAnimation {
@@ -240,7 +224,7 @@ Item {
                     height: parent.height
                     // Low battery = critical: invert percentage before feeding gradient.
                     color: __gradient__(Theme.stateSafe, Theme.stateCritical, 1.00 - (batStat.percentage / 100))
-                    radius: 25
+                    radius: Tokens.radiusXl
                     opacity: 0
                     Behavior on opacity {
                         NumberAnimation {
@@ -255,7 +239,7 @@ Item {
             Text {
                 id: volLabel
                 text: "VOL"
-                font.family: kogni.name
+                font.family: Theme.fontDisplay
                 font.pixelSize: Tokens.fontSizeLabel
                 color: Theme.textMuted
                 opacity: 0
@@ -271,7 +255,7 @@ Item {
             Text {
                 id: volPercent
                 text: audioStat.muted ? "M" : audioStat.volume + "%"
-                font.family: jetbrains.name
+                font.family: Theme.fontMono
                 font.pixelSize: Tokens.fontSizeLabel
                 color: audioStat.muted ? Theme.textMuted : Theme.textSecondary
                 opacity: 0
@@ -283,7 +267,7 @@ Item {
                 }
                 Behavior on color {
                     ColorAnimation {
-                        duration: 120
+                        duration: Tokens.animFast
                         easing.type: Easing.OutCubic
                     }
                 }
@@ -293,9 +277,9 @@ Item {
             Rectangle {
                 id: constVolBar
                 implicitWidth: Tokens.usageBarWidth
-                implicitHeight: 4
+                implicitHeight: Tokens.usageBarHeight
                 color: Theme.bgElevated
-                radius: 25
+                radius: Tokens.radiusXl
                 opacity: 0
                 Behavior on opacity {
                     NumberAnimation {
@@ -308,7 +292,7 @@ Item {
                     width: parent.width * audioStat.volume / 100
                     height: parent.height
                     color: audioStat.muted ? Theme.bgElevated : Theme.accent
-                    radius: 25
+                    radius: Tokens.radiusXl
                     opacity: 0
                     Behavior on opacity {
                         NumberAnimation {
@@ -318,7 +302,7 @@ Item {
                     }
                     Behavior on color {
                         ColorAnimation {
-                            duration: 120
+                            duration: Tokens.animFast
                             easing.type: Easing.OutCubic
                         }
                     }
@@ -334,8 +318,8 @@ Item {
         GridLayout {
             columns: 3
             rows: 2
-            rowSpacing: 2
-            columnSpacing: 4
+            rowSpacing: Tokens.spacingXss
+            columnSpacing: Tokens.columnSpacing
             Layout.alignment: Qt.AlignHCenter
             Layout.fillWidth: false
 
@@ -343,7 +327,7 @@ Item {
             Text {
                 id: cpuLabel
                 text: "CPU"
-                font.family: kogni.name
+                font.family: Theme.fontDisplay
                 font.pixelSize: Tokens.fontSizeLabel
                 color: Theme.textMuted
                 opacity: 0
@@ -359,7 +343,7 @@ Item {
             Text {
                 id: cpuPercent
                 text: cpuStat.averageUsage >= 0 ? cpuStat.averageUsage + "%" : "--%"
-                font.family: jetbrains.name
+                font.family: Theme.fontMono
                 font.pixelSize: Tokens.fontSizeLabel
                 color: Theme.textSecondary
                 opacity: 0
@@ -375,9 +359,9 @@ Item {
             Rectangle {
                 id: constCpuBar
                 Layout.preferredWidth: Tokens.usageBarWidth
-                Layout.preferredHeight: 4
+                Layout.preferredHeight: Tokens.usageBarHeight
                 color: Theme.bgElevated
-                radius: 25
+                radius: Tokens.radiusXl
                 opacity: 0
                 Behavior on opacity {
                     NumberAnimation {
@@ -391,7 +375,7 @@ Item {
                     height: parent.height
                     // High usage = critical: feed percentage directly, no inversion.
                     color: __gradient__(Theme.stateSafe, Theme.stateCritical, Math.max(cpuStat.averageUsage, 0) / 100)
-                    radius: 25
+                    radius: Tokens.radiusXl
                     opacity: 0
                     Behavior on opacity {
                         NumberAnimation {
@@ -406,7 +390,7 @@ Item {
             Text {
                 id: gpuLabel
                 text: "GPU"
-                font.family: kogni.name
+                font.family: Theme.fontDisplay
                 font.pixelSize: Tokens.fontSizeLabel
                 color: Theme.textMuted
                 opacity: 0
@@ -421,8 +405,8 @@ Item {
             // GPU percentage
             Text {
                 id: gpuPercent
-                text: gpuStat.__gpu_usage__ >= 0 ? gpuStat.__gpu_usage__ + "%" : "--%"
-                font.family: jetbrains.name
+                text: gpuStat.gpuUsage >= 0 ? gpuStat.gpuUsage + "%" : "--%"
+                font.family: Theme.fontMono
                 font.pixelSize: Tokens.fontSizeLabel
                 color: Theme.textSecondary
                 opacity: 0
@@ -438,9 +422,9 @@ Item {
             Rectangle {
                 id: constGpuBar
                 implicitWidth: Tokens.usageBarWidth
-                implicitHeight: 4
+                implicitHeight: Tokens.usageBarHeight
                 color: Theme.bgElevated
-                radius: 25
+                radius: Tokens.radiusXl
                 opacity: 0
                 Behavior on opacity {
                     NumberAnimation {
@@ -450,11 +434,11 @@ Item {
                 }
                 Rectangle {
                     id: varGpuBar
-                    width: parent.width * Math.max(gpuStat.__gpu_usage__, 0) / 100
+                    width: parent.width * Math.max(gpuStat.gpuUsage, 0) / 100
                     height: parent.height
                     // High usage = critical: feed percentage directly, no inversion.
-                    color: __gradient__(Theme.stateSafe, Theme.stateCritical, Math.max(gpuStat.__gpu_usage__, 0) / 100)
-                    radius: 25
+                    color: __gradient__(Theme.stateSafe, Theme.stateCritical, Math.max(gpuStat.gpuUsage, 0) / 100)
+                    radius: Tokens.radiusXl
                     opacity: 0
                     Behavior on opacity {
                         NumberAnimation {
@@ -474,14 +458,14 @@ Item {
         ColumnLayout {
             id: sysGrid
             Layout.alignment: Qt.AlignVCenter
-            spacing: 1
+            spacing: Tokens.spacingXss
             // Row 1 — labels
             Text {
                 id: ramLabel
                 Layout.alignment: Qt.AlignHCenter
                 text: "RAM"
                 horizontalAlignment: Text.AlignHCenter
-                font.family: kogni.name
+                font.family: Theme.fontDisplay
                 font.pixelSize: Tokens.fontSizeBase
                 color: Theme.textMuted
                 opacity: 0
@@ -499,7 +483,7 @@ Item {
                 Layout.alignment: Qt.AlignHCenter
                 text: ramStat.usageGiB
                 horizontalAlignment: Text.AlignHCenter
-                font.family: jetbrains.name
+                font.family: Theme.fontMono
                 font.pixelSize: Tokens.fontSizeLabel
                 color: Theme.textSecondary
                 opacity: 0

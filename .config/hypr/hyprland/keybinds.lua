@@ -14,6 +14,10 @@ hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO
     { locked = true, repeating = true })
 hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%-"),
     { locked = true, repeating = true })
+hl.bind("SUPER + XF86MonBrightnessUp", hl.dsp.exec_cmd("keyboard brightness increment || brightnessctl --device='*::kbd_backlight' s +50%"), 
+{ locked = true, repeating = true })
+hl.bind("SUPER + XF86MonBrightnessDown", hl.dsp.exec_cmd("keyboard brightness decrement || brightnessctl --device='*::kbd_backlight' s 50%-"), 
+{ locked = true, repeating = true })
 
 --# Color picker
 hl.bind("SUPER + SHIFT + C", hl.dsp.exec_cmd("hyprpicker -a"),
@@ -75,7 +79,7 @@ for i = 1, 2 do
     local focusdir = { "l", "r" }
     hl.bind("SUPER + " .. arrowkey[i], hl.dsp.focus({ direction = focusdir[i] }))
 end
---#/# bind = SUPER + SHIFT, ←/↑/→/↓,, -- Move in direction
+--#/# bind = SUPER + SHIFT, <--/<|/→/|>,, -- Move in direction
 for i = 1, 4 do
     local arrowkey = { "Left", "Right", "Up", "Down" }
     local focusdir = { "l", "r", "u", "d" }
@@ -92,7 +96,6 @@ hl.bind("ALT + F4",
 hl.bind("SUPER + Q", hl.dsp.window.close(), { description = "Window: Close" })
 hl.bind("SUPER + SHIFT + ALT + Q", hl.dsp.exec_cmd("hyprctl kill"), { description = "Window: Forcefully zap a window" })
 
---# Window split ratio
 --#/# binde = SUPER, ;/',, -- Adjust split ratio
 hl.bind("SUPER + Semicolon", hl.dsp.layout("splitratio -0.1"), { repeating = true })
 hl.bind("SUPER + Apostrophe", hl.dsp.layout("splitratio +0.1"), { repeating = true })
@@ -124,7 +127,7 @@ for i = 1, 10 do
     end)
 end
 
---# #/# bind = SUPER+SHIFT, Scroll ↑/↓,, -- Send to workspace left/right
+--# #/# bind = SUPER+SHIFT, Scroll <|/|>,, -- Send to workspace left/right
 for i = 1, 4 do
     local key = { "SUPER + SHIFT + mouse_", "SUPER + ALT + mouse_" }
     local keycombos = { key[1] .. "down", key[1] .. "up", key[2] .. "down", key[2] .. "up" }
@@ -132,7 +135,7 @@ for i = 1, 4 do
     hl.bind(keycombos[i], hl.dsp.window.move({ workspace = prefix[i] .. "1" }))
 end
 
---#/# bind = SUPER+SHIFT, Page_↑/↓,, -- Send to workspace left/right
+--#/# bind = SUPER+SHIFT, Page_<|/|>,, -- Send to workspace left/right
 for i = 1, 2 do
     local keydirs = { "Up", "Down" }
     local prefix = { "r-", "r+" }
@@ -171,8 +174,8 @@ for i = 1, 10 do
     end)
 end
 
---#/# bind = CTRL+SUPER, ←/→,, -- Focus left/right
---#/# bind = CTRL+SUPER+ALT, ←/→,, -- # [hidden] Focus busy left/right
+--#/# bind = CTRL+SUPER, <--/-->,, -- Focus left/right
+--#/# bind = CTRL+SUPER+ALT, <--/-->,, -- # [hidden] Focus busy left/right
 for i = 1, 2 do
     local keys = { "Left", "Right" }
     local prefix = { "r-", "r+" }
@@ -184,14 +187,14 @@ for i = 1, 2 do
     local prefix = { "m-", "m+" }
     hl.bind("CTRL + SUPER + ALT + " .. keys[i], hl.dsp.focus({ workspace = prefix[i] .. "1" }))
 end
---#/# bind = SUPER, Page_↑/↓,, -- Focus left/right
+--#/# bind = SUPER, Page_<|/|>,, -- Focus left/right
 for i = 1, 4 do
     local key = { "SUPER + Page_Down", "SUPER + Page_Up" }
     local keycombos = { key[1], key[2], "CTRL + " .. key[1], "CTRL + " .. key[2] }
     local prefix = { "r+", "r-", "r+", "r-" }
     hl.bind(keycombos[i], hl.dsp.focus({ workspace = prefix[i] .. "1" }))
 end
---#/# bind = SUPER, Scroll ↑/↓,, -- Focus left/right
+--#/# bind = SUPER, Scroll <|/|>,, -- Focus left/right
 for i = 1, 4 do
     local key = { "SUPER + mouse_up", "SUPER + mouse_down" }
     local keycombos = { key[1], key[2], "CTRL + " .. key[1], "CTRL + " .. key[2] }
@@ -259,6 +262,14 @@ hl.bind("SUPER + X", hl.dsp.exec_cmd(textEditor), { description = "App: Text edi
 hl.bind("CTRL + SUPER + V", hl.dsp.exec_cmd(volumeMixer), { description = "App: Volume mixer" })
 hl.bind("SUPER + I", hl.dsp.exec_cmd(settingsApp), { description = "App: Settings app" })
 hl.bind("CTRL + SHIFT + Escape", hl.dsp.exec_cmd(taskManager), { description = "App: Task manager" })
+-- ytmdesktop-git installs as youtube-music-desktop-app
+hl.bind("SUPER + M",
+    hl.dsp.exec_cmd(
+        "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'youtube-music-desktop-app' 'youtube-music' 'spotify'"),
+    { description = "App: YouTube Music" })
+hl.bind("SUPER + ALT + V",
+    hl.dsp.exec_cmd("$HOME/Doomslayer-mod/scripts/bash/cava-overlay.sh toggle"),
+    { description = "Media: Toggle cava overlay" })
 
 --# Cursed stuff
 --## Make window not amogus large

@@ -65,7 +65,7 @@ Item {
     anchors.fill:        parent
     anchors.leftMargin:  Tokens.workspaceToggleMargin
     anchors.rightMargin: Tokens.leftHeight + Tokens.spacingXs 
-    spacing:             Tokens.spacingXs * 2
+    spacing:             Tokens.barMarginTop
 
     // ---------------------------------------------------------
     //  ROW 1 — Workspace Numbers — FIXED WIDTH
@@ -92,7 +92,7 @@ Item {
                 color:          isActive ? Theme.textSecondary : Theme.textMuted
 
                 Behavior on color {
-                    ColorAnimation { duration: 120; easing.type: Easing.OutCubic }
+                    ColorAnimation { duration: Tokens.animFast; easing.type: Easing.OutCubic }
                 }
 
                 MouseArea {
@@ -108,7 +108,7 @@ Item {
     }
     // Separator — now always at fixed position
         Rectangle {
-            Layout.preferredWidth:  1
+            Layout.preferredWidth:  Tokens.strokeWidth
             Layout.preferredHeight: parent.height * 0.5
             Layout.fillWidth:       false
             Layout.alignment:       Qt.AlignVCenter

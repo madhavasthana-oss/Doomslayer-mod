@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Wayland
 import "bars"
+import "edges/rightEdge"
 import "widgets/rightBarWidgets"
 import "widgets/centerBarWidgets"
 import "bottom"
@@ -28,7 +29,7 @@ ShellRoot {
         implicitHeight: Globals.activePanel !== "" ? sysPanel.implicitHeight : 0
         
         Behavior on implicitHeight {
-            NumberAnimation { duration: 50; easing.type: Easing.OutQuart }
+            NumberAnimation { duration: Tokens.animInstant; easing.type: Easing.OutQuart }
         }
 
         color:         "transparent"
@@ -36,13 +37,13 @@ ShellRoot {
         WlrLayershell.layer:         WlrLayer.Top
         WlrLayershell.namespace:     "doomshell-dropdown"
         WlrLayershell.margins.top:   0
-        WlrLayershell.margins.right: 5
+        WlrLayershell.margins.right: Tokens.spacingXs
         visible: Globals.activePanel !== ""
 
          Rectangle {
             id: panelBg
             anchors.fill: parent
-            radius:       10
+            radius:       Tokens.radiusXl
             color:        Theme.bgConsole
             opacity:      Theme.opacityConsole
             border.color: Theme.borderConsole
@@ -87,20 +88,22 @@ ShellRoot {
         implicitHeight: Globals.activeCenterPanel !== "" ? centerPanel.implicitHeight : 0
 
         Behavior on implicitHeight {
-            NumberAnimation { duration: 50; easing.type: Easing.OutQuart }
+            NumberAnimation { duration: Tokens.animInstant; easing.type: Easing.OutQuart }
         }
         
         color:         "transparent"
         exclusiveZone: 0
+        // Keyboard for notes / todo fields on dashboard
+        focusable: Globals.activeCenterPanel !== ""
         WlrLayershell.layer:         WlrLayer.Top
         WlrLayershell.namespace:     "doomshell-center-dropdown"
-        WlrLayershell.margins.top:   5
+        WlrLayershell.margins.top:   Tokens.spacingXs
         visible: Globals.activeCenterPanel !== ""
 
         Rectangle {
             id: centerPanelBg
             anchors.fill: parent
-            radius:       10
+            radius:       Tokens.radiusXl
             color:        Theme.bgConsole
             opacity:      Theme.opacityConsole
             border.color: Theme.borderConsole
@@ -112,9 +115,6 @@ ShellRoot {
         }
     }
 
-    // Bottom power bar — dormant hotzone at bottom-center, expands on hover.
-    // Height follows sticky `revealed` (grace-period close) so edge hover
-    // doesn't thrash open/closed while the window resizes under the cursor.
     PanelWindow {
         id: bottomBarWindow
         anchors {
@@ -126,8 +126,6 @@ ShellRoot {
         margins.right: Tokens.bottomBarOriginX
 
         implicitWidth: Tokens.bottomBarWidth
-        // Height snaps with sticky revealed state (no Behavior) — animating
-        // the layer-shell window under the cursor was the thrash source.
         implicitHeight: bottomPanel.revealed
             ? Tokens.bottomBarHeight
             : Tokens.bottomHoverZoneHeight
@@ -144,6 +142,40 @@ ShellRoot {
             width:  Tokens.bottomBarWidth
             height: Tokens.bottomBarHeight
             opacity: bottomPanel.revealed
+                ? Theme.opacityVisible
+                : Theme.opacityHidden
+
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: Tokens.animFast
+                    easing.type: Easing.OutCubic
+                }
+            }
+        }
+    }
+
+    PanelWindow {
+        id: rightEdgeWidget
+        anchors.right: true
+        margins.top:   Tokens.edgeWidgetOriginY
+
+        implicitWidth: rightEdgePanel.revealed
+            ? Tokens.edgeWindowWidth
+            : Tokens.edgeHoverZoneCollapsed
+        implicitHeight: Tokens.edgeWindowHeight
+
+        // Keyboard focus for wifi password field
+        focusable: rightEdgePanel.revealed
+
+        color:         "transparent"
+        exclusiveZone: 0
+        WlrLayershell.layer:     WlrLayer.Top
+        WlrLayershell.namespace: "doomshell-right-edge"
+
+        RightEdgePanel {
+            id: rightEdgePanel
+            anchors.fill: parent
+            opacity: rightEdgePanel.revealed
                 ? Theme.opacityVisible
                 : Theme.opacityHidden
 

@@ -10,7 +10,7 @@ Item {
     implicitWidth:  Tokens.bottomBarWidth
     implicitHeight: Tokens.bottomBarHeight
 
-    // Sticky open state — raw hover alone causes thrash when the
+    // Sticky open state --- raw hover alone causes thrash when the
     // PanelWindow height animates under the cursor at the screen edge.
     property bool open: false
     readonly property bool revealed: open
@@ -49,7 +49,7 @@ Item {
         border.width: Tokens.strokeWidth
     }
 
-    // ─── Power actions (left → right) ────────────────────────
+    // ─── Power actions (left -> right) ────────────────────────
     // poweroff · reboot · logout · sleep · lock
     RowLayout {
         id: actionRow
@@ -62,8 +62,8 @@ Item {
                 { key: "poweroff", icon: Theme.iconPoweroff },
                 { key: "reboot",   icon: Theme.iconReboot },
                 { key: "logout",   icon: Theme.iconLogout },
-                { key: "sleep",    icon: Theme.iconSleep },
-                { key: "lock",     icon: Theme.iconLock }
+                { key: "lock",     icon: Theme.iconLock },
+                { key: "sleep",    icon: Theme.iconSleep }
             ]
 
             Item {
@@ -118,11 +118,11 @@ Item {
         case "logout":
             Quickshell.execDetached(["hyprctl", "dispatch", "exit"])
             break
-        case "sleep":
-            Quickshell.execDetached(["systemctl", "suspend"])
-            break
         case "lock":
             Quickshell.execDetached(["hyprlock"])
+            break
+        case "sleep":
+            Quickshell.execDetached(["systemctl", "suspend"])
             break
         }
     }

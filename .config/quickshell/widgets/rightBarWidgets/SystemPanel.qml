@@ -28,7 +28,7 @@ Item {
             id: sep
             Layout.leftMargin: Tokens.paddingH
             Layout.rightMargin: Tokens.paddingH
-            Layout.preferredHeight: 1
+            Layout.preferredHeight: Tokens.strokeWidth
             Layout.fillWidth: true
             color: Theme.borderIdle
             opacity: 0.5

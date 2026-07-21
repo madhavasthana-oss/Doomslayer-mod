@@ -16,14 +16,14 @@ Item {
     //  PROPERTIES
     // ---------------------------------------------------------
 
-    property real barWidth:    600
-    property real barHeight:   75
+    property real barWidth:    Tokens.centerExpandedWidth
+    property real barHeight:   Tokens.edgeToggleHeight
     property real angleOffset: barHeight
 
     property real fillOpacity:  Theme.opacityBar
     property color fillColor:   Theme.bgSurface
     property color strokeColor: Theme.accent
-    property real strokeWidth:  1.5
+    property real strokeWidth:  Tokens.strokeWidthActive
 
     property bool hovered:     false
     property bool alertActive: false
@@ -60,13 +60,13 @@ Item {
                              : root.hovered
                                  ? "#FFCA80"
                                  : root.strokeColor
-            strokeWidth: root.hovered ? 2.0 : root.strokeWidth
+            strokeWidth: root.hovered ? Tokens.borderXss : root.strokeWidth
 
             Behavior on strokeColor {
-                ColorAnimation { duration: 120; easing.type: Easing.OutCubic }
+                ColorAnimation { duration: Tokens.animFast; easing.type: Easing.OutCubic }
             }
             Behavior on strokeWidth {
-                NumberAnimation { duration: 120; easing.type: Easing.OutCubic }
+                NumberAnimation { duration: Tokens.animFast; easing.type: Easing.OutCubic }
             }
 
             startX: root.angleOffset
@@ -126,7 +126,7 @@ Item {
             property: "opacity"
             from:     1.0
             to:       0.4
-            duration: 500
+            duration: Tokens.animFadeDelay
             easing.type: Easing.OutCubic
         }
         NumberAnimation {
@@ -134,7 +134,7 @@ Item {
             property: "opacity"
             from:     0.4
             to:       1.0
-            duration: 500
+            duration: Tokens.animFadeDelay
             easing.type: Easing.InCubic
         }
     }

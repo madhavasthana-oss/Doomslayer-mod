@@ -66,10 +66,11 @@ QtObject {
     readonly property int exclusiveZone: Math.round(45 * scale)
 
     // CENTER EXPANSION GEOMETRY
+    // Keep a floor so shrinking this value cannot collapse media art / week forecast.
     readonly property int centerCollapsedWidth:  Math.round(640 * scale)
     readonly property int centerCollapsedHeight: Math.round(30  * scale)
     readonly property int centerExpandedWidth:   Math.round(580 * scale)
-    readonly property int centerExpandedHeight:  Math.round(550 * scale)
+    readonly property int centerExpandedHeight:  Math.max(Math.round(280 * scale), Math.round(350 * scale))
 
     readonly property int angleOffsetCollapsed: Math.round(30 * scale)
     readonly property int angleOffsetExpanded:  0
@@ -90,13 +91,20 @@ QtObject {
     readonly property int usageBarWidth:    Math.round(50  * scale)
     readonly property int usageBarHeight:   Math.round(4   * scale)
 
-    // EDGE PANELS
-    readonly property int edgeHoverZoneWidth: Math.round(45  * scale)
-    readonly property int edgePanelWidth:     Math.round(280 * scale)
-    readonly property int edgeToggleHeight:   Math.round(48  * scale)
-    readonly property int edgeHotzonePx:      Math.round(4   * scale)
+    // WEATHER / FORECAST
+    readonly property int forecastDayCount:         7
+    readonly property int forecastRowHeight:        Math.round(statBoxHeight + spacingXs)
+    readonly property int forecastDowWidth:         Math.round(spacingXl + spacingSm)
+    readonly property int forecastIconWidth:        spacingLg
+    readonly property int forecastTempWidth:        Math.round(spacingXl * 2 + spacingSm)
+    readonly property int weatherCardMinHeight:     statBoxHeight * 3
+    readonly property int weatherCurrentMaxLines:   2
+    readonly property int weatherHourlySampleIndex: 4
+    readonly property int weatherRefreshMs:         600000
+    readonly property int weatherFetchTimeoutSec:   10
 
-    // SCREEN GEOMETRY — centers & edge midpoints
+
+    // SCREEN GEOMETRY --- centers & edge midpoints
     readonly property int screenWidth:  primaryScreen ? primaryScreen.width  : 0
     readonly property int screenHeight: primaryScreen ? primaryScreen.height : 0
 
@@ -113,15 +121,58 @@ QtObject {
     readonly property int screenLeftX:   0
     readonly property int screenRightX:  screenWidth
 
-    // BOTTOM POWER BAR — width tracks centerSmallerWidth, height tracks center bar
+    // EDGE PANELS
+    readonly property int edgeHoverZoneWidth: Math.round(45  * scale)
+    readonly property int edgePanelWidth:     Math.round(280 * scale)
+    readonly property int edgeToggleHeight:   Math.round(48  * scale)
+    readonly property int edgeHotzonePx:      Math.round(4   * scale)
+
+    // BOTTOM POWER BAR --- width tracks centerSmallerWidth, height tracks center bar
     readonly property int bottomBarWidth:  centerSmallerWidth
     readonly property int bottomBarHeight: centerHeight
     readonly property int bottomBarOriginX: screenBottomCenterX - Math.round(bottomBarWidth / 2)
+
+    // RIGHT EDGE WIDGET --- vertical strip, right-center (mirror of bottom bar axes)
+    //
+    // Bottom bar:  fixed WIDTH,  variable HEIGHT, margins on LEFT/RIGHT from originX
+    // Right edge:  fixed HEIGHT, variable WIDTH,  margins on TOP/BOTTOM from originY
+    //
+    // originY must use HEIGHT/2, never width:
+    //   topMargin = bottomMargin = centerY - windowHeight/2
+    //   -> forced window height (top+bottom anchors) = windowHeight
+    //
+    // Pad is *inside* the panel root so the rounded card never touches the
+    // square layer-surface clip bounds (top/bottom/side borders stay visible).
+    // Generous enough for radiusXl + border on both sides of the edge.
+    readonly property int edgePanelPad: Math.max(radiusXl + borderXs, borderMd + borderXs)
+    readonly property int edgeWidgetWidth:  edgePanelWidth
+    readonly property int edgeWidgetHeight: Math.round(edgePanelWidth * 1.5)
+    readonly property int edgeWindowWidth:  edgeWidgetWidth  + 2 * edgePanelPad
+    readonly property int edgeWindowHeight: edgeWidgetHeight + 2 * edgePanelPad
+    // Top offset for a right-only-anchored window (not top+bottom forced height)
+    readonly property int edgeWidgetOriginY: screenRightCenterY - Math.round(edgeWindowHeight / 2)
+
+    // Collapsed hotzone stays flush to the physical right edge.
+    readonly property int edgeHoverZoneCollapsed: Math.max(edgeHotzonePx, barInset)
+
     // Slightly taller than a pure 1–4px edge so hover isn't lost to jitter,
     // still small enough to stay out of the way when collapsed.
     readonly property int bottomHoverZoneHeight: Math.max(edgeHotzonePx, barInset)
     readonly property int bottomBarMargin: barMarginTop
     readonly property int bottomHideDelay: animMedium
+    readonly property int edgeHideDelay:   animMedium
+
+    // MEDIA / CAVA
+    readonly property int mediaPollMs:            1000
+    readonly property int mediaArtMinSide:        statBoxHeight
+    readonly property real mediaArtWidthFrac:     0.38
+    readonly property real mediaArtHeightFrac:    0.42
+    readonly property int cavaBars:               80
+    readonly property int cavaFramerate:          60
+    readonly property int cavaSensitivity:        100
+    readonly property real cavaOverlayHeightFrac: 0.22
+    readonly property real cavaOverlayYFrac:      0.78
+    readonly property real cavaOverlayOpacity:    0.85
 
     readonly property int iconSizeSmall:  Math.round(4  * scale)
     readonly property int iconSizeBase:   Math.round(8  * scale)
