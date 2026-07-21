@@ -174,6 +174,12 @@ QtObject {
     readonly property real cavaOverlayYFrac:      0.78
     readonly property real cavaOverlayOpacity:    0.85
 
+    // PIPEWIRE AUDIO INIT (never hard-stop; backoff after fast phase)
+    readonly property int audioInitDelayMs:    300
+    readonly property int audioRetryFastMs:    250
+    readonly property int audioRetrySlowMs:    2000
+    readonly property int audioRetryFastCount: 120   // ~30s of fast polls before slow
+
     readonly property int iconSizeSmall:  Math.round(4  * scale)
     readonly property int iconSizeBase:   Math.round(8  * scale)
     readonly property int iconSizeMedium: Math.round(12 * scale)

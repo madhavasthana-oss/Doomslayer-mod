@@ -71,11 +71,27 @@ Item {
         visible: false
         anchors.top: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
+        // Show chrome on first ready *and* on subsequent volume events
+        onBecameReady: {
+            volLabel.opacity = 1
+            volPercent.opacity = 1
+            constVolBar.opacity = 1
+            varVolBar.opacity = 1
+        }
         onVolumeModified: {
-            volLabel.opacity = 1;
-            volPercent.opacity = 1;
-            constVolBar.opacity = 1;
-            varVolBar.opacity = 1;
+            volLabel.opacity = 1
+            volPercent.opacity = 1
+            constVolBar.opacity = 1
+            varVolBar.opacity = 1
+        }
+        onReadyChanged: {
+            // If sink drops (PW reconfigure), dim until back
+            if (!ready) {
+                volLabel.opacity = 0.35
+                volPercent.opacity = 0.35
+                constVolBar.opacity = 0.35
+                varVolBar.opacity = 0.35
+            }
         }
     }
 

@@ -19,19 +19,30 @@ Item {
 
     signal requestClose()   // parent should collapse edge panel
 
-    // ─── PipeWire sink ───────────────────────────────────────
+    // ─── PipeWire sink (same resilience as Volume.qml) ───────
+    readonly property var trackedSink: Pipewire.defaultAudioSink
     PwObjectTracker {
         id: sinkTracker
-        objects: [Pipewire.defaultAudioSink]
+        objects: root.trackedSink ? [root.trackedSink] : []
     }
-    readonly property var sinkAudio: sinkTracker.objects[0]?.audio ?? null
+    readonly property var sinkNode: {
+        if (sinkTracker.objects && sinkTracker.objects.length > 0 && sinkTracker.objects[0])
+            return sinkTracker.objects[0]
+        return Pipewire.defaultAudioSink
+    }
+    readonly property var sinkAudio: sinkNode ? (sinkNode.audio ?? null) : null
+    property bool audioReady: false
 
     function syncVolume() {
         const a = sinkAudio
-        if (!a)
-            return
-        root.volume = Math.round(a.volume * 100)
-        root.muted = a.muted
+        if (!a) {
+            root.audioReady = false
+            return false
+        }
+        root.volume = Math.round((a.volume ?? 0) * 100)
+        root.muted = !!a.muted
+        root.audioReady = true
+        return true
     }
 
     function setVolume(pct) {
@@ -50,6 +61,54 @@ Item {
         root.muted = a.muted
     }
 
+    property int audioAttempts: 0
+
+    function tickAudio() {
+        if (syncVolume()) {
+            root.audioAttempts = 0
+            audioSlowRetry.running = false
+            audioFastRetry.running = false
+            return
+        }
+        root.audioAttempts++
+        // never give up — WirePlumber can export the default sink late
+        if (root.audioAttempts <= Tokens.audioRetryFastCount) {
+            audioSlowRetry.running = false
+            if (!audioFastRetry.running)
+                audioFastRetry.running = true
+        } else {
+            audioFastRetry.running = false
+            if (!audioSlowRetry.running)
+                audioSlowRetry.running = true
+        }
+    }
+
+    Timer {
+        id: audioFastRetry
+        interval: Tokens.audioRetryFastMs
+        repeat: true
+        running: false
+        onTriggered: root.tickAudio()
+    }
+    Timer {
+        id: audioSlowRetry
+        interval: Tokens.audioRetrySlowMs
+        repeat: true
+        running: false
+        onTriggered: root.tickAudio()
+    }
+
+    Connections {
+        target: Pipewire
+        function onReadyChanged() {
+            root.audioAttempts = 0
+            root.tickAudio()
+        }
+        function onDefaultAudioSinkChanged() {
+            root.audioAttempts = 0
+            root.tickAudio()
+        }
+    }
     Connections {
         target: root.sinkAudio
         enabled: root.sinkAudio !== null
@@ -57,11 +116,16 @@ Item {
         function onVolumeChanged() { root.syncVolume() }
         function onMutedChanged()  { root.syncVolume() }
     }
+    Connections {
+        target: sinkTracker
+        function onObjectsChanged() { root.tickAudio() }
+    }
 
     Component.onCompleted: {
         brightQuery.running = true
         kbdQuery.running = true
-        syncVolume()
+        audioFastRetry.running = true
+        root.tickAudio()
     }
 
     // ─── Screen brightness ───────────────────────────────────

@@ -1,50 +1,70 @@
+// Volume.qml — resilient PipeWire default-sink binding
+//
+// Why this used to die on boot:
+//   Pipewire.defaultAudioSink is often null (or briefly null) until WirePlumber
+//   finishes exporting devices. The old code stopped retrying after ~20s, so if
+//   the sink appeared without a "changed" signal later (or audio was still
+//   unbound), the bar stayed dead until a full qs reload.
+//
+// Approach (same idea as end-4 / caelestia audio services):
+//   1. Wait for Pipewire.ready (initial server sync).
+//   2. Track defaultAudioSink with PwObjectTracker so node metadata is live.
+//   3. Never permanently give up — fast retries, then slow forever.
+//   4. Re-arm on ready / default-sink / node-ready / audio changes.
 import Quickshell.Services.Pipewire
 import QtQuick
+import "../../.."
 
 Item {
     id: audioStat
 
-    property int volume: 0        // true volume, can exceed 100 (e.g. up to 150)
+    property int volume: 0
     property bool muted: false
     property bool ready: false
     property string display: muted ? "M" : (volume + "%")
+    property string sinkName: ""
 
     property int barVolume: Math.min(volume, 100)
     property real barFraction: barVolume / 100
 
-    // --- Startup init tuning ---
-    property int initialDelayMs: 1000   // wait before even trying, gives PipeWire time to come up on boot
-    property int retryIntervalMs: 500   // how often to retry after the initial delay
-    property int maxRetries: 40         // ~20s of retrying after the initial delay before giving up
-    property int retryCount: 0
+    property int attemptCount: 0
 
     signal volumeModified(int volume, bool muted)
+    signal becameReady()
+
+    // Keep the tracked object list reactive — null when no sink so the tracker
+    // fully drops the old node, then rebinds when WP picks a default.
+    readonly property var trackedSink: Pipewire.defaultAudioSink
 
     PwObjectTracker {
         id: sinkTracker
-        objects: [Pipewire.defaultAudioSink]
+        objects: audioStat.trackedSink ? [audioStat.trackedSink] : []
     }
 
-    readonly property var currentAudio: sinkTracker.objects[0]?.audio ?? null
+    // Prefer the live tracked object; fall back to the singleton pointer.
+    readonly property var sinkNode: {
+        if (sinkTracker.objects && sinkTracker.objects.length > 0 && sinkTracker.objects[0])
+            return sinkTracker.objects[0]
+        return Pipewire.defaultAudioSink
+    }
+
+    readonly property var currentAudio: sinkNode ? (sinkNode.audio ?? null) : null
 
     function syncFromAudio() {
         const audio = currentAudio
         if (!audio)
             return false
 
-        const vol = Math.round(audio.volume * 100)
-        const isMuted = audio.muted
-
-        // NOTE: we used to bail out here if vol <= 0, treating that as
-        // "PipeWire isn't ready yet". That's wrong: a sink can legitimately
-        // report 0% volume (or 0 while muted) while being perfectly valid
-        // and ready. Readiness is determined by `audio` existing at all
-        // (checked above), not by what value it currently holds.
+        // Node may exist before audio is populated — treat as not ready yet.
+        const vol = Math.round((audio.volume ?? 0) * 100)
+        const isMuted = !!audio.muted
 
         const changed = (vol !== audioStat.volume) || (isMuted !== audioStat.muted)
-
         audioStat.volume = vol
         audioStat.muted = isMuted
+        audioStat.sinkName = sinkNode
+            ? (sinkNode.nickname || sinkNode.description || sinkNode.name || "")
+            : ""
 
         if (changed)
             audioStat.volumeModified(vol, isMuted)
@@ -52,67 +72,118 @@ Item {
         return true
     }
 
-    function initialize() {
-        if (syncFromAudio()) {
+    function markReady() {
+        if (!audioStat.ready) {
             audioStat.ready = true
-            audioStat.retryCount = 0
-            retryTimer.stop()
-        } else {
+            audioStat.becameReady()
+            // Ensure UI fades in even if volume value didn't change from 0
+            audioStat.volumeModified(audioStat.volume, audioStat.muted)
+        }
+        audioStat.attemptCount = 0
+        slowRetry.running = false
+        fastRetry.running = false
+    }
+
+    function markUnready() {
+        if (audioStat.ready)
             audioStat.ready = false
+    }
 
-            if (audioStat.retryCount >= audioStat.maxRetries) {
-                console.warn("audioStat: gave up waiting for PipeWire default sink after "
-                             + audioStat.retryCount + " retries")
-                retryTimer.stop()
-                return
-            }
+    function tick() {
+        // Still syncing the graph — stay in fast mode
+        if (!Pipewire.ready) {
+            markUnready()
+            scheduleRetry()
+            return
+        }
 
-            audioStat.retryCount++
-            retryTimer.start()
+        if (syncFromAudio()) {
+            markReady()
+            return
+        }
+
+        // Sink pointer present but audio not bound yet, or sink is null
+        // (docs: defaultAudioSink may briefly be null when switching).
+        markUnready()
+        scheduleRetry()
+    }
+
+    function scheduleRetry() {
+        audioStat.attemptCount++
+        if (audioStat.attemptCount <= Tokens.audioRetryFastCount) {
+            slowRetry.running = false
+            if (!fastRetry.running)
+                fastRetry.running = true
+        } else {
+            fastRetry.running = false
+            if (!slowRetry.running)
+                slowRetry.running = true
         }
     }
 
-    // Initial "sleep" before the very first init attempt — lets PipeWire/WirePlumber
-    // finish coming up on cold boot before we even ask for defaultAudioSink.
+    // Initial delay so we don't hammer PW on the first frame of a cold boot
     Timer {
         id: startupTimer
-        interval: audioStat.initialDelayMs
+        interval: Tokens.audioInitDelayMs
         repeat: false
         running: true
-        onTriggered: audioStat.initialize()
+        onTriggered: audioStat.tick()
     }
 
-    // Ongoing retry loop, only used after the initial delay if the sink
-    // still isn't ready (e.g. PipeWire took longer than initialDelayMs).
     Timer {
-        id: retryTimer
-        interval: audioStat.retryIntervalMs
+        id: fastRetry
+        interval: Tokens.audioRetryFastMs
         repeat: true
         running: false
-        onTriggered: audioStat.initialize()
+        onTriggered: audioStat.tick()
+    }
+
+    // After the fast window, keep a slow forever-poll so a late WP export
+    // still recovers without a manual qs reload.
+    Timer {
+        id: slowRetry
+        interval: Tokens.audioRetrySlowMs
+        repeat: true
+        running: false
+        onTriggered: audioStat.tick()
     }
 
     Connections {
         target: Pipewire
-        function onDefaultAudioSinkChanged() {
-            audioStat.retryCount = 0
-            audioStat.initialize()
+        function onReadyChanged() {
+            audioStat.attemptCount = 0
+            audioStat.tick()
         }
+        function onDefaultAudioSinkChanged() {
+            audioStat.attemptCount = 0
+            audioStat.tick()
+        }
+        function onDefaultConfiguredAudioSinkChanged() {
+            audioStat.attemptCount = 0
+            audioStat.tick()
+        }
+    }
+
+    // When the node itself finishes binding
+    Connections {
+        target: audioStat.sinkNode
+        enabled: audioStat.sinkNode !== null
+        ignoreUnknownSignals: true
+        function onReadyChanged() { audioStat.tick() }
+        function onAudioChanged() { audioStat.tick() }
     }
 
     Connections {
         target: audioStat.currentAudio
         enabled: audioStat.currentAudio !== null
         ignoreUnknownSignals: true
-
-        function onVolumeChanged() {
-            audioStat.syncFromAudio()
-        }
-        function onMutedChanged() {
-            audioStat.syncFromAudio()
-        }
+        function onVolumeChanged() { audioStat.syncFromAudio() }
+        function onMutedChanged()  { audioStat.syncFromAudio() }
     }
 
-    // NOTE: Component.onCompleted no longer calls initialize() directly —
-    // startupTimer handles the first attempt after initialDelayMs.
+    // Re-tick when tracker object list mutates
+    Connections {
+        target: sinkTracker
+        function onObjectsChanged() { audioStat.tick() }
+    }
 }
