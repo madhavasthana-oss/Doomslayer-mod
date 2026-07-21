@@ -3,7 +3,6 @@
   title, classification, description, icon, execCmd
 */
 import QtQuick
-import Quickshell
 
 Item {
     id: root
@@ -24,7 +23,7 @@ Item {
         ListElement {
             title: "KiTTY"
             classification: "Command Line Control Center"
-            description: "A highly combat tested, and powerful GPU-accelerated terminal. Coded in C++, if GhosTTY is perhaps too heavy, then KiTTY is your go to."
+            description: "A highly combat tested, and powerful GPU-accelerated terminal. Coded in C and python, if GhosTTY is perhaps too heavy, then KiTTY is your go to."
             icon: "kitty"
             execCmd: "kitty"
         }
