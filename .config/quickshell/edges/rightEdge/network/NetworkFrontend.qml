@@ -12,7 +12,96 @@ Item {
     implicitWidth:  Tokens.edgeWidgetWidth - 2 * Tokens.paddingH
     implicitHeight: Tokens.edgeWidgetHeight * 0.62
 
+    property int selectedIndex: 0
+
     NetworkBackend { id: backend }
+
+    function selectIndex(i) {
+        if (i < 0 || i >= backend.networks.count)
+            return
+        selectedIndex = i
+        if (list.currentIndex !== i)
+            list.currentIndex = i
+        list.positionViewAtIndex(i, ListView.Contain)
+    }
+
+    function activateSelected() {
+        if (backend.needsPassword)
+            return
+        if (selectedIndex < 0 || selectedIndex >= backend.networks.count)
+            return
+        const row = backend.networks.get(selectedIndex)
+        if (!row)
+            return
+        if (row.inUse)
+            backend.disconnectWifi()
+        else
+            backend.connectTo(row.rawSsid, row.security, row.inUse)
+    }
+
+    function grabListFocus() {
+        if (backend.needsPassword)
+            pskField.forceActiveFocus()
+        else
+            list.forceActiveFocus()
+    }
+
+    Component.onCompleted: {
+        if (Globals.activeEdgePanel === "wifi")
+            grabListFocus()
+    }
+
+    Connections {
+        target: Globals
+        function onActiveEdgePanelChanged() {
+            if (Globals.activeEdgePanel === "wifi")
+                Qt.callLater(root.grabListFocus)
+        }
+    }
+
+    Connections {
+        target: backend
+        function onNeedsPasswordChanged() {
+            if (backend.needsPassword) {
+                pskField.text = ""
+                Qt.callLater(() => pskField.forceActiveFocus())
+            } else {
+                Qt.callLater(root.grabListFocus)
+            }
+        }
+    }
+
+    Connections {
+        target: backend.networks
+        function onCountChanged() {
+            if (backend.networks.count === 0) {
+                selectedIndex = 0
+                return
+            }
+            if (selectedIndex >= backend.networks.count)
+                selectIndex(backend.networks.count - 1)
+        }
+    }
+
+    focus: true
+    Keys.forwardTo: [list]
+    Keys.onPressed: (event) => {
+        if (backend.needsPassword)
+            return
+        if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+            root.activateSelected()
+            event.accepted = true
+        } else if (event.key === Qt.Key_Up) {
+            root.selectIndex(root.selectedIndex - 1)
+            event.accepted = true
+        } else if (event.key === Qt.Key_Down) {
+            root.selectIndex(root.selectedIndex + 1)
+            event.accepted = true
+        } else if (event.key === Qt.Key_R) {
+            backend.rescan()
+            event.accepted = true
+        }
+    }
 
     ColumnLayout {
         anchors.fill: parent
@@ -196,13 +285,37 @@ Item {
             spacing: Tokens.spacingXss
             model: backend.networks
             visible: !backend.needsPassword
+            currentIndex: root.selectedIndex
+            focus: true
+            activeFocusOnTab: true
+            keyNavigationEnabled: false
+            highlightFollowsCurrentItem: true
+
+            Keys.onPressed: (event) => {
+                if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                    root.activateSelected()
+                    event.accepted = true
+                } else if (event.key === Qt.Key_Up) {
+                    root.selectIndex(root.selectedIndex - 1)
+                    event.accepted = true
+                } else if (event.key === Qt.Key_Down) {
+                    root.selectIndex(root.selectedIndex + 1)
+                    event.accepted = true
+                } else if (event.key === Qt.Key_R) {
+                    backend.rescan()
+                    event.accepted = true
+                }
+            }
 
             delegate: Rectangle {
                 width: list.width
                 height: Tokens.statBoxHeight
                 radius: Tokens.radiusSm
-                color: rowMouse.containsMouse ? Theme.bgElevated : Theme.bgSurface
-                border.color: model.inUse ? Theme.borderActive : Theme.borderIdle
+                property bool isSelected: index === root.selectedIndex
+                color: isSelected || rowMouse.containsMouse ? Theme.bgElevated : Theme.bgSurface
+                border.color: model.inUse ? Theme.borderActive
+                             : isSelected ? Theme.accent
+                             : Theme.borderIdle
                 border.width: Tokens.strokeWidth
 
                 RowLayout {
@@ -228,7 +341,7 @@ Item {
                             text: model.ssid
                             font.family: Theme.fontDisplay
                             font.pixelSize: Tokens.fontSizeLabel
-                            color: model.inUse ? Theme.accent : Theme.textPrimary
+                            color: model.inUse || isSelected ? Theme.accent : Theme.textPrimary
                             elide: Text.ElideRight
                         }
                         Text {
@@ -248,6 +361,8 @@ Item {
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
                     onClicked: {
+                        root.selectIndex(index)
+                        list.forceActiveFocus()
                         if (model.inUse)
                             backend.disconnectWifi()
                         else
@@ -264,6 +379,16 @@ Item {
                 font.pixelSize: Tokens.fontSizeLabel
                 color: Theme.textDim
             }
+        }
+
+        Text {
+            Layout.fillWidth: true
+            visible: !backend.needsPassword
+            text: "ARROWS move * ENTER link * R rescan"
+            font.family: Theme.fontMono
+            font.pixelSize: Tokens.fontSizeTiny
+            color: Theme.textDim
+            horizontalAlignment: Text.AlignHCenter
         }
     }
 

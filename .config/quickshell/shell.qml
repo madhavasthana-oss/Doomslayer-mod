@@ -34,6 +34,8 @@ ShellRoot {
 
         color:         "transparent"
         exclusiveZone: 0
+        // Keyboard for CPU core list / RAM process list / GPU actions
+        focusable: Globals.activePanel !== ""
         WlrLayershell.layer:         WlrLayer.Top
         WlrLayershell.namespace:     "doomshell-dropdown"
         WlrLayershell.margins.top:   0

@@ -12,7 +12,85 @@ Item {
     implicitWidth:  Tokens.edgeWidgetWidth - 2 * Tokens.paddingH
     implicitHeight: Tokens.edgeWidgetHeight * 0.62
 
+    property int selectedIndex: 0
+
     BluetoothBackend { id: backend }
+
+    function selectIndex(i) {
+        if (i < 0 || i >= list.count)
+            return
+        selectedIndex = i
+        if (list.currentIndex !== i)
+            list.currentIndex = i
+        list.positionViewAtIndex(i, ListView.Contain)
+    }
+
+    function selectedDevice() {
+        const row = list.currentItem
+        if (row && row.modelData)
+            return row.modelData
+        return null
+    }
+
+    function activateSelected() {
+        const dev = selectedDevice()
+        if (!dev)
+            return
+        if (dev.connected)
+            backend.disconnectDevice(dev)
+        else
+            backend.connectDevice(dev)
+    }
+
+    function forgetSelected() {
+        const dev = selectedDevice()
+        if (!dev)
+            return
+        backend.forgetDevice(dev)
+    }
+
+    function grabListFocus() {
+        list.forceActiveFocus()
+    }
+
+    Component.onCompleted: {
+        if (backend.powered)
+            backend.setDiscovering(true)
+        if (Globals.activeEdgePanel === "bluetooth")
+            grabListFocus()
+    }
+
+    Connections {
+        target: Globals
+        function onActiveEdgePanelChanged() {
+            if (Globals.activeEdgePanel === "bluetooth")
+                Qt.callLater(root.grabListFocus)
+        }
+    }
+
+    focus: true
+    Keys.forwardTo: [list]
+    Keys.onPressed: (event) => {
+        if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+            root.activateSelected()
+            event.accepted = true
+        } else if (event.key === Qt.Key_Delete || event.key === Qt.Key_Backspace) {
+            root.forgetSelected()
+            event.accepted = true
+        } else if (event.key === Qt.Key_Up) {
+            root.selectIndex(root.selectedIndex - 1)
+            event.accepted = true
+        } else if (event.key === Qt.Key_Down) {
+            root.selectIndex(root.selectedIndex + 1)
+            event.accepted = true
+        } else if (event.key === Qt.Key_S) {
+            backend.toggleDiscover()
+            event.accepted = true
+        } else if (event.key === Qt.Key_P) {
+            backend.setPowered(!backend.powered)
+            event.accepted = true
+        }
+    }
 
     ColumnLayout {
         anchors.fill: parent
@@ -99,14 +177,54 @@ Item {
             clip: true
             spacing: Tokens.spacingXss
             model: Bluetooth.devices
+            currentIndex: root.selectedIndex
+            focus: true
+            activeFocusOnTab: true
+            keyNavigationEnabled: false
+            highlightFollowsCurrentItem: true
+
+            Keys.onPressed: (event) => {
+                if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                    root.activateSelected()
+                    event.accepted = true
+                } else if (event.key === Qt.Key_Delete || event.key === Qt.Key_Backspace) {
+                    root.forgetSelected()
+                    event.accepted = true
+                } else if (event.key === Qt.Key_Up) {
+                    root.selectIndex(root.selectedIndex - 1)
+                    event.accepted = true
+                } else if (event.key === Qt.Key_Down) {
+                    root.selectIndex(root.selectedIndex + 1)
+                    event.accepted = true
+                } else if (event.key === Qt.Key_S) {
+                    backend.toggleDiscover()
+                    event.accepted = true
+                } else if (event.key === Qt.Key_P) {
+                    backend.setPowered(!backend.powered)
+                    event.accepted = true
+                }
+            }
+
+            onCountChanged: {
+                if (count === 0) {
+                    root.selectedIndex = 0
+                    return
+                }
+                if (root.selectedIndex >= count)
+                    root.selectIndex(count - 1)
+            }
 
             delegate: Rectangle {
                 required property var modelData
+                required property int index
                 width: list.width
                 height: Tokens.statBoxHeight
                 radius: Tokens.radiusSm
-                color: rowMouse.containsMouse ? Theme.bgElevated : Theme.bgSurface
-                border.color: modelData.connected ? Theme.borderActive : Theme.borderIdle
+                property bool isSelected: index === root.selectedIndex
+                color: isSelected || rowMouse.containsMouse ? Theme.bgElevated : Theme.bgSurface
+                border.color: modelData.connected ? Theme.borderActive
+                             : isSelected ? Theme.accent
+                             : Theme.borderIdle
                 border.width: Tokens.strokeWidth
 
                 RowLayout {
@@ -122,7 +240,7 @@ Item {
                             text: modelData.name || modelData.deviceName || modelData.address
                             font.family: Theme.fontDisplay
                             font.pixelSize: Tokens.fontSizeLabel
-                            color: modelData.connected ? Theme.accent : Theme.textPrimary
+                            color: modelData.connected || isSelected ? Theme.accent : Theme.textPrimary
                             elide: Text.ElideRight
                         }
                         Text {
@@ -153,6 +271,8 @@ Item {
                     cursorShape: Qt.PointingHandCursor
                     acceptedButtons: Qt.LeftButton | Qt.RightButton
                     onClicked: (mouse) => {
+                        root.selectIndex(index)
+                        list.forceActiveFocus()
                         if (mouse.button === Qt.RightButton) {
                             backend.forgetDevice(modelData)
                             return
@@ -177,16 +297,11 @@ Item {
 
         Text {
             Layout.fillWidth: true
-            text: "LMB connect * RMB forget"
+            text: "ARROWS move * ENTER link * DEL forget * S scan * P power"
             font.family: Theme.fontMono
             font.pixelSize: Tokens.fontSizeTiny
             color: Theme.textDim
             horizontalAlignment: Text.AlignHCenter
         }
-    }
-
-    Component.onCompleted: {
-        if (backend.powered)
-            backend.setDiscovering(true)
     }
 }

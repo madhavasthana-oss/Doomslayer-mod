@@ -22,6 +22,10 @@ Item {
         if (i < 0 || i >= codex.codexModel.count)
             return
         selectedIndex = i
+        if (appList.currentIndex !== i)
+            appList.currentIndex = i
+        appList.positionViewAtIndex(i, ListView.Contain)
+
         const row = codex.codexModel.get(i)
         const key = row.title
         const desc = row.description
@@ -54,7 +58,39 @@ Item {
         return p && p.length ? p : ""
     }
 
-    Component.onCompleted: selectIndex(0)
+    function grabListFocus() {
+        appList.forceActiveFocus()
+    }
+
+    Component.onCompleted: {
+        selectIndex(0)
+        grabListFocus()
+    }
+
+    // When user switches to CONSOLE tab, reclaim keyboard for Enter / arrows
+    Connections {
+        target: Globals
+        function onActiveCenterPanelChanged() {
+            if (Globals.activeCenterPanel === "console")
+                Qt.callLater(root.grabListFocus)
+        }
+    }
+
+    // Root-level keys as fallback if focus is somewhere in this panel
+    focus: true
+    Keys.forwardTo: [appList]
+    Keys.onPressed: (event) => {
+        if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+            root.launchSelected()
+            event.accepted = true
+        } else if (event.key === Qt.Key_Up) {
+            root.selectIndex(root.selectedIndex - 1)
+            event.accepted = true
+        } else if (event.key === Qt.Key_Down) {
+            root.selectIndex(root.selectedIndex + 1)
+            event.accepted = true
+        }
+    }
 
     RowLayout {
         id: mainRow
@@ -91,6 +127,23 @@ Item {
                     spacing: Tokens.spacingXss
                     model: codex.codexModel
                     currentIndex: root.selectedIndex
+                    focus: true
+                    activeFocusOnTab: true
+                    keyNavigationEnabled: false
+                    highlightFollowsCurrentItem: true
+
+                    Keys.onPressed: (event) => {
+                        if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                            root.launchSelected()
+                            event.accepted = true
+                        } else if (event.key === Qt.Key_Up) {
+                            root.selectIndex(root.selectedIndex - 1)
+                            event.accepted = true
+                        } else if (event.key === Qt.Key_Down) {
+                            root.selectIndex(root.selectedIndex + 1)
+                            event.accepted = true
+                        }
+                    }
 
                     delegate: Rectangle {
                         width: appList.width
@@ -127,7 +180,10 @@ Item {
                         MouseArea {
                             anchors.fill: parent
                             cursorShape: Qt.PointingHandCursor
-                            onClicked: root.selectIndex(index)
+                            onClicked: {
+                                root.selectIndex(index)
+                                appList.forceActiveFocus()
+                            }
                             onDoubleClicked: {
                                 root.selectIndex(index)
                                 root.launchSelected()

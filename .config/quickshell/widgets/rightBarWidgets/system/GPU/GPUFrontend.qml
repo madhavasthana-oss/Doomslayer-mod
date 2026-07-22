@@ -46,6 +46,45 @@ Item {
         id: gpu
     }
 
+    function launchNvtop() {
+        nvtopProc.running = true
+    }
+
+    function grabFocus() {
+        gpuFrontend.forceActiveFocus()
+    }
+
+    Component.onCompleted: {
+        if (Globals.activePanel === "gpu")
+            grabFocus()
+        let base = gpu.gpuFreq > 0 ? gpu.gpuFreq : 500
+
+        for (let i = 0; i < 40; i++) {
+            freqBars.push(base + (Math.random() - 0.5) * 40)
+            freqTargets.push(base)
+        }
+        textAnimator.transitionTo("[ PROBING ]")
+        freqAnimator.transitionTo(gpu.gpuFreq === -1 ? "--" : String(gpu.gpuFreq))
+        usageBoxAnimator.transitionTo(gpu.gpuUsage === -1 ? "--%" : gpu.gpuUsage + "%")
+        freqBoxAnimator.transitionTo(gpu.gpuFreq === -1 ? "--" : String(gpu.gpuFreq))
+    }
+
+    Connections {
+        target: Globals
+        function onActivePanelChanged() {
+            if (Globals.activePanel === "gpu")
+                Qt.callLater(gpuFrontend.grabFocus)
+        }
+    }
+
+    focus: true
+    Keys.onPressed: (event) => {
+        if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+            gpuFrontend.launchNvtop()
+            event.accepted = true
+        }
+    }
+
     AnimatedText {
         id: textAnimator
         mode: AnimatedText.Mode.Scramble
@@ -68,19 +107,6 @@ Item {
         id: freqBoxAnimator
         mode: AnimatedText.Mode.Scramble
         duration: Tokens.animStraighten
-    }
-
-    Component.onCompleted: {
-        let base = gpu.gpuFreq > 0 ? gpu.gpuFreq : 500
-
-        for (let i = 0; i < 40; i++) {
-            freqBars.push(base + (Math.random() - 0.5) * 40)
-            freqTargets.push(base)
-        }
-        textAnimator.transitionTo("[ PROBING ]")
-        freqAnimator.transitionTo(gpu.gpuFreq === -1 ? "--" : String(gpu.gpuFreq))
-        usageBoxAnimator.transitionTo(gpu.gpuUsage === -1 ? "--%" : gpu.gpuUsage + "%")
-        freqBoxAnimator.transitionTo(gpu.gpuFreq === -1 ? "--" : String(gpu.gpuFreq))
     }
 
     Timer {
@@ -457,7 +483,7 @@ Item {
                 id:                 nvtopHover 
                 anchors.fill:       parent
                 hoverEnabled:       true
-                onClicked:          nvtopProc.running = true
+                onClicked:          gpuFrontend.launchNvtop()
                 cursorShape:        Qt.PointingHandCursor
             }
         }

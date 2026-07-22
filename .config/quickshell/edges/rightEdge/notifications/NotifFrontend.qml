@@ -9,7 +9,75 @@ Item {
     implicitWidth:  Tokens.edgeWidgetWidth - 2 * Tokens.paddingH
     implicitHeight: Tokens.edgeWidgetHeight * 0.62
 
+    property int selectedIndex: 0
+
     NotifBackend { id: backend }
+
+    function selectIndex(i) {
+        if (i < 0 || i >= backend.notifications.count)
+            return
+        selectedIndex = i
+        if (list.currentIndex !== i)
+            list.currentIndex = i
+        list.positionViewAtIndex(i, ListView.Contain)
+    }
+
+    function dismissSelected() {
+        if (selectedIndex < 0 || selectedIndex >= backend.notifications.count)
+            return
+        const row = backend.notifications.get(selectedIndex)
+        if (!row)
+            return
+        backend.dismissId(row.notifId)
+    }
+
+    function grabListFocus() {
+        list.forceActiveFocus()
+    }
+
+    Component.onCompleted: {
+        if (Globals.activeEdgePanel === "notifications")
+            grabListFocus()
+    }
+
+    Connections {
+        target: Globals
+        function onActiveEdgePanelChanged() {
+            if (Globals.activeEdgePanel === "notifications")
+                Qt.callLater(root.grabListFocus)
+        }
+    }
+
+    Connections {
+        target: backend.notifications
+        function onCountChanged() {
+            if (backend.notifications.count === 0) {
+                selectedIndex = 0
+                return
+            }
+            if (selectedIndex >= backend.notifications.count)
+                selectIndex(backend.notifications.count - 1)
+        }
+    }
+
+    focus: true
+    Keys.forwardTo: [list]
+    Keys.onPressed: (event) => {
+        if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
+                || event.key === Qt.Key_Delete || event.key === Qt.Key_Backspace) {
+            root.dismissSelected()
+            event.accepted = true
+        } else if (event.key === Qt.Key_Up) {
+            root.selectIndex(root.selectedIndex - 1)
+            event.accepted = true
+        } else if (event.key === Qt.Key_Down) {
+            root.selectIndex(root.selectedIndex + 1)
+            event.accepted = true
+        } else if (event.key === Qt.Key_C) {
+            backend.dismissAll()
+            event.accepted = true
+        }
+    }
 
     ColumnLayout {
         anchors.fill: parent
@@ -115,14 +183,37 @@ Item {
             clip: true
             spacing: Tokens.spacingXss
             model: backend.notifications
+            currentIndex: root.selectedIndex
+            focus: true
+            activeFocusOnTab: true
+            keyNavigationEnabled: false
+            highlightFollowsCurrentItem: true
+
+            Keys.onPressed: (event) => {
+                if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
+                        || event.key === Qt.Key_Delete || event.key === Qt.Key_Backspace) {
+                    root.dismissSelected()
+                    event.accepted = true
+                } else if (event.key === Qt.Key_Up) {
+                    root.selectIndex(root.selectedIndex - 1)
+                    event.accepted = true
+                } else if (event.key === Qt.Key_Down) {
+                    root.selectIndex(root.selectedIndex + 1)
+                    event.accepted = true
+                } else if (event.key === Qt.Key_C) {
+                    backend.dismissAll()
+                    event.accepted = true
+                }
+            }
 
             delegate: Rectangle {
                 width: list.width
                 height: Math.max(Tokens.statBoxHeight, bodyCol.implicitHeight + 2 * Tokens.paddingV)
                 radius: Tokens.radiusSm
-                color: Theme.bgSurface
+                property bool isSelected: index === root.selectedIndex
+                color: isSelected ? Theme.bgElevated : Theme.bgSurface
                 border.color: model.urgency === "critical" ? Theme.stateCritical
-                            : model.urgency === "low" ? Theme.borderIdle
+                            : isSelected ? Theme.accent
                             : Theme.borderIdle
                 border.width: Tokens.strokeWidth
 
@@ -164,7 +255,7 @@ Item {
                         text: model.summary
                         font.family: Theme.fontDisplay
                         font.pixelSize: Tokens.fontSizeLabel
-                        color: Theme.textPrimary
+                        color: isSelected ? Theme.accent : Theme.textPrimary
                         wrapMode: Text.Wrap
                     }
 
@@ -180,6 +271,16 @@ Item {
                         elide: Text.ElideRight
                     }
                 }
+
+                MouseArea {
+                    anchors.fill: parent
+                    z: -1
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        root.selectIndex(index)
+                        list.forceActiveFocus()
+                    }
+                }
             }
 
             Text {
@@ -190,6 +291,15 @@ Item {
                 font.pixelSize: Tokens.fontSizeLabel
                 color: Theme.textDim
             }
+        }
+
+        Text {
+            Layout.fillWidth: true
+            text: "ARROWS move * ENTER dismiss * C clear all"
+            font.family: Theme.fontMono
+            font.pixelSize: Tokens.fontSizeTiny
+            color: Theme.textDim
+            horizontalAlignment: Text.AlignHCenter
         }
     }
 }

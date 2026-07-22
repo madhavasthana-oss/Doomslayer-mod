@@ -23,6 +23,63 @@ Item {
         root.open = false
     }
 
+    readonly property var panelOrder: ["wifi", "bluetooth", "settings", "notifications"]
+
+    function switchPanel(panel) {
+        Globals.activeEdgePanel = panel
+        Globals.lastEdgePanel = panel
+        Qt.callLater(root.grabActiveFocus)
+    }
+
+    function cyclePanel(delta) {
+        const order = root.panelOrder
+        let idx = order.indexOf(Globals.activeEdgePanel)
+        if (idx < 0)
+            idx = 0
+        idx = (idx + delta + order.length) % order.length
+        switchPanel(order[idx])
+    }
+
+    function grabActiveFocus() {
+        const panel = Globals.activeEdgePanel
+        if (panel === "wifi")
+            wifiPage.grabListFocus()
+        else if (panel === "bluetooth")
+            btPage.grabListFocus()
+        else if (panel === "notifications")
+            notifPage.grabListFocus()
+        else
+            root.forceActiveFocus()
+    }
+
+    onOpenChanged: {
+        if (open)
+            Qt.callLater(root.grabActiveFocus)
+    }
+
+    focus: true
+    Keys.onPressed: (event) => {
+        if (event.key === Qt.Key_Left) {
+            root.cyclePanel(-1)
+            event.accepted = true
+        } else if (event.key === Qt.Key_Right) {
+            root.cyclePanel(1)
+            event.accepted = true
+        } else if (event.key === Qt.Key_1) {
+            root.switchPanel("wifi")
+            event.accepted = true
+        } else if (event.key === Qt.Key_2) {
+            root.switchPanel("bluetooth")
+            event.accepted = true
+        } else if (event.key === Qt.Key_3) {
+            root.switchPanel("settings")
+            event.accepted = true
+        } else if (event.key === Qt.Key_4) {
+            root.switchPanel("notifications")
+            event.accepted = true
+        }
+    }
+
     HoverHandler {
         id: hoverHandler
         onHoveredChanged: {
@@ -72,10 +129,7 @@ Item {
             id: tabs
             Layout.fillWidth: true
             active: Globals.activeEdgePanel
-            onSwitched: (panel) => {
-                Globals.activeEdgePanel = panel
-                Globals.lastEdgePanel = panel
-            }
+            onSwitched: (panel) => root.switchPanel(panel)
         }
 
         Rectangle {

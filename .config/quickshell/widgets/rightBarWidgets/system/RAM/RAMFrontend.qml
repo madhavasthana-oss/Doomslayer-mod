@@ -19,6 +19,93 @@ Item {
         id: ram
     }
 
+    function selectProc(i) {
+        if (i < 0 || i >= ram.processes.count)
+            return
+        selectedProc = i
+        if (procList.currentIndex !== i)
+            procList.currentIndex = i
+        procList.positionViewAtIndex(i, ListView.Contain)
+    }
+
+    function killSelected() {
+        if (!selectedProcData)
+            return
+        ram.killProcess(selectedProcData.pid)
+    }
+
+    function haltSelected() {
+        if (!selectedProcData)
+            return
+        ram.toggleHaltProcess(selectedProcData.pid)
+    }
+
+    function optimizeSelected() {
+        if (!selectedProcData)
+            return
+        ram.optimizeProcess(selectedProcData.pid)
+    }
+
+    function launchRamTui() {
+        if (!ram.ramTuiAvailable)
+            return
+        ram.launchRamTui()
+    }
+
+    function grabListFocus() {
+        procList.forceActiveFocus()
+    }
+
+    Component.onCompleted: {
+        if (Globals.activePanel === "ram")
+            grabListFocus()
+    }
+
+    Connections {
+        target: Globals
+        function onActivePanelChanged() {
+            if (Globals.activePanel === "ram")
+                Qt.callLater(ramFrontend.grabListFocus)
+        }
+    }
+
+    // Keep selection in range when process list refreshes
+    Connections {
+        target: ram.processes
+        function onCountChanged() {
+            if (ram.processes.count === 0) {
+                selectedProc = 0
+                return
+            }
+            if (selectedProc >= ram.processes.count)
+                selectProc(ram.processes.count - 1)
+        }
+    }
+
+    focus: true
+    Keys.forwardTo: [procList]
+    Keys.onPressed: (event) => {
+        if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+            ramFrontend.launchRamTui()
+            event.accepted = true
+        } else if (event.key === Qt.Key_K) {
+            ramFrontend.killSelected()
+            event.accepted = true
+        } else if (event.key === Qt.Key_H) {
+            ramFrontend.haltSelected()
+            event.accepted = true
+        } else if (event.key === Qt.Key_O) {
+            ramFrontend.optimizeSelected()
+            event.accepted = true
+        } else if (event.key === Qt.Key_Up) {
+            ramFrontend.selectProc(ramFrontend.selectedProc - 1)
+            event.accepted = true
+        } else if (event.key === Qt.Key_Down) {
+            ramFrontend.selectProc(ramFrontend.selectedProc + 1)
+            event.accepted = true
+        }
+    }
+
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: Tokens.paddingH
@@ -93,6 +180,32 @@ Item {
                     }
                     currentIndex:         ramFrontend.selectedProc
                     model:                ram.processes
+                    focus:                true
+                    activeFocusOnTab:     true
+                    keyNavigationEnabled: false
+                    highlightFollowsCurrentItem: true
+
+                    Keys.onPressed: (event) => {
+                        if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                            ramFrontend.launchRamTui()
+                            event.accepted = true
+                        } else if (event.key === Qt.Key_K) {
+                            ramFrontend.killSelected()
+                            event.accepted = true
+                        } else if (event.key === Qt.Key_H) {
+                            ramFrontend.haltSelected()
+                            event.accepted = true
+                        } else if (event.key === Qt.Key_O) {
+                            ramFrontend.optimizeSelected()
+                            event.accepted = true
+                        } else if (event.key === Qt.Key_Up) {
+                            ramFrontend.selectProc(ramFrontend.selectedProc - 1)
+                            event.accepted = true
+                        } else if (event.key === Qt.Key_Down) {
+                            ramFrontend.selectProc(ramFrontend.selectedProc + 1)
+                            event.accepted = true
+                        }
+                    }
 
                     delegate: Item {
                         width:  procList.width
@@ -160,7 +273,10 @@ Item {
 
                         MouseArea {
                             anchors.fill: parent
-                            onClicked:    ramFrontend.selectedProc = index
+                            onClicked: {
+                                ramFrontend.selectProc(index)
+                                procList.forceActiveFocus()
+                            }
                         }
                     }
                 }
@@ -408,7 +524,7 @@ Item {
                         hoverEnabled: true
                         enabled:      ramFrontend.selectedProcData !== null
                         cursorShape:  Qt.PointingHandCursor
-                        onClicked:    ram.killProcess(ramFrontend.selectedProcData?.pid)
+                        onClicked:    ramFrontend.killSelected()
                     }
                 }
 
@@ -502,7 +618,7 @@ Item {
                         hoverEnabled: true
                         enabled:      ramFrontend.selectedProcData !== null
                         cursorShape:  Qt.PointingHandCursor
-                        onClicked:    ram.toggleHaltProcess(ramFrontend.selectedProcData?.pid)
+                        onClicked:    ramFrontend.haltSelected()
                     }
                 }
 
@@ -572,10 +688,19 @@ Item {
                         hoverEnabled: true
                         enabled:      ramFrontend.selectedProcData !== null
                         cursorShape:  Qt.PointingHandCursor
-                        onClicked:    ram.optimizeProcess(ramFrontend.selectedProcData?.pid)
+                        onClicked:    ramFrontend.optimizeSelected()
                     }
                 }
             }
+        }
+
+        Text {
+            Layout.fillWidth: true
+            text: "ARROWS move * ENTER ram-man * K kill * H halt * O optimize"
+            font.family: Theme.fontMono
+            font.pixelSize: Tokens.fontSizeTiny
+            color: Theme.textDim
+            horizontalAlignment: Text.AlignHCenter
         }
 
         Item {
@@ -645,7 +770,7 @@ Item {
                 hoverEnabled: true
                 enabled:      ramTuiBtn.isAvailable
                 cursorShape:  Qt.PointingHandCursor
-                onClicked:    ram.launchRamTui()
+                onClicked:    ramFrontend.launchRamTui()
             }
         }
     }

@@ -13,6 +13,54 @@ Item {
 
     CPUBackend { id: cpu }
     property int selectedCore: 0
+
+    function selectCore(i) {
+        if (i < 0 || i >= cpu.cores.count)
+            return
+        selectedCore = i
+        if (coreList.currentIndex !== i)
+            coreList.currentIndex = i
+        coreList.positionViewAtIndex(i, ListView.Contain)
+        usageCanvas.requestPaint()
+        tempCanvas.requestPaint()
+    }
+
+    function launchBtop() {
+        btopProc.running = true
+    }
+
+    function grabListFocus() {
+        coreList.forceActiveFocus()
+    }
+
+    Component.onCompleted: {
+        if (Globals.activePanel === "cpu")
+            grabListFocus()
+    }
+
+    Connections {
+        target: Globals
+        function onActivePanelChanged() {
+            if (Globals.activePanel === "cpu")
+                Qt.callLater(cpuFrontend.grabListFocus)
+        }
+    }
+
+    focus: true
+    Keys.forwardTo: [coreList]
+    Keys.onPressed: (event) => {
+        if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+            cpuFrontend.launchBtop()
+            event.accepted = true
+        } else if (event.key === Qt.Key_Up) {
+            cpuFrontend.selectCore(cpuFrontend.selectedCore - 1)
+            event.accepted = true
+        } else if (event.key === Qt.Key_Down) {
+            cpuFrontend.selectCore(cpuFrontend.selectedCore + 1)
+            event.accepted = true
+        }
+    }
+
     Timer {
         id: repaintTimer
         interval: 150
@@ -29,9 +77,7 @@ Item {
         tempCanvas.requestPaint()
     }
 
-    // ---
     //  MAIN LAYOUT
-    // ---
 
     ColumnLayout {
         id: mainLayout
@@ -39,18 +85,14 @@ Item {
         anchors.margins: Tokens.paddingH 
         spacing:         Tokens.spacingMd
 
-        // ---
         //  BODY --- core list (left) + detail panel (right)
-        // ---
 
         RowLayout {
             Layout.fillWidth:  true
             Layout.fillHeight: true
             spacing:           Tokens.spacingXs
 
-            // ---
             //  LEFT --- core list
-            // ---
 
             Rectangle {
                 Layout.preferredWidth: Tokens.listPanelWidth
@@ -85,11 +127,28 @@ Item {
                     spacing:              Tokens.spacingXss
                     clip:                 true
                     currentIndex:         cpuFrontend.selectedCore
+                    focus:                true
+                    activeFocusOnTab:     true
+                    keyNavigationEnabled: false
+                    highlightFollowsCurrentItem: true
 
                     model: cpu.cores
 
                     ScrollBar.vertical: ScrollBar {
                         policy: ScrollBar.AsNeeded
+                    }
+
+                    Keys.onPressed: (event) => {
+                        if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                            cpuFrontend.launchBtop()
+                            event.accepted = true
+                        } else if (event.key === Qt.Key_Up) {
+                            cpuFrontend.selectCore(cpuFrontend.selectedCore - 1)
+                            event.accepted = true
+                        } else if (event.key === Qt.Key_Down) {
+                            cpuFrontend.selectCore(cpuFrontend.selectedCore + 1)
+                            event.accepted = true
+                        }
                     }
 
                     delegate: Item {
@@ -158,15 +217,16 @@ Item {
 
                         MouseArea {
                             anchors.fill: parent
-                            onClicked:    cpuFrontend.selectedCore = index
+                            onClicked: {
+                                cpuFrontend.selectCore(index)
+                                coreList.forceActiveFocus()
+                            }
                         }
                     }
                 }
             }
 
-            // ---
             //  RIGHT --- detail panel
-            // ---
 
             ColumnLayout {
                 Layout.fillWidth:  true
@@ -508,9 +568,15 @@ Item {
             }
         }
 
-        // ---
         //  LAUNCH BTOP BUTTON
-        // ---
+        Text {
+            Layout.fillWidth: true
+            text: "ARROWS cores * ENTER btop * 1-3 / LEFT-RIGHT tabs"
+            font.family: Theme.fontMono
+            font.pixelSize: Tokens.fontSizeTiny
+            color: Theme.textDim
+            horizontalAlignment: Text.AlignHCenter
+        }
 
         Rectangle {
             id: btopBtn
@@ -538,7 +604,7 @@ Item {
                 id:           btopHover
                 anchors.fill: parent
                 hoverEnabled: true
-                onClicked:    btopProc.running = true
+                onClicked:    cpuFrontend.launchBtop()
                 cursorShape:  Qt.PointingHandCursor
             }
         }
