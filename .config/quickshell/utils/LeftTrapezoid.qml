@@ -150,9 +150,11 @@ Item {
     //  HOVER DETECTION
     // ---
 
+    // Hover only — do not accept buttons or workspace clicks get stolen
     MouseArea {
         anchors.fill: parent
         hoverEnabled: true
+        acceptedButtons: Qt.NoButton
         onEntered: root.hovered = true
         onExited:  root.hovered = false
     }

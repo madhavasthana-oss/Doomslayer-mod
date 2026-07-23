@@ -200,15 +200,6 @@ Item {
         centerBar.pushStatus(msg, { holdMs: 5000 })
     }
 
-    FontLoader {
-        id: kogni
-        source: "../assets/fonts/KogniGear.ttf"
-    }
-    FontLoader {
-        id: jetbrains
-        source: "../assets/fonts/JetBrainsMonoNerdFontMono-Regular.ttf"
-    }
-
     CenterTrapezoid {
         anchors.fill: parent
         barWidth:     Tokens.centerWidth
@@ -227,7 +218,7 @@ Item {
                 Layout.preferredWidth: Tokens.greetingWidth
                 text: "<< " + messageAnimator.displayedText + " >>"
                 horizontalAlignment: Text.AlignHCenter
-                font.family: kogni.name
+                font.family: Theme.fontDisplay
                 font.pixelSize: Tokens.fontSizeMedium
                 color: Theme.textPrimary
             }
@@ -237,7 +228,7 @@ Item {
                 Layout.alignment: Qt.AlignHCenter
                 text: Qt.formatDate(new Date(), "ddd") + " × " + Qt.formatDate(new Date(), "dd MMM") + " × " + Qt.formatTime(new Date(), "hh:mm")
                 horizontalAlignment: Text.AlignHCenter
-                font.family: jetbrains.name
+                font.family: Theme.fontMono
                 font.pixelSize: Tokens.fontSizeSmall
                 color: Theme.textSecondary
             }
