@@ -64,7 +64,8 @@ Item {
 
     Component.onCompleted: {
         selectIndex(0)
-        grabListFocus()
+        if (Globals.activeCenterPanel === "console")
+            grabListFocus()
     }
 
     // When user switches to CONSOLE tab, reclaim keyboard for Enter / arrows

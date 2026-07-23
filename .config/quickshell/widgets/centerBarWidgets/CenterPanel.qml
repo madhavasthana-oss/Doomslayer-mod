@@ -11,36 +11,45 @@ Item {
 
     readonly property var panelOrder: ["dashboard", "console", "media"]
 
-    function switchPanel(panel) {
+    function switchCenterPanel(panel) {
         Globals.activeCenterPanel = panel
         Globals.lastCenterPanel = panel
+        Qt.callLater(root.grabActiveFocus)
     }
 
-    function cyclePanel(delta) {
+    function cycleCenterPanel(delta) {
         const order = root.panelOrder
         let idx = order.indexOf(Globals.activeCenterPanel)
         if (idx < 0)
             idx = 0
         idx = (idx + delta + order.length) % order.length
-        switchPanel(order[idx])
+        switchCenterPanel(order[idx])
     }
 
-    // Left/Right cycle CPU/GPU/RAM when focus isn't on a text field
+    function grabActiveFocus() {
+        const panel = Globals.activeCenterPanel
+        if (panel === "console")
+            consoleView.grabListFocus()
+        else
+            root.forceActiveFocus()
+    }
+
+    // Left/Right cycle dashboard / console / media
     Keys.onPressed: (event) => {
         if (event.key === Qt.Key_Left) {
-            root.cyclePanel(-1)
+            root.cycleCenterPanel(-1)
             event.accepted = true
         } else if (event.key === Qt.Key_Right) {
-            root.cyclePanel(1)
+            root.cycleCenterPanel(1)
             event.accepted = true
         } else if (event.key === Qt.Key_1) {
-            root.switchPanel("cpu")
+            root.switchCenterPanel("dashboard")
             event.accepted = true
         } else if (event.key === Qt.Key_2) {
-            root.switchPanel("gpu")
+            root.switchCenterPanel("console")
             event.accepted = true
         } else if (event.key === Qt.Key_3) {
-            root.switchPanel("ram")
+            root.switchCenterPanel("media")
             event.accepted = true
         }
     }
@@ -55,10 +64,7 @@ Item {
             Layout.rightMargin: Tokens.paddingH
 
             active: Globals.activeCenterPanel
-            onSwitched: (panel) => {
-                Globals.activeCenterPanel = panel
-                Globals.lastCenterPanel = panel
-            }
+            onSwitched: (panel) => root.switchCenterPanel(panel)
         }
 
         // 2. Separator line
