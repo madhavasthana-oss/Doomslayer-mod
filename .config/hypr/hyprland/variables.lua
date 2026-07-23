@@ -9,7 +9,7 @@ textEditor = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'kate' '
 volumeMixer = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'pavucontrol-qt' 'pavucontrol'"
 settingsApp = "XDG_CURRENT_DESKTOP=gnome ~/.config/hypr/hyprland/scripts/launch_first_available.sh 'nwg-look' 'systemsettings' 'gnome-control-center' 'better-control'"
 taskManager = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'gnome-system-monitor' 'plasma-systemmonitor --page-name Processes' 'command -v btop && kitty -1 fish -c btop'"
-appManager = "~/.config/hypr/hyprland/scripts/launch_first_available.sh 'rofi -show drun'"
+appManager = "~/.config/rofi/launch.sh drun"
 
 workspaceGroupSize = 10
 

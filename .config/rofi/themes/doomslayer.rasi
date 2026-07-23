@@ -1,0 +1,230 @@
+/* ---
+ * Doomslayer-mod rofi theme
+ * Colors / type mirror quickshell Theme.qml + Tokens.qml
+ * bgPrimary #0D0000 | bgSurface #1A0000 | bgElevated #2A0500
+ * accent #FF4500 | accentWarm #FFCA80 | borderIdle #CC2200
+ * bgConsole #1F0200 @ opacityConsole ~0.95
+ * --- */
+
+* {
+    /* Theme.qml backgrounds */
+    bg-primary:   #0D0000;
+    bg-surface:   #1A0000;
+    bg-elevated:  #2A0500;
+    bg-console:   #1F0200F2;
+
+    /* Theme.qml accents */
+    accent:       #FF4500;
+    accent-warm:  #FFCA80;
+    accent-soft:  #FF80BF;
+    glow:         #994400;
+
+    /* Theme.qml text */
+    text-primary:   #FF4500;
+    text-secondary: #FFCA80;
+    text-muted:     #CC2200;
+    text-dim:       #601000;
+
+    /* Theme.qml state */
+    state-critical: #CC2200;
+    state-safe:     #8AFF80;
+    state-warning:  #FFCA80;
+
+    /* Theme.qml borders */
+    border-active:  #FF4500;
+    border-idle:    #CC2200;
+
+    transparent:      #00000000;
+    background-color: @transparent;
+    text-color:       @text-secondary;
+    border-color:     @border-idle;
+
+    /* Tokens: spacing-ish */
+    spacing: 6px;
+}
+
+window {
+    transparency:     "real";
+    location:         center;
+    anchor:           center;
+    width:            520px;
+    x-offset:         0px;
+    y-offset:         0px;
+
+    background-color: @bg-console;
+    border:           2px solid;
+    border-color:     @border-idle;
+    border-radius:    10px;
+    padding:          12px;
+}
+
+mainbox {
+    background-color: @transparent;
+    spacing:          10px;
+    children:         [ inputbar, message, listview, mode-switcher ];
+}
+
+/* --- input --- */
+
+inputbar {
+    background-color: @bg-surface;
+    border:           1px solid;
+    border-color:     @border-idle;
+    border-radius:    6px;
+    padding:          10px 12px;
+    spacing:          8px;
+    children:         [ prompt, entry, case-indicator ];
+}
+
+prompt {
+    background-color: @transparent;
+    text-color:       @accent;
+    font:             "KogniGear 12";
+}
+
+entry {
+    background-color: @transparent;
+    text-color:       @text-secondary;
+    placeholder:      "rip and tear...";
+    placeholder-color: @text-dim;
+    cursor:           @accent;
+}
+
+case-indicator {
+    background-color: @transparent;
+    text-color:       @text-muted;
+}
+
+/* --- list --- */
+
+listview {
+    background-color: @transparent;
+    columns:          1;
+    lines:            10;
+    cycle:            true;
+    dynamic:          true;
+    scrollbar:        true;
+    layout:           vertical;
+    fixed-height:     true;
+    spacing:          4px;
+    padding:          2px 0 0 0;
+}
+
+scrollbar {
+    background-color: @bg-surface;
+    handle-color:     @accent;
+    handle-width:     4px;
+    border:           0;
+    margin:           0 0 0 6px;
+}
+
+element {
+    background-color: @bg-surface;
+    text-color:       @text-secondary;
+    border:           1px solid;
+    border-color:     @transparent;
+    border-radius:    5px;
+    padding:          8px 10px;
+    spacing:          10px;
+    children:         [ element-icon, element-text ];
+}
+
+element-icon {
+    background-color: @transparent;
+    size:             1.4em;
+    cursor:           inherit;
+}
+
+element-text {
+    background-color: @transparent;
+    text-color:       inherit;
+    cursor:           inherit;
+    vertical-align:   0.5;
+    highlight:        bold underline #FF4500;
+}
+
+element normal.normal,
+element alternate.normal {
+    background-color: @bg-surface;
+    text-color:       @text-secondary;
+    border-color:     @transparent;
+}
+
+element normal.urgent,
+element alternate.urgent {
+    background-color: @bg-surface;
+    text-color:       @state-critical;
+}
+
+element normal.active,
+element alternate.active {
+    background-color: @bg-elevated;
+    text-color:       @state-safe;
+}
+
+element selected.normal {
+    background-color: @bg-elevated;
+    text-color:       @accent;
+    border-color:     @border-active;
+}
+
+element selected.urgent {
+    background-color: @bg-elevated;
+    text-color:       @state-critical;
+    border-color:     @state-critical;
+}
+
+element selected.active {
+    background-color: @bg-elevated;
+    text-color:       @state-safe;
+    border-color:     @state-safe;
+}
+
+/* --- message / error --- */
+
+message {
+    background-color: @bg-surface;
+    border:           1px solid;
+    border-color:     @border-idle;
+    border-radius:    5px;
+    padding:          8px 10px;
+}
+
+textbox {
+    background-color: @transparent;
+    text-color:       @text-secondary;
+}
+
+error-message {
+    background-color: @bg-console;
+    border:           2px solid;
+    border-color:     @state-critical;
+    border-radius:    6px;
+    padding:          12px;
+}
+
+/* --- mode switcher (sidebar tabs) --- */
+
+mode-switcher {
+    background-color: @transparent;
+    spacing:          6px;
+    border:           1px 0 0 0;
+    border-color:     @border-idle;
+    padding:          8px 0 0 0;
+}
+
+button {
+    background-color: @bg-surface;
+    text-color:       @text-dim;
+    border:           1px solid;
+    border-color:     @border-idle;
+    border-radius:    5px;
+    padding:          6px 10px;
+    font:             "KogniGear 10";
+}
+
+button selected {
+    background-color: @bg-elevated;
+    text-color:       @accent;
+    border-color:     @border-active;
+}
