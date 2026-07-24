@@ -336,9 +336,9 @@ hl.bind(
 ) -- # [hidden] Power off
 
 --##! Apps
-hl.bind("SUPER + Return", hl.dsp.exec_cmd(terminal), { description = "App: Terminal" })
-hl.bind("SUPER + T", hl.dsp.exec_cmd(terminal))
-hl.bind("CTRL + ALT + T", hl.dsp.exec_cmd(terminal))
+hl.bind("SUPER + T", hl.dsp.exec_cmd(terminalPrimary), { description = "App: Primary Terminal" })
+hl.bind("SUPER + ALT + T", hl.dsp.exec_cmd(terminalSecondary), { description = "App: Secondary Terminal" })
+hl.bind("SUPER + CTRL + T", hl.dsp.exec_cmd(terminalTertiary), { description = "App: Tertiary Terminal" })
 hl.bind("SUPER + E", hl.dsp.exec_cmd(fileManager), { description = "App: File manager" })
 hl.bind("SUPER + B", hl.dsp.exec_cmd(browser), { description = "App: Browser" })
 hl.bind("SUPER + C", hl.dsp.exec_cmd(codeEditor), { description = "App: Code editor" })

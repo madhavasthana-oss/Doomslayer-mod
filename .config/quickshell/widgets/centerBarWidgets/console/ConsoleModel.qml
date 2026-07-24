@@ -14,19 +14,20 @@ Item {
 
         ListElement {
             title: "GhosTTY"
-            classification: "Command Line Control Center"
+            classification: "Command Line Control Center 1"
             description: "The gateway to the heart of the machine. Every process bends to the Slayer's will. Every command carves another scar into the system. The machine obeys without hesitation."
             icon: "com.mitchellh.ghostty"
             execCmd: "ghostty"
         }
-
+        
         ListElement {
             title: "KiTTY"
-            classification: "Command Line Control Center"
+            classification: "Command Line Control Center 2"
             description: "A highly combat tested, and powerful GPU-accelerated terminal. Coded in C and python, if GhosTTY is perhaps too heavy, then KiTTY is your go to."
             icon: "kitty"
             execCmd: "kitty"
         }
+
 
         ListElement {
             title: "Firefox"

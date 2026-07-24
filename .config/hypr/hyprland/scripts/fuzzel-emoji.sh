@@ -1,4 +1,6 @@
 #!/bin/bash
+# No longer in use, replaced with rofi emoji
+# still kept for utility purpose
 set -euo pipefail
 
 MODE="${1:-type}"

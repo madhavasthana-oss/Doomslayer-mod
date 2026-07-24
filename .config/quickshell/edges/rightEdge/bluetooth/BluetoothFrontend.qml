@@ -296,8 +296,9 @@ Item {
         }
 
         Text {
+            id: instructionText
             Layout.fillWidth: true
-            text: "ARROWS move * ENTER link * DEL forget * S scan * P power"
+            text: "ENTER link * DEL forget * S scan * P power"
             font.family: Theme.fontMono
             font.pixelSize: Tokens.fontSizeTiny
             color: Theme.textDim

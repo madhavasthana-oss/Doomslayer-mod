@@ -112,13 +112,12 @@ pciutils
 # -----------------------------------------------------------------------------
 zsh
 fastfetch
-# oh-my-posh is often AUR: oh-my-posh-bin
-@aur oh-my-posh-bin
+oh-my-posh-git
 
 # -----------------------------------------------------------------------------
 # FONTS (Quickshell assets also ship JetBrains Mono Nerd locally)
 # -----------------------------------------------------------------------------
-ttf-jetbrains-mono-nerd
+ttf-fira-code
 otf-font-awesome
 noto-fonts
 noto-fonts-emoji
@@ -146,12 +145,15 @@ util-linux
 # OPTIONAL — nice-to-have / fallbacks in variables.lua
 # Uncomment if you want them available without searching.
 # -----------------------------------------------------------------------------
-# foot
-# wezterm
-# chromium
-# kate
-# libreoffice-fresh
-# nwg-displays
-# rofi-wayland
-# swappy
-# spotify-launcher
+
+foot
+wezterm
+chromium
+kate
+libreoffice-fresh
+nwg-displays
+rofi
+rofi-wayland
+swappy
+spotify-launcher
+wtype

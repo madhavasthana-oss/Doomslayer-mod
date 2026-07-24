@@ -23,6 +23,12 @@ background-opacity = 0.7
 background-blur = false
 background-opacity-cells = false
 
+# Prefer one process; new launches open windows in the existing instance
+gtk-single-instance = true
+
+# If monitors show high CPU / iowait with multiple tabs/windows
+async-backend = epoll
+
 # custom shaders (paths are relative to this config dir)
 # custom-shader = shaders/cursor_sweep.glsl
 

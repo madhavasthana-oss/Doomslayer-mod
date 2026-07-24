@@ -242,7 +242,7 @@ Item {
 
             Repeater {
                 model: [
-                    { key: "look",  label: "NWG-LOOK", icon: Theme.iconThemeApp },
+                    { key: "gnome",  label: "GNOME-CONTROLS", icon: Theme.iconThemeApp },
                     { key: "shot",  label: "SCREENSHOT", icon: Theme.iconScreenshot },
                     { key: "rec",   label: Globals.screenRecording ? "STOP REC" : "RECORD", icon: Theme.iconRecord },
                     { key: "mute",  label: backend.muted ? "UNMUTE" : "MUTE", icon: Theme.iconAudio }
@@ -297,7 +297,7 @@ Item {
                         cursorShape: Qt.PointingHandCursor
                         onClicked: {
                             switch (modelData.key) {
-                            case "look": backend.launchLook(); break
+                            case "gnome": backend.launchGnome(); break
                             case "shot": backend.screenshot(); break
                             case "rec":  backend.toggleRecord(); break
                             case "mute": backend.toggleMute(); break

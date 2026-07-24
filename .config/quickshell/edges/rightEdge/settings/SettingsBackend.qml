@@ -1,4 +1,4 @@
-// SettingsBackend.qml --- brightness, kbd, audio, capture tools, nwg-look
+// SettingsBackend.qml --- brightness, kbd, audio, capture tools, gnome-control-center
 import QtQuick
 import Quickshell
 import Quickshell.Io
@@ -194,18 +194,22 @@ Item {
         onExited: kbdQuery.running = true
     }
 
-    // --- Appearance (nwg-look) ---
-    function launchLook() {
-        root.statusMsg = "LAUNCHING NWG-LOOK"
+    // --- Appearance (GNOME-CONTROL-CENTER) ---
+    // GCC refuses to start unless XDG_CURRENT_DESKTOP is GNOME/Unity.
+    // Spoof it for Hyprland; the binary is already installed.
+    function launchGnome() {
+        root.statusMsg = "LAUNCHING GNOME"
         root.requestClose()
         // slight delay so panel can collapse first
-        lookTimer.start()
+        gnomeTimer.start()
     }
 
     Timer {
-        id: lookTimer
+        id: gnomeTimer
         interval: Tokens.animMedium
-        onTriggered: Quickshell.execDetached(["nwg-look"])
+        onTriggered: Quickshell.execDetached([
+            "env", "XDG_CURRENT_DESKTOP=GNOME", "gnome-control-center"
+        ])
     }
 
     // --- Screenshot (grim + slurp) ---
