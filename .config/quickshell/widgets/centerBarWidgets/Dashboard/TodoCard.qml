@@ -97,44 +97,77 @@ Rectangle {
             clip: true
             spacing: Tokens.spacingXss
             model: todoModel
+            boundsBehavior: Flickable.StopAtBounds
+            flickableDirection: Flickable.VerticalFlick
+            interactive: contentHeight > height
 
-            delegate: RowLayout {
-                width: list.width
-                spacing: Tokens.spacingXs
-
-                Rectangle {
-                    Layout.preferredWidth: Tokens.iconSizeMedium
-                    Layout.preferredHeight: Tokens.iconSizeMedium
+            ScrollBar.vertical: ScrollBar {
+                policy: list.contentHeight > list.height
+                    ? ScrollBar.AsNeeded
+                    : ScrollBar.AlwaysOff
+                width: Tokens.borderXs
+                contentItem: Rectangle {
                     radius: Tokens.radiusSm
-                    color: model.done ? Theme.bgElevated : Theme.bgPrimary
-                    border.color: model.done ? Theme.borderActive : Theme.borderIdle
-                    border.width: Tokens.strokeWidth
-                    Text {
-                        anchors.centerIn: parent
-                        text: model.done ? "✓" : ""
-                        color: Theme.accent
-                        font.pixelSize: Tokens.fontSizeTiny
-                    }
-                    MouseArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: root.toggle(index)
-                    }
+                    color: Theme.accent
+                    opacity: Theme.opacityMuted
                 }
+                background: Rectangle {
+                    radius: Tokens.radiusSm
+                    color: Theme.bgElevated
+                    opacity: Theme.opacityMuted
+                }
+            }
 
-                Text {
-                    Layout.fillWidth: true
-                    text: model.text
-                    font.family: Theme.fontMono
-                    font.pixelSize: Tokens.fontSizeSmall
-                    color: model.done ? Theme.textDim : Theme.textPrimary
-                    font.strikeout: model.done
-                    elide: Text.ElideRight
-                    MouseArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: root.toggle(index)
-                        onPressAndHold: root.removeAt(index)
+            // Explicit height so wrapped multi-line rows scroll correctly
+            delegate: Item {
+                width: list.width - Tokens.borderXs - Tokens.spacingXss
+                height: row.implicitHeight
+
+                RowLayout {
+                    id: row
+                    width: parent.width
+                    spacing: Tokens.spacingXs
+
+                    Rectangle {
+                        Layout.preferredWidth: Tokens.iconSizeMedium
+                        Layout.preferredHeight: Tokens.iconSizeMedium
+                        Layout.alignment: Qt.AlignTop
+                        radius: Tokens.radiusSm
+                        color: model.done ? Theme.bgElevated : Theme.bgPrimary
+                        border.color: model.done ? Theme.borderActive : Theme.borderIdle
+                        border.width: Tokens.strokeWidth
+                        Text {
+                            anchors.centerIn: parent
+                            text: model.done ? "✓" : ""
+                            color: Theme.accent
+                            font.pixelSize: Tokens.fontSizeTiny
+                        }
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: root.toggle(index)
+                        }
+                    }
+
+                    Text {
+                        Layout.fillWidth: true
+                        text: model.text
+                        font.family: Theme.fontMono
+                        font.pixelSize: Tokens.fontSizeSmall
+                        color: model.done ? Theme.textDim : Theme.textPrimary
+                        font.strikeout: model.done
+                        wrapMode: Text.WordWrap
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            // Don't steal wheel / flick from ListView
+                            propagateComposedEvents: true
+                            onClicked: (mouse) => {
+                                root.toggle(index)
+                                mouse.accepted = true
+                            }
+                            onPressAndHold: root.removeAt(index)
+                        }
                     }
                 }
             }
