@@ -39,10 +39,12 @@ Item {
             modeAdd.mode = "silent"
             modeAdd.running = true
             root.statusMsg = "SILENT MODE"
+            Globals.toast("Silent mode", "Notifications muted", "Notifications")
         } else {
             modeRemove.mode = "silent"
             modeRemove.running = true
             root.statusMsg = "AUDIBLE"
+            Globals.toast("Audible", "Silent mode off", "Notifications")
         }
     }
 
@@ -53,10 +55,12 @@ Item {
             modeAdd.mode = "dnd"
             modeAdd.running = true
             root.statusMsg = "DO NOT DISTURB"
+            Globals.toast("Do not disturb", "Notifications hidden", "Notifications")
         } else {
             modeRemove.mode = "dnd"
             modeRemove.running = true
             root.statusMsg = "DND OFF"
+            Globals.toast("DND off", "Notifications visible", "Notifications")
         }
     }
 

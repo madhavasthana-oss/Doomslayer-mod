@@ -20,6 +20,7 @@ Item {
             return
         Bluetooth.defaultAdapter.enabled = on
         root.statusMsg = on ? "ADAPTER ONLINE" : "ADAPTER OFFLINE"
+        Globals.toast(on ? "Bluetooth on" : "Bluetooth off", "", "Bluetooth")
     }
 
     function setDiscovering(on) {
@@ -27,6 +28,8 @@ Item {
             return
         Bluetooth.defaultAdapter.discovering = on
         root.statusMsg = on ? "SCANNING AIRSPACE..." : "SCAN HALTED"
+        if (on)
+            Globals.toast("Scanning", "Bluetooth discovery started", "Bluetooth")
     }
 
     function toggleDiscover() {
@@ -36,7 +39,9 @@ Item {
     function connectDevice(dev) {
         if (!dev)
             return
-        root.statusMsg = "LINKING " + (dev.name || dev.deviceName || dev.address)
+        const label = dev.name || dev.deviceName || dev.address
+        root.statusMsg = "LINKING " + label
+        Globals.toast("Linking", label, "Bluetooth")
         if (dev.paired || dev.bonded) {
             dev.connect()
         } else {
@@ -49,15 +54,19 @@ Item {
     function disconnectDevice(dev) {
         if (!dev)
             return
+        const label = dev.name || dev.address
         dev.disconnect()
-        root.statusMsg = "DROPPED " + (dev.name || dev.address)
+        root.statusMsg = "DROPPED " + label
+        Globals.toast("Disconnected", label, "Bluetooth")
     }
 
     function forgetDevice(dev) {
         if (!dev)
             return
+        const label = dev.name || dev.address
         dev.forget()
-        root.statusMsg = "FORGOT " + (dev.name || dev.address)
+        root.statusMsg = "FORGOT " + label
+        Globals.toast("Forgot device", label, "Bluetooth")
     }
 
     Connections {
@@ -69,8 +78,11 @@ Item {
                 target.connect()
         }
         function onConnectedChanged() {
-            if (target && target.connected)
+            if (target && target.connected) {
                 root.statusMsg = "LINKED"
+                const label = target.name || target.deviceName || target.address || ""
+                Globals.toast("Linked", label, "Bluetooth")
+            }
         }
     }
 

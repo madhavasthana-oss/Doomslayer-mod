@@ -16,7 +16,11 @@ hl.on("hyprland.start", function()
 	hl.exec_cmd("sleep 1 && dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP") -- Some fix idk
 
 	-- GhosTTY initializer
-	hl.exec_cmd("ghostty --gtk-single-instance=true --quit-after-last-window-closed=false --initial-window=false")
+	-- If GhosTTY lags behind, uncomment to make it faster, this will keep a window
+	-- hl.exec_cmd("ghostty --gtk-single-instance=true --quit-after-last-window-closed=false --initial-window=false")
+
+	-- notification daemon initializer
+	hl.exec_cmd("mako")
 
 	-- Audio
 	hl.exec_cmd("easyeffects --hide-window --service-mode")

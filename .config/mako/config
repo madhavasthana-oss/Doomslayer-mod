@@ -96,6 +96,28 @@ progress-color=over #FF4500FF
 border-color=#FF4500FF
 format=<span foreground="#FF4500"><b>◆ %s</b></span>\n<span foreground="#FFCA80">%b</span>
 
+# Quickshell Globals.toast() app-names
+[app-name="Quickshell"]
+border-color=#FF4500FF
+default-timeout=4000
+format=<span foreground="#FF4500"><b>◆ %s</b></span>\n<span foreground="#FFCA80">%b</span>
+
+[app-name="Settings"]
+border-color=#FF4500FF
+default-timeout=4000
+
+[app-name="Bluetooth"]
+border-color=#FF4500FF
+default-timeout=4000
+
+[app-name="Network"]
+border-color=#FF4500FF
+default-timeout=4000
+
+[app-name="Notifications"]
+border-color=#FF4500FF
+default-timeout=3000
+
 [app-name="notify-send"]
 # keep theme defaults
 
@@ -112,5 +134,12 @@ default-timeout=1500
 # Soft mute without killing the daemon:
 #   makoctl mode -a do-not-disturb
 #   makoctl mode -r do-not-disturb
+# Quickshell NotifBackend uses "dnd" / "silent"
 [mode=do-not-disturb]
+invisible=1
+
+[mode=dnd]
+invisible=1
+
+[mode=silent]
 invisible=1

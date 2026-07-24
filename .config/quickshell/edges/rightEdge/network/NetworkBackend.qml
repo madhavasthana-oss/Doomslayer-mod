@@ -30,6 +30,7 @@ Item {
 
     function setWifiEnabled(on) {
         radioSet.command = ["nmcli", "radio", "wifi", on ? "on" : "off"]
+        radioSet.wantOn = on
         radioSet.running = true
     }
 
@@ -126,6 +127,7 @@ Item {
 
     Process {
         id: radioSet
+        property bool wantOn: true
         command: ["nmcli", "radio", "wifi", "on"]
         stdout: StdioCollector { onStreamFinished: radioQuery.running = true }
         stderr: StdioCollector {
@@ -137,8 +139,12 @@ Item {
         }
         onExited: (code) => {
             radioQuery.running = true
-            if (code === 0)
+            if (code === 0) {
+                Globals.toast(wantOn ? "Wi‑Fi on" : "Wi‑Fi off", "", "Network")
                 root.rescan()
+            } else {
+                Globals.toast("Wi‑Fi toggle failed", root.statusMsg, "Network")
+            }
         }
     }
 
@@ -200,6 +206,7 @@ Item {
                 root.connecting = false
                 root.needsPassword = false
                 root.statusMsg = "LINKED: " + connectKnown.ssid
+                Globals.toast("Connected", connectKnown.ssid, "Network")
                 root.rescan()
             } else if (!root.needsPassword) {
                 root.needsPassword = true
@@ -220,10 +227,12 @@ Item {
                 root.needsPassword = false
                 root.pendingSsid = ""
                 root.statusMsg = "LINKED: " + connectPass.ssid
+                Globals.toast("Connected", connectPass.ssid, "Network")
                 root.rescan()
             } else {
                 root.needsPassword = true
                 root.statusMsg = "AUTH FAILED"
+                Globals.toast("Auth failed", connectPass.ssid, "Network")
             }
         }
     }
@@ -254,6 +263,11 @@ Item {
         command: ["nmcli", "device", "disconnect", iface]
         onExited: (code) => {
             root.statusMsg = code === 0 ? "DISCONNECTED" : "DISCONNECT FAILED"
+            Globals.toast(
+                code === 0 ? "Disconnected" : "Disconnect failed",
+                "",
+                "Network"
+            )
             root.rescan()
         }
     }

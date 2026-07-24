@@ -59,6 +59,7 @@ Item {
             return
         a.muted = !a.muted
         root.muted = a.muted
+        Globals.toast(root.muted ? "Muted" : "Unmuted", "", "Settings")
     }
 
     property int audioAttempts: 0
@@ -199,6 +200,7 @@ Item {
     // Spoof it for Hyprland; the binary is already installed.
     function launchGnome() {
         root.statusMsg = "LAUNCHING GNOME"
+        Globals.toast("Settings", "Opening GNOME Control Center", "Settings")
         root.requestClose()
         // slight delay so panel can collapse first
         gnomeTimer.start()
@@ -227,7 +229,7 @@ Item {
                 "bash", "-c",
                 "mkdir -p \"$HOME/Pictures\" && "
                 + "f=\"$HOME/Pictures/slayer-$(date +%Y%m%d-%H%M%S).png\" && "
-                + "grim -g \"$(slurp)\" \"$f\" && notify-send Screenshot \"$f\""
+                + "grim -g \"$(slurp)\" \"$f\" && notify-send -a Settings Screenshot \"$f\""
             ])
         }
     }
@@ -239,6 +241,7 @@ Item {
             return
         }
         root.statusMsg = "SELECT REGION TO RECORD"
+        Globals.toast("Recording", "Select region…", "Settings")
         root.requestClose()
         recTimer.start()
     }
@@ -253,7 +256,7 @@ Item {
                 "mkdir -p \"$HOME/Videos\" && "
                 + "f=\"$HOME/Videos/slayer-$(date +%Y%m%d-%H%M%S).mp4\" && "
                 + "wf-recorder -g \"$(slurp)\" -f \"$f\"; "
-                + "notify-send 'Recording saved' \"$f\""
+                + "notify-send -a Settings 'Recording saved' \"$f\""
             ])
         }
     }
@@ -264,6 +267,7 @@ Item {
         onExited: {
             Globals.screenRecording = false
             root.statusMsg = "RECORDING STOPPED"
+            Globals.toast("Recording stopped", "", "Settings")
         }
     }
 }
