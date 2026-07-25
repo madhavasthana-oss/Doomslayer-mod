@@ -17,7 +17,7 @@
 # CORE — compositor session (required)
 # -----------------------------------------------------------------------------
 hyprland
-hyprpaper
+awww
 hypridle
 hyprlock
 hyprpicker
@@ -84,7 +84,7 @@ gnome-keyring
 
 # -----------------------------------------------------------------------------
 # WALLPAPERS
-#   Static: hyprpaper (above)
+#   Static + animated GIF: awww (above) — transition animations on switch
 #   Live video walls (wallpaper-slayer.sh --live): mpvpaper
 # -----------------------------------------------------------------------------
 mpvpaper

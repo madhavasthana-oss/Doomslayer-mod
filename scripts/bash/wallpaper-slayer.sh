@@ -17,6 +17,11 @@ STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/doomslayer"
 STATE_FILE="$STATE_DIR/wallpaper-slayer.state"
 LIVE=false
 
+# Animated switch defaults (override with env if you want)
+TRANSITION_TYPE="${AWWW_TRANSITION:-random}"
+TRANSITION_DURATION="${AWWW_TRANSITION_DURATION:-2}"
+TRANSITION_FPS="${AWWW_TRANSITION_FPS:-60}"
+
 usage() {
     cat <<EOF
 Usage: $0 [--list|--next|--random|--status|--set <name>] [--live]
@@ -32,8 +37,13 @@ HyDE theme wallpaper caches.
   --status            Show last applied wallpaper
   -h, --help          This help
 
-Static images use hyprpaper (via hyde-shell wallpaper.hyprpaper when available).
-Videos / gifs use mpvpaper when installed.
+Static images + animated GIFs use awww (with transition animations).
+Videos use mpvpaper when installed.
+
+Env (awww transitions):
+  AWWW_TRANSITION            type (default: random)
+  AWWW_TRANSITION_DURATION   seconds (default: 2)
+  AWWW_TRANSITION_FPS        fps (default: 60)
 EOF
     exit 0
 }
@@ -86,47 +96,67 @@ stop_live() {
     pkill -u "$USER" -x mpvpaper 2>/dev/null || true
 }
 
+stop_hyprpaper() {
+    pkill -u "$USER" -x hyprpaper 2>/dev/null || true
+}
+
+ensure_awww() {
+    if ! command -v awww >/dev/null 2>&1; then
+        echo "error: awww not installed (pacman -S awww)" >&2
+        return 1
+    fi
+
+    stop_hyprpaper
+
+    if ! pgrep -u "$USER" -x awww-daemon >/dev/null 2>&1; then
+        awww-daemon >/dev/null 2>&1 &
+        disown 2>/dev/null || true
+        local i
+        for i in {1..50}; do
+            if awww query >/dev/null 2>&1; then
+                return 0
+            fi
+            sleep 0.1
+        done
+        echo "error: awww-daemon failed to start" >&2
+        return 1
+    fi
+    return 0
+}
+
 apply_static() {
     local path="$1"
     stop_live
+    ensure_awww || return 1
 
-    if command -v hyde-shell >/dev/null 2>&1; then
-        # Prefer HyDE's hyprpaper helper so caches stay coherent
-        if hyde-shell wallpaper.hyprpaper "$path" >/dev/null 2>&1; then
-            return 0
-        fi
-    fi
-
-    if command -v hyprctl >/dev/null 2>&1; then
-        # Ensure hyprpaper is up
-        if ! pgrep -u "$USER" -x hyprpaper >/dev/null 2>&1; then
-            hyprpaper >/dev/null 2>&1 &
-            disown 2>/dev/null || true
-            sleep 0.4
-        fi
-        hyprctl hyprpaper preload "$path" >/dev/null 2>&1 || true
-        hyprctl hyprpaper wallpaper ",$path" >/dev/null 2>&1 \
-            || hyprctl hyprpaper reload ",$path" >/dev/null 2>&1 \
-            || true
-        return 0
-    fi
-
-    echo "error: neither hyde-shell wallpaper.hyprpaper nor hyprctl available" >&2
-    return 1
+    awww img "$path" \
+        --transition-type "$TRANSITION_TYPE" \
+        --transition-duration "$TRANSITION_DURATION" \
+        --transition-fps "$TRANSITION_FPS" \
+        --resize crop
 }
 
 apply_live() {
     local path="$1"
-    if ! command -v mpvpaper >/dev/null 2>&1; then
-        echo "warning: mpvpaper not installed; falling back to static thumbnail if possible" >&2
-        apply_static "$path" || return 1
+
+    # awww natively animates GIFs — prefer it over mpvpaper
+    if is_gif "$path"; then
+        apply_static "$path"
         return 0
     fi
 
+    if ! command -v mpvpaper >/dev/null 2>&1; then
+        echo "warning: mpvpaper not installed; cannot play video wallpaper" >&2
+        return 1
+    fi
+
     stop_live
-    # Kill hyprpaper wallpaper on monitors so mpvpaper owns the layer
-    if command -v hyprctl >/dev/null 2>&1; then
-        hyprctl hyprpaper unload all >/dev/null 2>&1 || true
+    stop_hyprpaper
+
+    # Drop awww so mpvpaper owns the background layer
+    if pgrep -u "$USER" -x awww-daemon >/dev/null 2>&1; then
+        awww kill >/dev/null 2>&1 || pkill -u "$USER" -x awww-daemon 2>/dev/null || true
+        sleep 0.2
     fi
 
     # Cover all monitors ("*")
@@ -145,9 +175,12 @@ apply_wall() {
     mkdir -p "$STATE_DIR"
     echo "$path" > "$STATE_FILE"
 
-    if is_video "$path" || is_gif "$path"; then
+    if is_video "$path"; then
         apply_live "$path"
         echo "Wallpaper (live): $path"
+    elif is_gif "$path"; then
+        apply_live "$path"
+        echo "Wallpaper (gif): $path"
     else
         apply_static "$path"
         echo "Wallpaper: $path"
@@ -235,8 +268,11 @@ status() {
     fi
     if pgrep -u "$USER" -x mpvpaper >/dev/null 2>&1; then
         echo "live engine: mpvpaper running"
+    elif pgrep -u "$USER" -x awww-daemon >/dev/null 2>&1; then
+        echo "static engine: awww-daemon running"
+        awww query 2>/dev/null || true
     elif pgrep -u "$USER" -x hyprpaper >/dev/null 2>&1; then
-        echo "static engine: hyprpaper running"
+        echo "static engine: hyprpaper running (legacy — switch to awww)"
     else
         echo "engine: none detected"
     fi

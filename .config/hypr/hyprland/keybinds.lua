@@ -342,7 +342,6 @@ hl.bind("SUPER + CTRL + T", hl.dsp.exec_cmd(terminalTertiary), { description = "
 hl.bind("SUPER + E", hl.dsp.exec_cmd(fileManager), { description = "App: File manager" })
 hl.bind("SUPER + B", hl.dsp.exec_cmd(browser), { description = "App: Browser" })
 hl.bind("SUPER + C", hl.dsp.exec_cmd(codeEditor), { description = "App: Code editor" })
-hl.bind("CTRL + SUPER + SHIFT + ALT + W", hl.dsp.exec_cmd(officeSoftware), { description = "App: Office software" })
 hl.bind("SUPER + X", hl.dsp.exec_cmd(textEditor), { description = "App: Text editor" })
 hl.bind("CTRL + SUPER + V", hl.dsp.exec_cmd(volumeMixer), { description = "App: Volume mixer" })
 hl.bind("SUPER + I", hl.dsp.exec_cmd(settingsApp), { description = "App: Settings app" })
@@ -379,12 +378,23 @@ hl.bind(
 	{ description = "Clipboard: wipe history" }
 )
 
+-- Wallpaper cycler
+hl.bind(
+	"SUPER + W",
+	hl.dsp.exec_cmd(
+		string.format(
+			"%s/wallpaper.sh --next", hyprScripts
+		)
+	)
+)
+
+
 --##! Screenshots
 local screenshot_dir = "$HOME/Pictures/Screenshots"
 hl.bind(
 	"Print",
 	hl.dsp.exec_cmd("grim - | wl-copy && notify-send -a Hyprland 'Screenshot' 'Full screen → clipboard'"),
-	{ description = "Screenshot: full → clipboard" }
+	{ description = "Screenshot: full -> clipboard" }
 )
 hl.bind(
 	"SUPER + Print",

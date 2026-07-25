@@ -31,7 +31,11 @@ hl.on("hyprland.start", function()
 	-- Cursor
 	hl.exec_cmd("hyprctl setcursor Bibata-Modern-Classic 24")
 
-	-- load wallpaper
+	-- Wallpaper: awww (replaces hyprpaper; animated transitions + native GIF)
+	-- Kill legacy hyprpaper if anything still spawns it, start the daemon, then
+	-- apply the default image via wallpaper.sh (waits for the socket + fade).
+	hl.exec_cmd("pkill -x hyprpaper 2>/dev/null || true")
+	hl.exec_cmd("sh -c 'pgrep -u \"$USER\" -x awww-daemon >/dev/null || exec awww-daemon'")
 	hl.exec_cmd(string.format("bash %s %q", wallpaper_script_path, wallpaper))
 
 	-- load quickshell
