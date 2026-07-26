@@ -1,6 +1,4 @@
-# =============================================================================
 # Doomslayer-mod — system package requirements
-# =============================================================================
 # Target: Arch Linux / CachyOS (pacman). Package names may differ on other distros.
 #
 # Install (official repos only):
@@ -11,11 +9,8 @@
 #   yay -S $(grep '^@aur ' requirements.txt | awk '{print $2}')
 #
 # This is NOT a Python pip requirements file.
-# =============================================================================
-
-# -----------------------------------------------------------------------------
 # CORE — compositor session (required)
-# -----------------------------------------------------------------------------
+
 hyprland
 awww
 hypridle
@@ -29,42 +24,42 @@ qt6-wayland
 polkit-kde-agent
 libnotify
 
-# -----------------------------------------------------------------------------
+
 # SHELL / BAR — Doomshell (Quickshell)
 # On CachyOS: quickshell or quickshell-git both work.
 # Prefer: quickshell (repo) or quickshell-git (AUR / newer).
-# -----------------------------------------------------------------------------
+
 quickshell
 qt6-base
 qt6-declarative
 
-# -----------------------------------------------------------------------------
+
 # CLIPBOARD HISTORY
 #   Startup:  wl-paste --watch cliphist store   (hyprland/execs.lua)
 #   Picker:   Super+V → cliphist + fuzzel
-# -----------------------------------------------------------------------------
+
 wl-clipboard
 cliphist
 fuzzel
 
-# -----------------------------------------------------------------------------
+
 # SCREENSHOTS + ANNOTATE
 #   grim / slurp capture; satty annotate (Super+Shift+Print)
-# -----------------------------------------------------------------------------
+
 grim
 slurp
 satty
 
-# -----------------------------------------------------------------------------
+
 # SCREEN RECORDING + SHARE
 #   wf-recorder keybinds; portal for browsers/OBS/Discord
-# -----------------------------------------------------------------------------
+
 wf-recorder
 
-# -----------------------------------------------------------------------------
+
 # AUDIO (PipeWire stack + mixer + effects)
 #   wpctl keybinds; easyeffects started in execs.lua
-# -----------------------------------------------------------------------------
+
 pipewire
 pipewire-pulse
 pipewire-alsa
@@ -74,27 +69,27 @@ pavucontrol
 easyeffects
 playerctl
 
-# -----------------------------------------------------------------------------
+
 # INPUT / HARDWARE HELPERS
-# -----------------------------------------------------------------------------
+
 brightnessctl
 bc
 geoclue
 gnome-keyring
 
-# -----------------------------------------------------------------------------
+
 # WALLPAPERS
 #   Static + animated GIF: awww (above) — transition animations on switch
 #   Live video walls (wallpaper-slayer.sh --live): mpvpaper
-# -----------------------------------------------------------------------------
+
 mpvpaper
 ffmpeg
 
-# -----------------------------------------------------------------------------
+
 # APPS used by keybinds / Doomshell console (primary picks)
 # variables.lua falls back through many alternatives; these are the ones
 # this mod actually launches by default / UI buttons.
-# -----------------------------------------------------------------------------
+
 ghostty
 kitty
 alacritty
@@ -107,44 +102,41 @@ btop
 bottom
 pciutils
 
-# -----------------------------------------------------------------------------
+
 # TERMINAL / PROMPT / FETCH (configs shipped in .config/)
-# -----------------------------------------------------------------------------
+
 zsh
 fastfetch
 oh-my-posh-git
 
-# -----------------------------------------------------------------------------
+
 # FONTS (Quickshell assets also ship JetBrains Mono Nerd locally)
-# -----------------------------------------------------------------------------
+
 ttf-fira-code
 otf-font-awesome
 noto-fonts
 noto-fonts-emoji
 
-# -----------------------------------------------------------------------------
+
 # CURSOR theme referenced in execs.lua
 #   hyprctl setcursor Bibata-Modern-Classic 24
-# -----------------------------------------------------------------------------
+
 @aur bibata-cursor-theme
 
-# -----------------------------------------------------------------------------
+
 # DISPLAY MANAGER (optional — configs under .config/sddm/)
-# -----------------------------------------------------------------------------
+
 sddm
 
-# -----------------------------------------------------------------------------
+
 # UTILITIES used by scripts (snip_to_search, toolinfo, etc.)
-# -----------------------------------------------------------------------------
+
 jq
 curl
 xdg-utils
 util-linux
 
-# -----------------------------------------------------------------------------
 # OPTIONAL — nice-to-have / fallbacks in variables.lua
-# Uncomment if you want them available without searching.
-# -----------------------------------------------------------------------------
 
 foot
 wezterm
@@ -157,3 +149,6 @@ rofi-wayland
 swappy
 spotify-launcher
 wtype
+
+# for dolphin and kdeglobals
+plasma-integration
