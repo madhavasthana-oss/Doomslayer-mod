@@ -29,7 +29,7 @@ gtk-single-instance = true
 # If monitors show high CPU / iowait with multiple tabs/windows
 async-backend = epoll
 
-# custom shaders (paths are relative to this config dir)
+# custom shaders (paths are relative to this config dir) 
 custom-shader = shaders/cursor_blaze.glsl
 
 # optional includes (? = ignore if missing)
