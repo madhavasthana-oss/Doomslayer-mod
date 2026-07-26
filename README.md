@@ -21,7 +21,7 @@ Contents include:
 
 ---
 
-### [`toolinfo.sh`](./scripts/toolinfo.sh)
+### [`toolinfo.sh`](./scripts/bash/toolinfo.sh)
 
 Utility inspection and information broker script.
 

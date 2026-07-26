@@ -113,6 +113,15 @@ vec3 gradientColor(float factor) {
 const float DURATION = 0.25;
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+    // Suppress cursor effects when unfocused.
+    // Ghostty stops the animation loop on blur; unfinished trails would otherwise
+    // freeze until the surface is refocused. Also avoids hollow-cursor style
+    // changes on unfocus from spawning a bogus smear.
+    if (iFocus < 1) {
+        fragColor = texture(iChannel0, fragCoord.xy / iResolution.xy);
+        return;
+    }
+
     // Calculate animation progress with easing
     float baseProgress = clamp((iTime - iTimeCursorChange) / DURATION, 0.0, 1.0);
 

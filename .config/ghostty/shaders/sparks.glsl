@@ -66,6 +66,15 @@ float getSdfRectangle(in vec2 p, in vec2 xy, in vec2 b)
 }
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+    // Suppress cursor effects when unfocused.
+    // Ghostty stops the animation loop on blur; unfinished trails would otherwise
+    // freeze until the surface is refocused. Also avoids hollow-cursor style
+    // changes on unfocus from spawning a bogus smear.
+    if (iFocus < 1) {
+        fragColor = texture(iChannel0, fragCoord.xy / iResolution.xy);
+        return;
+    }
+
     vec3 base_color = iCurrentCursorColor.rgb;
     base_color = vec3(0.1, 0.5, 2.5);
     // base_color = vec3(0.5, 0.1, 2.5);

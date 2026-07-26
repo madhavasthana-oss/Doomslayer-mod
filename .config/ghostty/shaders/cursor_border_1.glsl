@@ -27,6 +27,15 @@ float normalizeValue(float value) {
 vec2 OFFSET = vec2(0.5, -0.5);
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
+    // Suppress cursor effects when unfocused.
+    // Ghostty stops the animation loop on blur; unfinished trails would otherwise
+    // freeze until the surface is refocused. Also avoids hollow-cursor style
+    // changes on unfocus from spawning a bogus smear.
+    if (iFocus < 1) {
+        fragColor = texture(iChannel0, fragCoord.xy / iResolution.xy);
+        return;
+    }
+
     fragColor = texture(iChannel0, fragCoord.xy / iResolution.xy);
     // Normalization for fragCoord to a space of -1 to 1;
     vec2 vu = normalizePosition(fragCoord.xy);

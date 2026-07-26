@@ -75,6 +75,15 @@ const float DURATION = 0.3; //IN SECONDS
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
+    // Suppress cursor effects when unfocused.
+    // Ghostty stops the animation loop on blur; unfinished trails would otherwise
+    // freeze until the surface is refocused. Also avoids hollow-cursor style
+    // changes on unfocus from spawning a bogus smear.
+    if (iFocus < 1) {
+        fragColor = texture(iChannel0, fragCoord.xy / iResolution.xy);
+        return;
+    }
+
     fragColor = texture(iChannel0, fragCoord.xy / iResolution.xy);
     // Normalization for fragCoord to a space of -1 to 1;
     vec2 vu = norm(fragCoord, 1.);

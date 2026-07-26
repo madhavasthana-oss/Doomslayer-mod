@@ -62,6 +62,15 @@ vec3 saturate(vec3 color, float factor) {
 }
 const vec3 BLAZE_COLOR = vec3(1.0, 0.725, 0.161);
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+    // Suppress cursor effects when unfocused.
+    // Ghostty stops the animation loop on blur; unfinished trails would otherwise
+    // freeze until the surface is refocused. Also avoids hollow-cursor style
+    // changes on unfocus from spawning a bogus smear.
+    if (iFocus < 1) {
+        fragColor = texture(iChannel0, fragCoord.xy / iResolution.xy);
+        return;
+    }
+
     vec3 base_color = iCurrentCursorColor.rgb;
     base_color = vec3(0.1, 0.5, 2.5);
     base_color = BLAZE_COLOR;
