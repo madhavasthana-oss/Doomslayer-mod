@@ -8,12 +8,14 @@ Item {
 
     property bool coreInitialized: false
     property bool ready           : false
+    property bool coreMapReady    : false
     property int  coreCount      : -1
     property int  historyLength       : 20
     property int  intervalLength      : 500
 
-    // WARNING --- THIS IS HARDCODED!! YOU NEED TO UPDATE THIS YOURSELF FOR ACCURATE READING
-    property var coreIdMap: [0, 0, 4, 4, 8, 9, 10, 11, 12, 13, 14, 15]
+    // logical CPU index → physical core_id (matches sensors "Core N" on Intel coretemp)
+    // Built at init from /sys/devices/system/cpu/cpuN/topology/core_id
+    property var coreIdMap: []
 
     // history[i] = { usage: [...], temp: [...] }
     property var history: ({})
@@ -81,6 +83,17 @@ Item {
         history = h
     }
 
+    function startCoreMap() {
+        // seq 0..N-1 so order is numeric (not lexical glob order for cpu10+)
+        coreMapProc.command = [
+            "sh", "-c",
+            "for n in $(seq 0 " + (cpuBackend.coreCount - 1) + "); do " +
+            "cat /sys/devices/system/cpu/cpu$n/topology/core_id 2>/dev/null || echo -1; " +
+            "done | paste -sd,"
+        ]
+        coreMapProc.running = true
+    }
+
     Timer {
         id: detector
         interval: parent.intervalLength
@@ -103,6 +116,9 @@ Item {
             onStreamFinished: {
                 if (cpuBackend.coreCount === -1) {
                     let count = parseInt(text.trim())
+                    if (isNaN(count) || count < 1)
+                        return
+
                     cpuBackend.coreCount = count
 
                     for (let i = 0; i < count; i++) {
@@ -116,8 +132,34 @@ Item {
                     }
 
                     cpuBackend.initHistory(count)
-                    tempDetector.running = true
+                    cpuBackend.startCoreMap()
                 }
+            }
+        }
+    }
+
+    Process {
+        id: coreMapProc
+        command: ["true"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                let raw = text.trim()
+                if (!raw.length) {
+                    // Fallback: identity map if sysfs unreadable
+                    let fallback = []
+                    for (let i = 0; i < cpuBackend.coreCount; i++)
+                        fallback.push(i)
+                    cpuBackend.coreIdMap = fallback
+                } else {
+                    let map = raw.split(",").map(function (s) {
+                        let n = parseInt(s.trim(), 10)
+                        return isNaN(n) ? -1 : n
+                    })
+                    cpuBackend.coreIdMap = map
+                }
+
+                cpuBackend.coreMapReady = true
+                tempDetector.running = true
             }
         }
     }
@@ -175,7 +217,10 @@ Item {
         interval: parent.intervalLength
         running:  false
         repeat:   true
-        onTriggered: tempProc.running = true
+        onTriggered: {
+            if (cpuBackend.coreMapReady)
+                tempProc.running = true
+        }
     }
 
     Process {
@@ -183,7 +228,8 @@ Item {
         command: ["sensors", "-j", "coretemp-isa-0000"]
         stdout: StdioCollector {
             onStreamFinished: {
-                if (cpuBackend.coreCount === -1) return;
+                if (cpuBackend.coreCount === -1 || !cpuBackend.coreMapReady)
+                    return;
 
                 let parsed;
                 try {
@@ -196,14 +242,28 @@ Item {
                 if (!coretemp) return;
 
                 for (let core = 0; core < cpuBackend.coreCount; core++) {
-                    let sensorLabel = "Core " + cpuBackend.coreIdMap[core]
+                    let coreId = cpuBackend.coreIdMap[core]
+                    if (coreId === undefined || coreId < 0)
+                        continue;
+
+                    let sensorLabel = "Core " + coreId
                     let sensorObj   = coretemp[sensorLabel]
                     if (!sensorObj) continue;
 
-                    let tempKey = Object.keys(sensorObj)[0]
-                    let temp    = sensorObj[tempKey]
+                    // Prefer *_input keys (actual reading); fall back to first numeric value
+                    let temp = undefined
+                    let keys = Object.keys(sensorObj)
+                    for (let k = 0; k < keys.length; k++) {
+                        if (keys[k].endsWith("_input")) {
+                            temp = sensorObj[keys[k]]
+                            break
+                        }
+                    }
+                    if (temp === undefined && keys.length > 0)
+                        temp = sensorObj[keys[0]]
 
-                    cpuBackend.setTemp(core, temp)
+                    if (typeof temp === "number")
+                        cpuBackend.setTemp(core, temp)
                 }
             }
         }
