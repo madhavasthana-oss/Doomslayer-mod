@@ -30,7 +30,7 @@ gtk-single-instance = true
 async-backend = epoll
 
 # custom shaders (paths are relative to this config dir)
-# custom-shader = shaders/cursor_sweep.glsl
+custom-shader = shaders/cursor_smear.glsl
 
 # optional includes (? = ignore if missing)
 config-file = ?~/.config/ghostty/theme.conf
