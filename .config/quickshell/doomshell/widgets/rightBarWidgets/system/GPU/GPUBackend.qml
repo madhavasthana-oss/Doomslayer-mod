@@ -12,14 +12,21 @@ Item {
 
     property bool   isReady   : false
     property bool   nameFound : false
-    property string gpuName   : "Loading GPU" 
+    property string gpuName   : "Loading GPU"
     property int    gpuUsage  : -1
     property int    gpuFreq   : -1
 
     readonly property int historyLength: 20
+    // Match frontend usage/frequency paint windows (500 ms)
+    property int intervalLength: 500
 
     property var gpuUsageHistory: new Array(historyLength).fill(undefined)
     property var gpuFreqHistory:  new Array(historyLength).fill(undefined)
+
+    readonly property string gpuInfoScript: {
+        const home = Quickshell.env("HOME") || ""
+        return home + "/Doomslayer-mod/scripts/bash/gpu-info.sh"
+    }
 
     // ---
     //  Sliding window helpers
@@ -86,12 +93,12 @@ Item {
     }
 
     // ---
-    //  Polling
+    //  Polling — gpu-info.sh (nvtop util + sysfs MHz), not turbostat
     // ---
 
     Timer {
         id:       detector
-        interval: 500
+        interval: gpuBackend.intervalLength
         running:  true
         repeat:   true
         onTriggered: {
@@ -107,36 +114,27 @@ Item {
     Process {
         id:      gpuProc
         running: false
-        command: [
-            "turbostat",
-            "--Summary",
-            "--quiet",
-            "--show", "GFX%rc6,GFXMHz",
-            "--no-msr",
-            "--no-perf",
-            "-n", "1"
-        ]
+        // Raw line: "<usage_pct> <freq_mhz>"  (~150ms, no root)
+        command: [gpuBackend.gpuInfoScript, "-r"]
         stdout: StdioCollector {
             onStreamFinished: {
-                let lines = text.trim().split("\n")
-                if (lines.length < 2) return
+                let parts = text.trim().split(/\s+/)
+                if (parts.length < 2)
+                    return
 
-                let data = lines[1].trim().split(/\s+/)
-                if (data.length < 2) return
+                let usage = parseInt(parts[0], 10)
+                let freq  = parseInt(parts[1], 10)
+                if (isNaN(usage))
+                    return
 
-                let rc6  = parseFloat(data[0])
-                let freq = parseInt(data[1])
-                if (isNaN(rc6)) return
-
-                let usage = Math.max(0, Math.min(100, Math.round(100 - rc6)))
-
+                usage = Math.max(0, Math.min(100, usage))
                 gpuBackend.gpuUsage = usage
 
-                if (!isNaN(freq))
+                if (!isNaN(freq) && freq >= 0)
                     gpuBackend.gpuFreq = freq
 
                 gpuBackend.pushHistory(usage, "gpuUsageHistory")
-                gpuBackend.pushHistory(freq, "gpuFreqHistory")
+                gpuBackend.pushHistory(isNaN(freq) ? 0 : freq, "gpuFreqHistory")
 
                 if (!gpuBackend.isReady)
                     gpuBackend.isReady = true

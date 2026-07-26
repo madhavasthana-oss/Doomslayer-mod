@@ -3,7 +3,6 @@ import Quickshell
 import Quickshell.Io
 import QtQuick.Layouts
 import "../../../.."
-import "../../../../utils"
 import "."
 
 Item {
@@ -11,27 +10,24 @@ Item {
     id: gpuFrontend
 
     implicitHeight:  Tokens.rightWidth
-    implicitWidth:   Tokens.rightWidth 
+    implicitWidth:   Tokens.rightWidth
 
     property var freqBars: []
     property var freqTargets: []
     property real freqFrame: 0
 
-    Connections {
-        target: gpu
-
-        function onGpuUsageChanged() {
-            let usageText = gpu.gpuUsage === -1 ? "[ PROBING ]" : gpu.gpuUsage + "%"
-            textAnimator.transitionTo(usageText)
-            usageBoxAnimator.transitionTo(gpu.gpuUsage === -1 ? "[ PROBING ]" : usageText)
-        }
-
-        function onGpuFreqChanged() {
-            let freqVal = gpu.gpuFreq
-            freqAnimator.transitionTo(freqVal === -1 ? "[ PROBING ]" : String(freqVal))
-            freqBoxAnimator.transitionTo(freqVal === -1 ? "[ PROBING ]" : String(freqVal))
-        }
-    }
+    readonly property string usageText: gpu.gpuUsage === -1
+                                        ? "[ PROBING ]"
+                                        : gpu.gpuUsage + "%"
+    readonly property string freqText:  gpu.gpuFreq === -1
+                                        ? "[ PROBING ]"
+                                        : String(gpu.gpuFreq)
+    readonly property string usageBoxText: gpu.gpuUsage === -1
+                                           ? "--%"
+                                           : gpu.gpuUsage + "%"
+    readonly property string freqBoxText:  gpu.gpuFreq === -1
+                                           ? "--"
+                                           : String(gpu.gpuFreq)
 
     Process {
         id: nvtopProc
@@ -63,10 +59,6 @@ Item {
             freqBars.push(base + (Math.random() - 0.5) * 40)
             freqTargets.push(base)
         }
-        textAnimator.transitionTo("[ PROBING ]")
-        freqAnimator.transitionTo(gpu.gpuFreq === -1 ? "--" : String(gpu.gpuFreq))
-        usageBoxAnimator.transitionTo(gpu.gpuUsage === -1 ? "--%" : gpu.gpuUsage + "%")
-        freqBoxAnimator.transitionTo(gpu.gpuFreq === -1 ? "--" : String(gpu.gpuFreq))
     }
 
     Connections {
@@ -85,95 +77,18 @@ Item {
         }
     }
 
-    AnimatedText {
-        id: textAnimator
-        mode: AnimatedText.Mode.Scramble
-        duration: Tokens.animStraighten
-    }
-
-    AnimatedText {
-        id: freqAnimator
-        mode: AnimatedText.Mode.Scramble
-        duration: Tokens.animStraighten
-    }
-
-    AnimatedText {
-        id: usageBoxAnimator
-        mode: AnimatedText.Mode.Scramble
-        duration: Tokens.animStraighten
-    }
-
-    AnimatedText {
-        id: freqBoxAnimator
-        mode: AnimatedText.Mode.Scramble
-        duration: Tokens.animStraighten
-    }
-
-    Timer {
-        id: usageTextUpdater
-
-        interval: 500
-        running: true
-        repeat: true
-
-        property int lastValue: -1
-
-        onTriggered: {
-            let current = gpu.gpuUsage
-
-            if (current === lastValue)
-                return
-
-            lastValue = current
-
-            if (current === -1) {
-                textAnimator.transitionTo("[ PROBING ]")
-                usageBoxAnimator.transitionTo("[ PROBING ]")
-            } else {
-                textAnimator.transitionTo(current + "%")
-                usageBoxAnimator.transitionTo(current + "%")
-            }
-        }
-    }
-
-    Timer {
-        id: freqTextUpdater
-
-        interval: 500
-        running: true
-        repeat: true
-
-        property int lastValue: -999
-
-        onTriggered: {
-            let current = gpu.gpuFreq
-
-            if (current === lastValue)
-                return
-
-            lastValue = current
-
-            if (current === -1) {
-                freqAnimator.transitionTo("[ PROBING ]")
-                freqBoxAnimator.transitionTo("--") 
-            } else {
-                freqAnimator.transitionTo(String(current))
-                freqBoxAnimator.transitionTo(String(current))
-            }
-        }
-    }
-
     Timer {
         id: repaintTimer
-        interval: 150
+        // Keep usage / frequency canvases in lockstep with GPUBackend poll (500 ms)
+        interval: 500
         running: gpu.isReady
         repeat: true
         onTriggered: {
-            freqFrame++
+            parent.freqFrame++
             let target = gpu.gpuFreq > 0 ? gpu.gpuFreq : 500
             for (let i = 0; i < 40; i++) {
-                freqTargets[i] = target + (Math.random() - 0.5) * 30
-                freqBars[i] = freqBars[i] + (freqTargets[i] - freqBars[i]) * 0.12
+                parent.freqTargets[i] = target + (Math.random() - 0.5) * 30
+                parent.freqBars[i] = parent.freqBars[i] + (parent.freqTargets[i] - parent.freqBars[i]) * 0.12
                             + (Math.random() - 0.5) * 5
             }
             usageCanvas.requestPaint()
@@ -213,7 +128,7 @@ Item {
             Text {
                 id: liveUsageLabel
                 property int liveVal: gpu.gpuUsage
-                text:           textAnimator.displayedText
+                text:           gpuFrontend.usageText
                 font.family:    Theme.fontMono
                 font.pixelSize: Tokens.fontSizeSmall
                 color:          liveVal > 85 ? Theme.stateCritical
@@ -262,7 +177,10 @@ Item {
                     ctx.fillText("0",   Tokens.radiusSm, h - Tokens.radiusSm)
 
                     let numPts = usageHistory.length
-                    const xget = i => i / (numPts - 1) * w
+                    if (numPts < 1)
+                        return
+
+                    const xget = i => numPts === 1 ? w / 2 : i / (numPts - 1) * w
                     const yget = v => h * (1 - v / 100)
 
                     let grad = ctx.createLinearGradient(0, 0, 0, h)
@@ -323,11 +241,11 @@ Item {
             Text {
                 id: liveFreqLabel
                 property int liveVal: gpu.gpuFreq
-                text:           freqAnimator.displayedText
+                text:           gpuFrontend.freqText
                 font.family:    Theme.fontMono
                 font.pixelSize: Tokens.fontSizeSmall
-                color:          liveVal > 85 ? Theme.stateCritical
-                                : liveVal > 60 ? Theme.stateWarning
+                color:          liveVal > 1000 ? Theme.stateCritical
+                                : liveVal > 600 ? Theme.stateWarning
                                 : Theme.accent
             }
         }
@@ -402,7 +320,7 @@ Item {
                     }
                     Text {
                         Layout.alignment: Qt.AlignHCenter
-                        text:           usageBoxAnimator.displayedText
+                        text:           gpuFrontend.usageBoxText
                         font.family:    Theme.fontMono
                         font.pixelSize: Tokens.fontSizeMedium
                         font.bold:      true
@@ -436,7 +354,7 @@ Item {
 
                     Text {
                         Layout.alignment: Qt.AlignHCenter
-                        text: freqBoxAnimator.displayedText
+                        text: gpuFrontend.freqBoxText
                         font.family: Theme.fontMono
                         font.pixelSize: Tokens.fontSizeMedium
                         font.bold: true
@@ -480,7 +398,7 @@ Item {
             }
 
             MouseArea {
-                id:                 nvtopHover 
+                id:                 nvtopHover
                 anchors.fill:       parent
                 hoverEnabled:       true
                 onClicked:          gpuFrontend.launchNvtop()

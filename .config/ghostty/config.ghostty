@@ -32,5 +32,6 @@ async-backend = epoll
 # custom shaders (paths are relative to this config dir)
 # custom-shader = shaders/cursor_sweep.glsl
 
-# optional include (? = ignore if missing)
+# optional includes (? = ignore if missing)
 config-file = ?~/.config/ghostty/theme.conf
+config-file = ?~/.config/ghostty/keybinds
