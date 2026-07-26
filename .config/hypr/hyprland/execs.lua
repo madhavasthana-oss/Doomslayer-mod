@@ -2,9 +2,8 @@
 hl.on("hyprland.start", function()
 	-- local variables
 	local home = os.getenv("HOME")
-	local wallpaper = string.format("%s/Pictures/Wallpapers/Doomslayer-1.jpg", home)
 	local wallpaper_script_path = string.format("%s/.config/hypr/hyprland/scripts/wallpaper.sh", home)
-
+	local quickshell_cfg_main = string.format("doomshell")
 	-- Bar, wallpaper
 	hl.exec_cmd("$HOME/.config/hypr/hyprland/scripts/start_geoclue_agent.sh")
 	hl.exec_cmd("$HOME/.config/hypr/custom/scripts/__restore_video_wallpaper.sh")
@@ -36,8 +35,7 @@ hl.on("hyprland.start", function()
 	-- apply the default image via wallpaper.sh (waits for the socket + fade).
 	hl.exec_cmd("pkill -x hyprpaper 2>/dev/null || true")
 	hl.exec_cmd("sh -c 'pgrep -u \"$USER\" -x awww-daemon >/dev/null || exec awww-daemon'")
-	hl.exec_cmd(string.format("bash %s %q", wallpaper_script_path, wallpaper))
 
 	-- load quickshell
-	hl.exec_cmd("quickshell")
+	hl.exec_cmd(string.format("quickshell -c %s",quickshell_cfg_main))
 end)

@@ -45,7 +45,7 @@ config.font = wezterm.font_with_fallback({
 	"JetBrains Mono",
 	"Symbols Nerd Font Mono",
 })
-config.font_size = 8
+config.font_size = 12
 config.line_height = 1.0
 config.cell_width = 1.0
 config.freetype_load_target = "Normal"
