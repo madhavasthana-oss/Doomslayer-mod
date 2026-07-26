@@ -23,10 +23,8 @@ Item {
     property var gpuUsageHistory: new Array(historyLength).fill(undefined)
     property var gpuFreqHistory:  new Array(historyLength).fill(undefined)
 
-    readonly property string gpuInfoScript: {
-        const home = Quickshell.env("HOME") || ""
-        return home + "/Doomslayer-mod/scripts/bash/gpu-info.sh"
-    }
+    // Co-located with the shell: doomshell/utils/scripts/gpu-info.sh
+    readonly property string gpuInfoScript: Quickshell.shellDir + "/utils/scripts/gpu-info.sh"
 
     // ---
     //  Sliding window helpers

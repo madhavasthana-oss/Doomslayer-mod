@@ -19,10 +19,8 @@ Item {
     readonly property bool hasTrack: title.length > 0 || artUrl.length > 0
     readonly property bool hasPlayer: playerName.length > 0
 
-    readonly property string cavaScript: {
-        const home = Quickshell.env("HOME") || ""
-        return home + "/Doomslayer-mod/scripts/bash/cava-overlay.sh"
-    }
+    // Co-located with the shell: doomshell/utils/scripts/cava-overlay.sh
+    readonly property string cavaScript: Quickshell.shellDir + "/utils/scripts/cava-overlay.sh"
 
     // Unit separator --- titles/artists can contain | and commas
     readonly property string sep: "\x1f"
