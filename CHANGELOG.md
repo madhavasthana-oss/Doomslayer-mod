@@ -1,6 +1,6 @@
 # Change Log
 
-This file tracks all modifications made to the Bad Blood theme in pursuit of a more Doom Slayer–inspired desktop environment.
+This file tracks all modifications made to the Doom Slayer–inspired desktop environment.
 
 ## Table of Contents
 

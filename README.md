@@ -1,12 +1,14 @@
-# Bad Blood — Doom Slayer Customization Log
+# Doom Slayer Customization Log
 
-This repository contains modifications to the HyDE **Bad Blood** theme to create a darker, more industrial, Doom Slayer–inspired aesthetic.
+Before: This started as a somewhat quickshell add on to HyDE's bad blood.
+
+Now:    It is it's own eco-system
+
+This repository contains a dark, more industrial, Doom Slayer–inspired aesthetic.
 
 ## Files
 
 ### [`CHANGELOG.md`](./CHANGELOG.md)
-
-Tracks every modification made to the theme.
 
 Contents include:
 
@@ -32,12 +34,6 @@ Used to:
 
 ---
 
-### [`TOKENS.txt`](./TOKENS.txt)
-
-Tracks token usage, references, and miscellaneous project metadata.
-
----
-
 ## Design Direction
 
 Current objectives:
@@ -56,7 +52,7 @@ Current objectives:
   * Wlogout
   * Rofi
   * AGS components
-
+  * NeoVim
 ---
 
 ## Quick Navigation
