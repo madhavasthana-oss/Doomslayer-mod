@@ -20,7 +20,7 @@ settingsApp =
 	"XDG_CURRENT_DESKTOP=GNOME ~/.config/hypr/hyprland/scripts/launch_first_available.sh 'gnome-control-center' 'nwg-look' 'systemsettings' 'better-control'"
 taskManager =
 	"~/.config/hypr/hyprland/scripts/launch_first_available.sh 'gnome-system-monitor' 'plasma-systemmonitor --page-name Processes' 'command -v btop && kitty -1 fish -c btop'"
-appManager = "~/.config/rofi/launch.sh drun"
+appManager = "~/.config/fuzzel/launch.sh"
 
 workspaceGroupSize = 10
 

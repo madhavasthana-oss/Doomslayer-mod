@@ -1,22 +1,22 @@
 #!/usr/bin/env bash
-# Doomslayer rofi launcher --- fix locale for xkb compose, then show mode.
-# LANG=en_IN (non-UTF-8) maps to en_IN.ISO8859-1 which has no Compose file.
+# DEPRECATED: rofi was replaced by fuzzel.
+# Forwards to ~/.config/fuzzel/launch.sh so old Super+A / scripts keep working.
 set -euo pipefail
 
+# Old usage: launch.sh [drun|run|window|emoji]
+# fuzzel is always app-launcher unless --dmenu; emoji has its own script.
 MODE="${1:-drun}"
+FUZZEL_LAUNCH="${XDG_CONFIG_HOME:-$HOME/.config}/fuzzel/launch.sh"
 
-# Prefer system India UTF-8, then C.UTF-8. Leave other LC_* alone if set.
-if locale -a 2>/dev/null | grep -qiE '^en_IN\.utf-?8$'; then
-	export LANG=en_IN.UTF-8
-	export LC_CTYPE=en_IN.UTF-8
-elif locale -a 2>/dev/null | grep -qiE '^C\.utf-?8$'; then
-	export LANG=C.UTF-8
-	export LC_CTYPE=C.UTF-8
-elif locale -a 2>/dev/null | grep -qiE '^en_US\.utf-?8$'; then
-	export LANG=en_US.UTF-8
-	export LC_CTYPE=en_US.UTF-8
-fi
-unset LC_ALL 2>/dev/null || true
-
-CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/config.rasi"
-exec rofi -config "$CONFIG" -show "$MODE"
+case "$MODE" in
+	emoji)
+		exec "$HOME/.config/hypr/hyprland/scripts/fuzzel-emoji.sh" both
+		;;
+	drun|run|window|"")
+		exec "$FUZZEL_LAUNCH"
+		;;
+	*)
+		# Unknown mode: still open app launcher
+		exec "$FUZZEL_LAUNCH"
+		;;
+esac

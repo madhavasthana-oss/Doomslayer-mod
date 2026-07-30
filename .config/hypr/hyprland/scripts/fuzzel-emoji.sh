@@ -1,27 +1,47 @@
-#!/bin/bash
-# No longer in use, replaced with rofi emoji
-# still kept for utility purpose
+#!/usr/bin/env bash
+# Doomslayer emoji picker via fuzzel (dmenu).
+# Bound to Super+.  Modes: type | copy | both (default: type)
 set -euo pipefail
 
 MODE="${1:-type}"
 
-emoji="$(sed '1,/^### DATA ###$/d' "$0" | fuzzel --match-mode fzf --dmenu | cut -d ' ' -f 1 | tr -d '\n')"
+# Prefer UTF-8 locale so emoji + compose behave (same idea as fuzzel/launch.sh).
+if locale -a 2>/dev/null | grep -qiE '^en_IN\.utf-?8$'; then
+	export LANG=en_IN.UTF-8
+	export LC_CTYPE=en_IN.UTF-8
+elif locale -a 2>/dev/null | grep -qiE '^C\.utf-?8$'; then
+	export LANG=C.UTF-8
+	export LC_CTYPE=C.UTF-8
+elif locale -a 2>/dev/null | grep -qiE '^en_US\.utf-?8$'; then
+	export LANG=en_US.UTF-8
+	export LC_CTYPE=en_US.UTF-8
+fi
+unset LC_ALL 2>/dev/null || true
+
+CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/fuzzel/fuzzel.ini"
+FUZZEL_ARGS=(--match-mode fzf --dmenu --prompt "EMOJI " --placeholder "search emoji...")
+if [[ -f "$CONFIG" ]]; then
+	FUZZEL_ARGS+=(--config "$CONFIG")
+fi
+
+emoji="$(sed '1,/^### DATA ###$/d' "$0" | fuzzel "${FUZZEL_ARGS[@]}" | cut -d ' ' -f 1 | tr -d '\n')"
+[[ -n "${emoji}" ]] || exit 0
 
 case "$MODE" in
-    type)
-        wtype "${emoji}" || wl-copy "${emoji}"
-        ;;
-    copy)
-        wl-copy "${emoji}"
-        ;;
-    both)
-        wtype "${emoji}" || true
-        wl-copy "${emoji}"
-        ;;
-    *)
-        echo "Usage: $0 [type|copy|both]"
-        exit 1
-        ;;
+	type)
+		wtype "${emoji}" || wl-copy "${emoji}"
+		;;
+	copy)
+		wl-copy "${emoji}"
+		;;
+	both)
+		wtype "${emoji}" || true
+		wl-copy "${emoji}"
+		;;
+	*)
+		echo "Usage: $0 [type|copy|both]" >&2
+		exit 1
+		;;
 esac
 exit
 ### DATA ###

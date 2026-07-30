@@ -16,6 +16,7 @@ import "../widgets/rightBarWidgets/system/RAM"
 
 Item {
     id: rightBar
+    // Rect width tracks RightTrapezoid's second-longest edge (pinched top).
     width: Tokens.rightWidth
     height: Tokens.rightHeight
 
@@ -165,7 +166,7 @@ Item {
     }
 
     //  SHAPE
-    RightTrapezoid {
+    SideRect {
         anchors.fill: parent
         barWidth: Tokens.rightWidth
         barHeight: Tokens.rightHeight
@@ -175,10 +176,13 @@ Item {
     //  CONTENT ROW
     RowLayout {
         anchors.fill: parent
-        anchors.leftMargin: Tokens.rightHeight + Tokens.spacingXs
-        anchors.rightMargin: Tokens.spacingXs
+        anchors.leftMargin: Tokens.paddingH + Tokens.spacingXs
+        anchors.rightMargin: Tokens.paddingH + Tokens.spacingXs
         spacing: Tokens.spacingXs
 
+        Item {
+            Layout.fillWidth: true
+        }
         //  ZONE 1 --- Battery + Volume
         GridLayout {
             columns: 3 

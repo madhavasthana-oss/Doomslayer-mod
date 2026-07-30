@@ -1,6 +1,6 @@
 # ─────────────────────────────────────────────────────────────
 #  Doomslayer-mod · mako
-#  Colors / type mirror quickshell Theme.qml + rofi doomslayer
+#  Colors / type mirror quickshell Theme.qml + fuzzel doomslayer
 #
 #  bgPrimary #0D0000 | bgSurface #1A0000 | bgElevated #2A0500
 #  bgConsole #1F0200 @ ~0.95 opacity
@@ -38,7 +38,7 @@ on-button-middle=dismiss-all
 on-touch=dismiss
 
 # ── layout ──────────────────────────────────────────────────
-# Matches rofi console panel: dense, industrial, not floaty
+# Matches fuzzel console panel: dense, industrial, not floaty
 width=360
 height=140
 outer-margin=16

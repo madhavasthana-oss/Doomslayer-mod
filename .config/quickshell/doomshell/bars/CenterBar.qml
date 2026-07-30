@@ -10,7 +10,8 @@ import ".."
 
 Item {
     id: centerBar
-    width: Tokens.centerWidth
+    // Rect width tracks CenterTrapezoid's second-longest edge (pinched bottom).
+    width: Tokens.centerSmallerWidth
     height: Tokens.centerHeight
 
     property var statusMessages: [
@@ -94,30 +95,62 @@ Item {
         }
     }
 
+    // Prefer UPower.onBattery for plug/unplug: with charge thresholds enabled,
+    // displayDevice.state is often PendingCharge (not Charging) while AC is connected,
+    // so state-based AC detection never flips and status messages never fire.
     property var battery: UPower.displayDevice
     property bool batteryInitialized: false
-    property bool wasOnAC: false          // true for Charging or FullyCharged
+    property bool wasOnAC: false
+    property int lastBatteryState: UPowerDeviceState.Unknown
     property bool lowBatteryWarned: false
     property bool criticalBatteryWarned: false
 
     function initBatteryState() {
-        if (!centerBar.battery || !centerBar.battery.ready)
-            return
-        const state = centerBar.battery.state
-        centerBar.wasOnAC = (state === UPowerDeviceState.Charging || state === UPowerDeviceState.FullyCharged)
+        // onBattery is valid even before displayDevice.ready
+        centerBar.wasOnAC = !UPower.onBattery
+        if (centerBar.battery && centerBar.battery.ready)
+            centerBar.lastBatteryState = centerBar.battery.state
         centerBar.batteryInitialized = true
     }
 
+    // Plug / unplug — system AC line, not device charge state
     Connections {
-        target: centerBar.battery
+        target: UPower
+
+        function onOnBatteryChanged() {
+            if (!centerBar.batteryInitialized) {
+                centerBar.initBatteryState()
+                return
+            }
+
+            const nowOnAC = !UPower.onBattery
+            if (nowOnAC === centerBar.wasOnAC)
+                return
+
+            if (nowOnAC) {
+                centerBar.pushStatus("POWER CONDUIT ESTABLISHED: CHARGING", { holdMs: 4000 })
+                centerBar.lowBatteryWarned = false
+                centerBar.criticalBatteryWarned = false
+            } else {
+                centerBar.pushStatus("CHARGER DISCONNECTED: ON RESERVES", { holdMs: 4000 })
+            }
+
+            centerBar.wasOnAC = nowOnAC
+        }
+    }
+
+    Connections {
+        target: UPower.displayDevice
 
         function onReadyChanged() {
-            if (centerBar.battery.ready && !centerBar.batteryInitialized)
+            if (UPower.displayDevice.ready && !centerBar.batteryInitialized)
                 centerBar.initBatteryState()
+            else if (UPower.displayDevice.ready)
+                centerBar.lastBatteryState = UPower.displayDevice.state
         }
 
         function onStateChanged() {
-            if (!centerBar.battery.ready)
+            if (!UPower.displayDevice.ready)
                 return
 
             if (!centerBar.batteryInitialized) {
@@ -125,31 +158,35 @@ Item {
                 return
             }
 
-            const state = centerBar.battery.state
-            const nowOnAC = (state === UPowerDeviceState.Charging || state === UPowerDeviceState.FullyCharged)
+            const state = UPower.displayDevice.state
+            const prev = centerBar.lastBatteryState
 
-            if (nowOnAC && !centerBar.wasOnAC) {
-                centerBar.pushStatus("POWER CONDUIT ESTABLISHED: CHARGING", { holdMs: 4000 })
-            } else if (!nowOnAC && centerBar.wasOnAC && state === UPowerDeviceState.Discharging) {
-                centerBar.pushStatus("CHARGER DISCONNECTED: ON RESERVES", { holdMs: 4000 })
-            } else if (state === UPowerDeviceState.FullyCharged) {
+            // Only a completed charge cycle: Charging → FullyCharged.
+            // Do NOT treat PendingCharge as full — with charge thresholds that
+            // state means "plugged in, not charging yet", and brief
+            // Charging→PendingCharge blips on plug-in were false positives.
+            if (state === UPowerDeviceState.FullyCharged
+                && prev === UPowerDeviceState.Charging) {
                 centerBar.pushStatus("POWER CELL FULL", { holdMs: 4000 })
             }
 
-            centerBar.wasOnAC = nowOnAC
-
-            if (state === UPowerDeviceState.Charging) {
+            if (state === UPowerDeviceState.Charging
+                || state === UPowerDeviceState.FullyCharged
+                || state === UPowerDeviceState.PendingCharge) {
                 centerBar.lowBatteryWarned = false
                 centerBar.criticalBatteryWarned = false
             }
+
+            centerBar.lastBatteryState = state
         }
 
         function onPercentageChanged() {
-            if (!centerBar.battery.ready)
+            if (!UPower.displayDevice.ready)
                 return
 
-            const pct = centerBar.battery.percentage * 100
-            const discharging = centerBar.battery.state === UPowerDeviceState.Discharging
+            const pct = UPower.displayDevice.percentage * 100
+            const discharging = UPower.onBattery
+                || UPower.displayDevice.state === UPowerDeviceState.Discharging
 
             if (discharging && pct <= 5 && !centerBar.criticalBatteryWarned) {
                 centerBar.criticalBatteryWarned = true
@@ -200,12 +237,12 @@ Item {
         centerBar.pushStatus(msg, { holdMs: 5000 })
     }
 
-    CenterTrapezoid {
+    CenterRect {
         anchors.fill: parent
-        barWidth:     Tokens.centerWidth
+        barWidth:     Tokens.centerSmallerWidth
         barHeight:    Tokens.centerHeight
         alertActive:  centerBar.alertActive
-        expanded:     Globals.activePanel !== ""
+        expanded:     Globals.activeCenterPanel !== ""
     }
 
     RowLayout {

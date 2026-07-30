@@ -14,6 +14,7 @@ ShellRoot {
         anchors { top: true; right: true }
         implicitWidth:  Tokens.rightWidth
         implicitHeight: Tokens.rightHeight 
+        margins.right: Tokens.sideMargin
         color: "transparent"
         exclusiveZone: Tokens.exclusiveZone
         WlrLayershell.layer: WlrLayer.Top
@@ -63,6 +64,7 @@ ShellRoot {
         implicitWidth:  Tokens.leftWidth
         implicitHeight: Tokens.leftHeight
         color: "transparent"
+        margins.left: Tokens.sideMargin
         exclusiveZone: Tokens.exclusiveZone
         WlrLayershell.layer:     WlrLayer.Top
         WlrLayershell.namespace: "doomshell-left"
@@ -73,7 +75,7 @@ ShellRoot {
     PanelWindow {
         id: centerBarWindow
         anchors { top: true }
-        implicitWidth:  Tokens.centerWidth
+        implicitWidth:  Tokens.centerSmallerWidth
         implicitHeight: Tokens.centerHeight
         color: "transparent"
         exclusiveZone: Tokens.exclusiveZone

@@ -9,6 +9,7 @@ import ".."
 
 Item {
     id: leftBar
+    // Rect width tracks LeftTrapezoid's second-longest edge (pinched top).
     width:  Tokens.leftWidth
     height: Tokens.leftHeight
     property int visibleCount: Globals.workspaceNumber
@@ -52,7 +53,7 @@ Item {
 
     //  SHAPE
 
-    LeftTrapezoid {
+    SideRect {
         anchors.fill: parent
         barWidth:     Tokens.leftWidth
         barHeight:    Tokens.leftHeight
@@ -67,7 +68,7 @@ Item {
     RowLayout {
         anchors.fill:        parent
         anchors.leftMargin:  Tokens.workspaceToggleMargin
-        anchors.rightMargin: Tokens.leftHeight + Tokens.spacingXs
+        anchors.rightMargin: Tokens.workspaceToggleMargin
         spacing:             Tokens.spacingXss
 
         //  Workspace numbers --- locked width

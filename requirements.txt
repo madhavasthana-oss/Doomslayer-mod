@@ -34,9 +34,10 @@ qt6-base
 qt6-declarative
 
 
-# CLIPBOARD HISTORY
-#   Startup:  wl-paste --watch cliphist store   (hyprland/execs.lua)
-#   Picker:   Super+V → cliphist + fuzzel
+# APP LAUNCHER + DMENU (fuzzel — replaces rofi)
+#   Super+A  → app launcher (~/.config/fuzzel/launch.sh)
+#   Super+.  → emoji picker (hyprland/scripts/fuzzel-emoji.sh)
+#   Super+V  → cliphist + fuzzel
 
 wl-clipboard
 cliphist
@@ -144,8 +145,6 @@ chromium
 kate
 libreoffice-fresh
 nwg-displays
-rofi
-rofi-wayland
 swappy
 spotify-launcher
 wtype

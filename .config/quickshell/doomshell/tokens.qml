@@ -22,6 +22,7 @@ QtObject {
     readonly property real scale: customScale > 0 ? customScale : predefinedScale
     // SPACING SCALE
 
+    readonly property int sideMargin: Math.round(5 * scale)
     readonly property int spacingXss: Math.round(2 * scale)
     readonly property int spacingXs:  Math.round(4  * scale)
     readonly property int spacingSm:  Math.round(6  * scale)
@@ -51,6 +52,10 @@ QtObject {
     readonly property int radiusXl: Math.round(10 * scale)
 
     // BAR GEOMETRY
+    // Full widths are the longest trapezoid edge (screen-hugging parallel).
+    // Rect chrome uses the second-longest edge (the pinched parallel):
+    //   CenterTrapezoid: top=W, bottom=W-2H (45° both sides)  → centerSmallerWidth
+    //   Left/RightTrapezoid: bottom=W, top=W-H (45° one side) → left/rightSmallerWidth
     readonly property int leftWidth:    Math.round(350 * scale)
     readonly property int leftHeight:   Math.round(35  * scale)
     readonly property int rightWidth:   Math.round(350 * scale)
@@ -58,7 +63,7 @@ QtObject {
     readonly property int centerWidth:  Math.round(640 * scale)
     readonly property int centerHeight: Math.round(45  * scale)
 
-    readonly property int centerSmallerWidth: centerWidth - 2 * (centerHeight)
+    readonly property int centerSmallerWidth: centerWidth - 2 * centerHeight
 
     readonly property int preferredWidthNoGreeting: Math.round(80  * scale)
     readonly property int greetingWidth:            Math.round(204 * scale)

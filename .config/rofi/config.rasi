@@ -1,7 +1,9 @@
 /* ---
- * Doomslayer-mod rofi config
- * Deploy: scripts/bash/configure_rofi.sh  -->  ~/.config/rofi/
- * Theme colors source: .config/quickshell/theme.qml
+ * DEPRECATED: app launcher / emoji moved to fuzzel.
+ *   Super+A  → ~/.config/fuzzel/launch.sh
+ *   Super+.  → hyprland/scripts/fuzzel-emoji.sh
+ *   Theme:   ~/.config/fuzzel/fuzzel.ini
+ * launch.sh in this directory now forwards to fuzzel.
  * --- */
 
 configuration {
