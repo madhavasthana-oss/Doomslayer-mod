@@ -10,10 +10,11 @@ import "bottom"
 ShellRoot {
     id:shellRoot
     PanelWindow { 
-        id: rightBarWindow
+      id: rightBarWindow
         anchors { top: true; right: true }
         implicitWidth:  Tokens.rightWidth
         implicitHeight: Tokens.rightHeight 
+        margins.top: Tokens.topMargin
         margins.right: Tokens.sideMargin
         color: "transparent"
         exclusiveZone: Tokens.exclusiveZone
@@ -64,6 +65,7 @@ ShellRoot {
         implicitWidth:  Tokens.leftWidth
         implicitHeight: Tokens.leftHeight
         color: "transparent"
+        margins.top: Tokens.topMargin
         margins.left: Tokens.sideMargin
         exclusiveZone: Tokens.exclusiveZone
         WlrLayershell.layer:     WlrLayer.Top
@@ -78,6 +80,7 @@ ShellRoot {
         implicitWidth:  Tokens.centerSmallerWidth
         implicitHeight: Tokens.centerHeight
         color: "transparent"
+        margins.top: Tokens.topMargin
         exclusiveZone: Tokens.exclusiveZone
         WlrLayershell.layer:     WlrLayer.Top
         WlrLayershell.namespace: "doomshell-center"

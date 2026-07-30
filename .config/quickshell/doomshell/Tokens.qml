@@ -11,7 +11,7 @@ QtObject {
     readonly property real dpiScale: primaryScreen ? 
                                          primaryScreen.devicePixelRatio : 1.0
 
-    property real customScale: 1.5
+    property real customScale: -1
 
     readonly property real resScale: primaryScreen ?
         Math.min(primaryScreen.width / 1920, primaryScreen.height / 1080) : 1.0
@@ -21,7 +21,8 @@ QtObject {
 
     readonly property real scale: customScale > 0 ? customScale : predefinedScale
     // SPACING SCALE
-
+    
+    readonly property int topMargin: Math.round(5 * scale)
     readonly property int sideMargin: Math.round(5 * scale)
     readonly property int spacingXss: Math.round(2 * scale)
     readonly property int spacingXs:  Math.round(4  * scale)
