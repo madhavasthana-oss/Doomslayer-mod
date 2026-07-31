@@ -1,37 +1,120 @@
 pragma Singleton
 import QtQuick 2.15
+import Quickshell
+import Quickshell.Io
 
-QtObject {
+// Singleton (not QtObject): FileView must be a child object; QtObject has no
+// default property and fails with "Cannot assign to non-existent default property".
+Singleton {
+    id: root
+
+    // ---
+    //  Live palette file (written by load-legacy-colors.sh / load-wallust-colors.sh)
+    //  Switch sources without regenerating this QML file.
+    // ---
+    readonly property string colorsPath: Quickshell.shellDir + "/colors/active-colors.json"
+
+    // Hardcoded Doom fallbacks — used until JSON loads, or if a key is missing.
+    readonly property var _defaults: ({
+        "bgPrimary":     "#0D0000",
+        "bgSurface":     "#1A0000",
+        "bgElevated":    "#2A0500",
+        "accent":        "#FF4500",
+        "accentWarm":    "#FFCA80",
+        "accentSoft":    "#FF80BF",
+        "textPrimary":   "#FF4500",
+        "textSecondary": "#FFCA80",
+        "textMuted":     "#CC2200",
+        "textDim":       "#601000",
+        "stateCritical": "#CC2200",
+        "stateSafe":     "#8AFF80",
+        "stateWarning":  "#FFCA80",
+        "borderActive":  "#FF4500",
+        "borderIdle":    "#CC2200",
+        "bgConsole":     "#1F0200",
+        "borderConsole": "#CC2200",
+        "glowConsole":   "#994400"
+    })
+
+    property var _palette: _defaults
+    property string colorsSource: "defaults"
+
+    function _hexOf(key) {
+        const p = _palette
+        if (p && p[key] !== undefined && p[key] !== null && String(p[key]).length)
+            return String(p[key])
+        return String(_defaults[key])
+    }
+
+    function _applyJsonText(text) {
+        if (text === undefined || text === null)
+            return
+        const raw = String(text).trim()
+        if (!raw.length)
+            return
+        try {
+            const data = JSON.parse(raw)
+            const next = Object.assign({}, _defaults)
+            for (const key in _defaults) {
+                if (data[key] !== undefined && data[key] !== null && String(data[key]).length)
+                    next[key] = String(data[key])
+            }
+            _palette = next
+            colorsSource = (data._source !== undefined && String(data._source).length)
+                ? String(data._source)
+                : "active"
+        } catch (e) {
+            console.warn("Theme: failed to parse colors JSON:", e)
+        }
+    }
+
+    FileView {
+        id: colorsFile
+        path: root.colorsPath
+        watchChanges: true
+        blockLoading: true
+
+        onFileChanged: reload()
+        onLoaded: root._applyJsonText(text())
+        Component.onCompleted: {
+            // text() is available after initial load when blockLoading is true
+            try {
+                root._applyJsonText(text())
+            } catch (e) {
+                // keep _defaults
+            }
+        }
+    }
 
     // Backgrounds
-    readonly property color bgPrimary:   "#0D0000"
-    readonly property color bgSurface:   "#1A0000"
-    readonly property color bgElevated:  "#2A0500"
+    readonly property color bgPrimary:   root._hexOf("bgPrimary")
+    readonly property color bgSurface:   root._hexOf("bgSurface")
+    readonly property color bgElevated:  root._hexOf("bgElevated")
 
     // Core accents
-    readonly property color accent:      "#FF4500"
-    readonly property color accentWarm:  "#FFCA80"
-    readonly property color accentSoft:  "#FF80BF"
+    readonly property color accent:      root._hexOf("accent")
+    readonly property color accentWarm:  root._hexOf("accentWarm")
+    readonly property color accentSoft:  root._hexOf("accentSoft")
 
     // Text
-    readonly property color textPrimary:   "#FF4500"
-    readonly property color textSecondary: "#FFCA80"
-    readonly property color textMuted:     "#CC2200"
-    readonly property color textDim:       "#601000"
+    readonly property color textPrimary:   root._hexOf("textPrimary")
+    readonly property color textSecondary: root._hexOf("textSecondary")
+    readonly property color textMuted:     root._hexOf("textMuted")
+    readonly property color textDim:       root._hexOf("textDim")
 
     // State colors
-    readonly property color stateCritical: "#CC2200"
-    readonly property color stateSafe:     "#8AFF80"
-    readonly property color stateWarning:  "#FFCA80"
+    readonly property color stateCritical: root._hexOf("stateCritical")
+    readonly property color stateSafe:     root._hexOf("stateSafe")
+    readonly property color stateWarning:  root._hexOf("stateWarning")
 
     // Border / stroke color (widths now live in Tokens)
-    readonly property color borderActive:  "#FF4500"
-    readonly property color borderIdle:    "#CC2200"
+    readonly property color borderActive:  root._hexOf("borderActive")
+    readonly property color borderIdle:    root._hexOf("borderIdle")
 
     // Expansion panel visuals
-    readonly property color bgConsole:     "#1F0200"
-    readonly property color borderConsole: "#CC2200"
-    readonly property color glowConsole:   "#994400"
+    readonly property color bgConsole:     root._hexOf("bgConsole")
+    readonly property color borderConsole: root._hexOf("borderConsole")
+    readonly property color glowConsole:   root._hexOf("glowConsole")
 
     // SYSTEM ICONS --- breeze symbolic, tinted at use site to theme colors
     readonly property string iconThemeActions: "file:///usr/share/icons/breeze/actions/22/"

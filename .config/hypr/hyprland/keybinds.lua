@@ -384,14 +384,24 @@ hl.bind(
 	{ description = "Clipboard: wipe history" }
 )
 
--- Wallpaper cycler
+-- Wallpaper cycler (also recolors doomshell via wallust from live awww image)
 hl.bind(
 	"SUPER + W",
 	hl.dsp.exec_cmd(
 		string.format(
 			"%s/wallpaper.sh --next", hyprScripts
 		)
-	)
+	),
+	{ description = "Wallpaper: next + doomshell wallust theme (from awww)" }
+)
+
+-- Restore constant Doom palette for doomshell (no wallpaper recolor)
+hl.bind(
+	"SUPER + SHIFT + W",
+	hl.dsp.exec_cmd(
+		"$HOME/.config/quickshell/doomshell/utils/scripts/load-legacy-colors.sh --activate && notify-send -a Doomshell 'Theme' 'Legacy colors restored'"
+	),
+	{ description = "Theme: restore doomshell legacy colors" }
 )
 
 

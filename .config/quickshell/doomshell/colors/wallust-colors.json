@@ -1,0 +1,28 @@
+{
+  "_comment": "Doomshell semantic palette from wallust (ANSI layout)",
+  "_source": "wallust",
+  "_wallpaper": "/home/madhav/Pictures/Wallpapers/Doomslayer-1.jpg",
+
+  "bgPrimary":   "#000000",
+  "bgSurface":   "#1A1A1A",
+  "bgElevated":  "#333333",
+  "bgConsole":   "#1A1A1A",
+
+  "accent":      "#9B5C2A",
+  "accentWarm":  "#89A940",
+  "accentSoft":  "#672742",
+
+  "textPrimary":   "#9B5C2A",
+  "textSecondary": "#89A940",
+  "textMuted":     "#6C401D",
+  "textDim":       "#4E2E15",
+
+  "stateCritical": "#9B5C2A",
+  "stateSafe":     "#377860",
+  "stateWarning":  "#89A940",
+
+  "borderActive":  "#9B5C2A",
+  "borderIdle":    "#6C401D",
+  "borderConsole": "#6C401D",
+  "glowConsole":   "#5D3719"
+}

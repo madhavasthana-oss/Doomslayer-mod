@@ -164,6 +164,36 @@ apply_live() {
     disown 2>/dev/null || true
 }
 
+# Theme doomshell from whatever awww is currently showing (no hardcoded path).
+# Falls back to the just-applied path if awww has no image (e.g. mpvpaper video).
+theme_doomshell_from_awww() {
+    local fallback="${1:-}"
+    local theme_script="${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/doomshell/utils/scripts/load-wallust-colors.sh"
+
+    if [[ ! -x "$theme_script" ]]; then
+        echo "warning: doomshell theme script missing: $theme_script" >&2
+        return 0
+    fi
+
+    # Brief settle so awww query sees the new image after transition start
+    sleep 0.15
+
+    if "$theme_script" --from-awww; then
+        notify "Doomshell theme" "wallust ← awww wallpaper"
+        return 0
+    fi
+
+    if [[ -n "$fallback" && -f "$fallback" ]] && ! is_video "$fallback"; then
+        if "$theme_script" "$fallback"; then
+            notify "Doomshell theme" "wallust ← $(basename "$fallback")"
+            return 0
+        fi
+    fi
+
+    echo "warning: doomshell wallust theme failed (wallpaper still applied)" >&2
+    return 0
+}
+
 apply_wall() {
     local path="$1"
     path="$(readlink -f "$path")"
@@ -186,6 +216,9 @@ apply_wall() {
         echo "Wallpaper: $path"
     fi
     notify "Wallpaper" "$(basename "$path")"
+
+    # SUPER+W path: recolor quickshell from the live awww image
+    theme_doomshell_from_awww "$path"
 }
 
 list_walls() {
