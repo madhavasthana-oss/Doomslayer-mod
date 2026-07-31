@@ -62,7 +62,7 @@ Item {
     // ---
     // Set this to whatever RAM-management TUI you use, e.g. "btop" or a
     // custom script. Left blank -> button stays disabled.
-    property string ramTuiCommand: "btm"
+    property string ramTuiCommand: "htop"
     property bool   ramTuiAvailable: true
 
     function checkRamTuiAvailable() {

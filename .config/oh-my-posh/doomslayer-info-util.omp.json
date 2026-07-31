@@ -122,6 +122,17 @@
           "style": "plain",
           "template": "[<#F8F8F2>{{ .UpstreamIcon }} </>{{ .HEAD }}{{if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Working.Changed }} <#F8F8F2></> {{ .Working.String }}{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}{{ if .Staging.Changed }} <#CC2200></> {{ .Staging.String }}{{ end }}{{ if gt .StashCount 0 }} <#F8F8F2></> {{ .StashCount }}{{ end }}]",
           "type": "git"
+        },
+        {
+          "foreground": "#FFCA80",
+          "options": {
+            "display_mode": "environment",
+            "fetch_virtual_env": true,
+            "display_default": false
+          },
+          "style": "diamond",
+          "template": "[<#F8F8F2></> {{ if .Error }}{{ .Error }}{{ else }}{{ if .Venv }}<#8AFF80>{{ .Venv }}</>{{ if .Full }} | {{ end }}{{ end }}{{ if .Full }}{{ .Full }}{{ end }}{{ end }}]",
+          "type": "python"
         }
       ],
       "type": "prompt"

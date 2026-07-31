@@ -62,6 +62,18 @@
           "background": "#0D0D0D",
           "foreground": "#FFCA80",
           "options": {
+            "display_mode": "environment",
+            "fetch_virtual_env": true,
+            "display_default": false
+          },
+          "style": "plain",
+          "template": "<#000000>\ue0b1 </>\ue235 {{ if .Error }}{{ .Error }}{{ else }}{{ if .Venv }}{{ .Venv }}{{ if .Full }} {{ end }}{{ end }}{{ if .Full }}{{ .Full }}{{ end }}{{ end }} ",
+          "type": "python"
+        },
+        {
+          "background": "#0D0D0D",
+          "foreground": "#FFCA80",
+          "options": {
             "style": "dallas",
             "threshold": 0
           },

@@ -87,8 +87,13 @@
           "background": "#1B1A23",
           "foreground": "#FFCA80",
           "leading_diamond": "\ue0b2",
+          "options": {
+            "display_mode": "environment",
+            "fetch_virtual_env": true,
+            "display_default": false
+          },
           "style": "diamond",
-          "template": "\ue235 {{ if .Error }}{{ .Error }}{{ else }}{{ if .Venv }}{{ .Venv }} {{ end }}{{ .Full }}{{ end }}",
+          "template": "\ue235 {{ if .Error }}{{ .Error }}{{ else }}{{ if .Venv }}{{ .Venv }}{{ if .Full }} {{ end }}{{ end }}{{ if .Full }}{{ .Full }}{{ end }}{{ end }}",
           "trailing_diamond": "\ue0b0 ",
           "type": "python"
         },
