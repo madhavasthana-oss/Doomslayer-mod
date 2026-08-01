@@ -140,8 +140,9 @@ ShellRoot {
         WorkspaceBoard {
             id: workspaceBoard
             anchors.centerIn: parent
-            width:  Tokens.workspaceBoardWidth
-            height: Tokens.workspaceBoardHeight
+            // Content-sized card (hugs the 5×2 mini-desktop grid)
+            width:  implicitWidth
+            height: implicitHeight
         }
     }
 

@@ -244,12 +244,35 @@ QtObject {
     readonly property int workspaceStripIcon:    Math.max(iconSizeMedium, Math.round(14 * scale))
     readonly property int workspaceStripMaxIcons: 4
     readonly property int workspaceBarIconSize:  Math.max(iconSizeLarge, Math.round(16 * scale))
-    // Board: grid of landscape mini-desktops (screen aspect)
-    readonly property int workspaceBoardWidth:   Math.round(Math.min(screenWidth * 0.92, 1200 * scale))
-    readonly property int workspaceBoardHeight:  Math.round(Math.min(screenHeight * 0.72, 640 * scale))
+    // Board: content-sized 5×2 grid of landscape mini-desktops (screen aspect)
+    // Sized to hug the grid — no giant empty panel. Matches bar/panel scale density.
     readonly property int workspaceBoardCols:    5
-    readonly property int workspaceBoardIcon:    Math.round(22 * scale)
-    readonly property int workspaceMiniPad:      Math.round(6 * scale)
+    readonly property int workspaceBoardMiniW:   Math.round(170 * scale)  // ~221 @ 1.3
+    readonly property int workspaceBoardGap:     spacingSm
+    readonly property int workspaceBoardIcon:    Math.round(18 * scale)
+    readonly property int workspaceMiniPad:      Math.round(4 * scale)
+    // Compact per-tile label strip (no separate FOOTER row — click tile to focus)
+    readonly property int workspaceBoardLabelH:  Math.round(16 * scale)
+    // Outer card padding around the grid + title row
+    readonly property int workspaceBoardPad:     paddingH
+    // Fallback fixed size (board prefers its own implicit size from content)
+    readonly property int workspaceBoardWidth: {
+        const cols = workspaceBoardCols
+        const gap  = workspaceBoardGap
+        const pad  = workspaceBoardPad * 2
+        return pad + cols * workspaceBoardMiniW + Math.max(0, cols - 1) * gap
+    }
+    readonly property int workspaceBoardHeight: {
+        // title + separator + 2 rows of (label + 16:9 mini) + gaps + pad
+        // Real height is computed in WorkspaceBoard; this is a safe default.
+        const rows = 2
+        const gap  = workspaceBoardGap
+        const pad  = workspaceBoardPad * 2
+        const miniH = Math.round(workspaceBoardMiniW * 9 / 16)
+        const cellH = workspaceBoardLabelH + miniH + spacingXss
+        const title = actionBtnHeight + spacingSm + Math.round(strokeWidth) + spacingSm
+        return pad + title + rows * cellH + Math.max(0, rows - 1) * gap
+    }
 
 
     readonly property int animInstant:    60
