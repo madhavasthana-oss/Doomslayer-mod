@@ -5,12 +5,13 @@ import QtQuick.Controls
 import Qt5Compat.GraphicalEffects
 import Quickshell
 import "../../.."
+import "../../../utils"
 import "."
 
 Item {
     id: root
-    implicitWidth:  Tokens.edgeWidgetWidth - 2 * Tokens.paddingH
-    implicitHeight: Tokens.edgeWidgetHeight * 0.62
+    // StackLayout sizes us; clip so lists never paint outside the card
+    clip: true
 
     property int selectedIndex: 0
 
@@ -290,6 +291,10 @@ Item {
             activeFocusOnTab: true
             keyNavigationEnabled: false
             highlightFollowsCurrentItem: true
+            boundsBehavior: Flickable.StopAtBounds
+            flickableDirection: Flickable.VerticalFlick
+            interactive: contentHeight > height
+            ScrollBar.vertical: DoomScrollBar {}
 
             Keys.onPressed: (event) => {
                 if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
@@ -308,7 +313,10 @@ Item {
             }
 
             delegate: Rectangle {
-                width: list.width
+                width: Math.max(0, list.width
+                    - (list.contentHeight > list.height
+                        ? Tokens.borderXs + Tokens.spacingXss + 2
+                        : 0))
                 height: Tokens.statBoxHeight
                 radius: Tokens.radiusSm
                 property bool isSelected: index === root.selectedIndex

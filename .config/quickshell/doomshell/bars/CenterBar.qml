@@ -245,42 +245,102 @@ Item {
         expanded:     Globals.activeCenterPanel !== ""
     }
 
-    RowLayout {
+    // Natural-width, fully centered labels — no fixed width, no elide
+    Column {
+        id: centerLabels
         anchors.centerIn: parent
-        spacing: Tokens.spacingMd
-        ColumnLayout {
-            Layout.alignment: Qt.AlignHCenter
-            spacing: Tokens.spacingXss
+        spacing: Tokens.spacingXss
+
+        Text {
+            id: statusText
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: "<< " + messageAnimator.displayedText + " >>"
+            horizontalAlignment: Text.AlignHCenter
+            font.family: Theme.fontDisplay
+            font.pixelSize: Tokens.fontSizeMedium
+            color: Theme.textPrimary
+        }
+
+        Text {
+            id: timeText
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: Qt.formatDate(new Date(), "ddd") + " × "
+                + Qt.formatDate(new Date(), "dd MMM") + " × "
+                + Qt.formatTime(new Date(), "hh:mm")
+            horizontalAlignment: Text.AlignHCenter
+            font.family: Theme.fontMono
+            font.pixelSize: Tokens.fontSizeSmall
+            color: Theme.textSecondary
+        }
+    }
+
+    // Notification badge --- trailing edge of center bar; opens T.S.S notifications
+    Item {
+        id: notifBadge
+        anchors.right: parent.right
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.rightMargin: Tokens.paddingH
+        width: badgeChrome.width
+        height: badgeChrome.height
+        z: 2
+        visible: Globals.notifCount > 0 || Globals.notifDnd || Globals.notifSilent
+
+        Rectangle {
+            id: badgeChrome
+            width: Math.max(Tokens.iconSizeLarge + Tokens.spacingXs,
+                            badgeLabel.implicitWidth + 2 * Tokens.paddingH)
+            height: Tokens.listRowHeight
+            radius: Tokens.radiusSm
+            color: badgeMouse.containsMouse ? Theme.bgElevated : Theme.bgSurface
+            border.color: Globals.notifDnd
+                ? Theme.stateCritical
+                : (Globals.notifCount > 0 ? Theme.borderActive : Theme.borderIdle)
+            border.width: Tokens.strokeWidth
+
             Text {
-                Layout.preferredWidth: Tokens.greetingWidth
-                text: "<< " + messageAnimator.displayedText + " >>"
-                horizontalAlignment: Text.AlignHCenter
+                id: badgeLabel
+                anchors.centerIn: parent
+                text: {
+                    if (Globals.notifDnd)
+                        return Globals.notifCount > 0 ? "DND " + Globals.notifCount : "DND"
+                    if (Globals.notifSilent)
+                        return Globals.notifCount > 0 ? "S " + Globals.notifCount : "S"
+                    return Globals.notifCount > 99 ? "99+" : String(Globals.notifCount)
+                }
                 font.family: Theme.fontDisplay
-                font.pixelSize: Tokens.fontSizeMedium
-                color: Theme.textPrimary
+                font.pixelSize: Tokens.fontSizeLabel
+                color: Globals.notifDnd
+                    ? Theme.stateCritical
+                    : (Globals.notifCount > 0 ? Theme.accent : Theme.textDim)
             }
-            Text {
-                Layout.preferredWidth: Tokens.greetingWidth
-                id: timeText
-                Layout.alignment: Qt.AlignHCenter
-                text: Qt.formatDate(new Date(), "ddd") + " × " + Qt.formatDate(new Date(), "dd MMM") + " × " + Qt.formatTime(new Date(), "hh:mm")
-                horizontalAlignment: Text.AlignHCenter
-                font.family: Theme.fontMono
-                font.pixelSize: Tokens.fontSizeSmall
-                color: Theme.textSecondary
+
+            MouseArea {
+                id: badgeMouse
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                // Consume click so center panel toggle does not fire
+                onClicked: (mouse) => {
+                    Globals.toggleEdgePanel("notifications")
+                    mouse.accepted = true
+                }
             }
         }
     }
-       MouseArea {
-            anchors.fill: parent
-            cursorShape: Qt.PointingHandCursor
 
-            onClicked: {
-                if (Globals.activeCenterPanel !== "") {
-                    Globals.lastCenterPanel = Globals.activeCenterPanel;
-                    Globals.activeCenterPanel = "";
-                } else
-                    Globals.activeCenterPanel = Globals.lastCenterPanel; 
+    MouseArea {
+        anchors.fill: parent
+        cursorShape: Qt.PointingHandCursor
+        // Leave room for badge hit target on the right
+        anchors.rightMargin: notifBadge.visible ? notifBadge.width + Tokens.paddingH : 0
+
+        onClicked: {
+            if (Globals.activeCenterPanel !== "") {
+                Globals.lastCenterPanel = Globals.activeCenterPanel
+                Globals.activeCenterPanel = ""
+            } else {
+                Globals.activeCenterPanel = Globals.lastCenterPanel
             }
         }
+    }
 }

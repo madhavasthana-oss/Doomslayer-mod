@@ -57,11 +57,13 @@ QtObject {
     // Rect chrome uses the second-longest edge (the pinched parallel):
     //   CenterTrapezoid: top=W, bottom=W-2H (45° both sides)  → centerSmallerWidth
     //   Left/RightTrapezoid: bottom=W, top=W-H (45° one side) → left/rightSmallerWidth
-    readonly property int leftWidth:    Math.round(350 * scale)
-    readonly property int leftHeight:   Math.round(35  * scale)
+    // Left matches right bar width; left shows a sliding window of N workspaces
     readonly property int rightWidth:   Math.round(350 * scale)
     readonly property int rightHeight:  Math.round(35  * scale)
-    readonly property int centerWidth:  Math.round(640 * scale)
+    readonly property int leftWidth:    rightWidth
+    readonly property int leftHeight:   rightHeight
+    readonly property int workspaceBarVisible: 5
+    readonly property int centerWidth:  Math.round(800 * scale)
     readonly property int centerHeight: Math.round(45  * scale)
 
     readonly property int centerSmallerWidth: centerWidth - 2 * centerHeight
@@ -75,8 +77,9 @@ QtObject {
     // Keep a floor so shrinking this value cannot collapse media art / week forecast.
     readonly property int centerCollapsedWidth:  Math.round(640 * scale)
     readonly property int centerCollapsedHeight: Math.round(30  * scale)
-    readonly property int centerExpandedWidth:   Math.round(580 * scale)
-    readonly property int centerExpandedHeight:  Math.max(Math.round(280 * scale), Math.round(350 * scale))
+    readonly property int centerExpandedWidth:   Math.round(800 * scale)
+    // Fixed content footprint for center dropdown (tabs sit above this)
+    readonly property int centerExpandedHeight:  Math.round(420 * scale)
 
     readonly property int angleOffsetCollapsed: Math.round(30 * scale)
     readonly property int angleOffsetExpanded:  0
@@ -108,6 +111,23 @@ QtObject {
     readonly property int weatherHourlySampleIndex: 4
     readonly property int weatherRefreshMs:         600000
     readonly property int weatherFetchTimeoutSec:   10
+
+    // SLAYER DASHBOARD --- mission timer, disk, net, updates, notif badge
+    readonly property int missionFocusSec:     25 * 60
+    readonly property int missionBreakSec:      5 * 60
+    readonly property int missionLongBreakSec: 15 * 60
+    readonly property int diskRefreshMs:        30000
+    readonly property int netRefreshMs:         2000
+    readonly property int updatesRefreshMs:     300000   // 5 min background
+    readonly property int updatesRefreshActiveMs: 60000  // 1 min while dashboard open
+    readonly property int notifBadgePollMs:     3000
+    readonly property int wallpaperScanMax:     48
+    readonly property int wallpaperListRows:    6
+    // Side-by-side DISK (arc) + NET (bars) — keep short so weather/patches can flex
+    readonly property int diskNetCardHeight: Math.round(statBoxHeight * 1.75 + spacingSm)
+    readonly property int diskArcSize:       Math.round(statBoxHeight * 1.35)
+    readonly property int netBarCount:       7
+    readonly property int netBarGap:         Math.max(1, Math.round(2 * scale))
 
 
     // SCREEN GEOMETRY --- centers & edge midpoints
@@ -167,6 +187,8 @@ QtObject {
     readonly property int bottomBarMargin: barMarginTop
     readonly property int bottomHideDelay: animMedium
     readonly property int edgeHideDelay:   animMedium
+    // Badge / IPC force-open auto-releases if the pointer never takes over
+    readonly property int edgeForceTimeoutMs: 10000
 
     // MEDIA / CAVA
     readonly property int mediaPollMs:            1000
@@ -216,6 +238,19 @@ QtObject {
 
     readonly property int workspaceToggleMargin: Math.round(10 * scale)
     readonly property int workspaceMargins:      Math.round(6  * scale)
+    readonly property int workspacePollMs:       750
+    // Compact workspace number cell (icons live in a separate strip, not in-cell)
+    readonly property int workspaceCellWidth:    Math.round(fontSizeSmall + spacingSm)
+    readonly property int workspaceStripIcon:    Math.max(iconSizeMedium, Math.round(14 * scale))
+    readonly property int workspaceStripMaxIcons: 4
+    readonly property int workspaceBarIconSize:  Math.max(iconSizeLarge, Math.round(16 * scale))
+    // Board: grid of landscape mini-desktops (screen aspect)
+    readonly property int workspaceBoardWidth:   Math.round(Math.min(screenWidth * 0.92, 1200 * scale))
+    readonly property int workspaceBoardHeight:  Math.round(Math.min(screenHeight * 0.72, 640 * scale))
+    readonly property int workspaceBoardCols:    5
+    readonly property int workspaceBoardIcon:    Math.round(22 * scale)
+    readonly property int workspaceMiniPad:      Math.round(6 * scale)
+
 
     readonly property int animInstant:    60
     readonly property int animFast:       120

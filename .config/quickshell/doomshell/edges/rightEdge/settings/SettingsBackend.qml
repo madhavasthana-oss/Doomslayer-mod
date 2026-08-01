@@ -1,4 +1,4 @@
-// SettingsBackend.qml --- brightness, kbd, audio, capture tools, gnome-control-center
+// SettingsBackend.qml --- brightness, kbd, audio, capture tools, gnome, wallust/wallpaper
 import QtQuick
 import Quickshell
 import Quickshell.Io
@@ -16,6 +16,14 @@ Item {
     property bool recording: Globals.screenRecording
     property string statusMsg: ""
     property string kbdDevice: "platform::kbd_backlight"
+    property string wallpaperHint: ""
+    property bool wallScanning: false
+
+    readonly property string wallustScript: Quickshell.shellDir + "/utils/scripts/load-wallust-colors.sh"
+    readonly property string legacyScript:  Quickshell.shellDir + "/utils/scripts/load-legacy-colors.sh"
+
+    ListModel { id: wallpaperModel }
+    property alias wallpapers: wallpaperModel
 
     signal requestClose()   // parent should collapse edge panel
 
@@ -127,6 +135,133 @@ Item {
         kbdQuery.running = true
         audioFastRetry.running = true
         root.tickAudio()
+        root.scanWallpapers()
+        root.queryWallpaper()
+    }
+
+    // --- Wallpaper + palette (awww / wallust / legacy) ---
+    function scanWallpapers() {
+        root.wallScanning = true
+        wallScan.running = true
+    }
+
+    function queryWallpaper() {
+        wallQuery.running = true
+    }
+
+    function parseWallpaperList(text) {
+        wallpaperModel.clear()
+        const lines = (text || "").split("\n")
+        let n = 0
+        for (let i = 0; i < lines.length; i++) {
+            const p = lines[i].trim()
+            if (!p.length)
+                continue
+            const base = p.split("/").pop()
+            wallpaperModel.append({ path: p, name: base })
+            n++
+            if (n >= Tokens.wallpaperScanMax)
+                break
+        }
+        root.wallScanning = false
+        if (n === 0)
+            root.wallpaperHint = "No images in ~/Pictures · ~/Wallpapers"
+        else if (!root.wallpaperHint.length)
+            root.wallpaperHint = n + " surfaces found"
+    }
+
+    function setWallpaper(path) {
+        if (!path || !String(path).length)
+            return
+        root.statusMsg = "DEPLOYING WALLPAPER"
+        root.wallpaperHint = String(path).split("/").pop()
+        Globals.toast("Wallpaper", root.wallpaperHint, "Settings")
+        wallSet.path = String(path)
+        wallSet.running = true
+    }
+
+    function syncWallust() {
+        root.statusMsg = "WALLUST FROM AWWW"
+        Globals.toast("Theme", "Recoloring from wallpaper…", "Settings")
+        wallustRun.running = true
+    }
+
+    function activateLegacy() {
+        root.statusMsg = "DOOM PALETTE"
+        Globals.toast("Theme", "Activating legacy Doom palette", "Settings")
+        legacyRun.running = true
+    }
+
+    Process {
+        id: wallQuery
+        command: [
+            "bash", "-c",
+            "if command -v awww >/dev/null 2>&1 && pgrep -u \"$USER\" -x awww-daemon >/dev/null 2>&1; then "
+                + "awww query 2>/dev/null | sed -n 's/.*image: //p' | head -1; "
+                + "else echo ''; fi"
+        ]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const p = text.trim()
+                if (p.length)
+                    root.wallpaperHint = p.split("/").pop()
+            }
+        }
+    }
+
+    Process {
+        id: wallScan
+        command: [
+            "bash", "-c",
+            "HOME_D=\"$HOME\"; "
+                + "find \"$HOME_D/Pictures\" \"$HOME_D/Wallpapers\" "
+                + "\"$HOME_D/.config/hypr/wallpapers\" \"$HOME_D/Pictures/Wallpapers\" "
+                + "-type f \\( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' "
+                + "-o -iname '*.webp' -o -iname '*.jxl' \\) 2>/dev/null "
+                + "| sort -u | head -n " + Tokens.wallpaperScanMax
+        ]
+        stdout: StdioCollector {
+            onStreamFinished: root.parseWallpaperList(text)
+        }
+        onExited: root.wallScanning = false
+    }
+
+    Process {
+        id: wallSet
+        property string path: ""
+        // $1 = image path (passed as argv after -c script name)
+        command: [
+            "bash", "-c",
+            "IMG=\"$1\"; "
+                + "if command -v awww >/dev/null 2>&1; then "
+                + "  awww img \"$IMG\" --transition-type any --transition-fps 60 2>/dev/null "
+                + "    || awww img \"$IMG\"; "
+                + "fi; "
+                + "exec \"$2\" \"$IMG\"",
+            "wallset",
+            path,
+            root.wallustScript
+        ]
+        onExited: (code) => {
+            root.statusMsg = code === 0 ? "WALLPAPER + WALLUST OK" : "WALLPAPER APPLY FAILED"
+            root.queryWallpaper()
+        }
+    }
+
+    Process {
+        id: wallustRun
+        command: [root.wallustScript, "--from-awww"]
+        onExited: (code) => {
+            root.statusMsg = code === 0 ? "WALLUST ACTIVE" : "WALLUST FAILED"
+        }
+    }
+
+    Process {
+        id: legacyRun
+        command: [root.legacyScript, "--activate"]
+        onExited: (code) => {
+            root.statusMsg = code === 0 ? "DOOM PALETTE ACTIVE" : "LEGACY ACTIVATE FAILED"
+        }
     }
 
     // --- Screen brightness ---

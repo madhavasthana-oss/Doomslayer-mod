@@ -1,13 +1,14 @@
 // NotifFrontend.qml --- notification inbox + silent/dnd (T.S.S content)
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Controls
 import "../../.."
+import "../../../utils"
 import "."
 
 Item {
     id: root
-    implicitWidth:  Tokens.edgeWidgetWidth - 2 * Tokens.paddingH
-    implicitHeight: Tokens.edgeWidgetHeight * 0.62
+    clip: true
 
     property int selectedIndex: 0
 
@@ -188,6 +189,10 @@ Item {
             activeFocusOnTab: true
             keyNavigationEnabled: false
             highlightFollowsCurrentItem: true
+            boundsBehavior: Flickable.StopAtBounds
+            flickableDirection: Flickable.VerticalFlick
+            interactive: contentHeight > height
+            ScrollBar.vertical: DoomScrollBar {}
 
             Keys.onPressed: (event) => {
                 if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
@@ -207,7 +212,10 @@ Item {
             }
 
             delegate: Rectangle {
-                width: list.width
+                width: Math.max(0, list.width
+                    - (list.contentHeight > list.height
+                        ? Tokens.borderXs + Tokens.spacingXss + 2
+                        : 0))
                 height: Math.max(Tokens.statBoxHeight, bodyCol.implicitHeight + 2 * Tokens.paddingV)
                 radius: Tokens.radiusSm
                 property bool isSelected: index === root.selectedIndex

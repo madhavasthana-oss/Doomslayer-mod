@@ -20,8 +20,33 @@ function create_if_not_exists(path)
 end
 
 function workspace_in_group(i)
-    local curr = hl.get_active_workspace().id
-    local newVal = math.floor((curr - 1) / workspaceGroupSize) * workspaceGroupSize + i
-    -- hl.notification.create({ text = "curr " .. curr .. " floor " .. math.floor(curr / 10) .. " new " .. newVal, duration = 5000 })
-    return newVal
+	-- Primary bank is always 1..workspaceGroupSize (loop, not infinite groups)
+	local n = workspaceGroupSize or 10
+	local idx = ((i - 1) % n) + 1
+	return idx
+end
+
+-- Wrap workspace index into 1..workspaceGroupSize
+function workspace_wrap(id)
+	local n = workspaceGroupSize or 10
+	-- Lua modulo of negative: normalize into [0, n)
+	local z = (id - 1) % n
+	if z < 0 then
+		z = z + n
+	end
+	return z + 1
+end
+
+-- Relative cycle: delta +1 / -1 loops 10→1 and 1→10
+function cycle_workspace(delta)
+	local curr = hl.get_active_workspace().id
+	local nextWs = workspace_wrap(curr + delta)
+	hl.dispatch(hl.dsp.focus({ workspace = nextWs }))
+end
+
+-- Move active window to previous/next workspace (wrap), stay on current view
+function cycle_move_window(delta)
+	local curr = hl.get_active_workspace().id
+	local nextWs = workspace_wrap(curr + delta)
+	hl.dispatch(hl.dsp.window.move({ workspace = nextWs, silent = true, follow = false }))
 end

@@ -1,3 +1,4 @@
+// LeftBar.qml --- workspace numbers + active-workspace icon strip + window title
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Hyprland
@@ -9,49 +10,53 @@ import ".."
 
 Item {
     id: leftBar
-    // Rect width tracks LeftTrapezoid's second-longest edge (pinched top).
     width:  Tokens.leftWidth
     height: Tokens.leftHeight
-    property int visibleCount: Globals.workspaceNumber
-    property int focusedId:    Hyprland.focusedWorkspace?.id ?? 1
-    property int windowStart:  1    // starts at 1, updated by Connections
+    clip: true
 
-    // Cell size for each workspace number (room for double digits + click padding)
-    readonly property int wsCellWidth: Tokens.fontSizeSmall + Tokens.spacingXs
-    readonly property int wsRowSpacing: Tokens.spacingXs
-    // Must include inter-item spacing or cells overflow into the separator
+    // Sliding window of 5 workspace numbers (full set remains on board)
+    readonly property int visibleCount: Tokens.workspaceBarVisible
+    readonly property int workspaceMax: Globals.workspaceNumber
+    property int focusedId: Hyprland.focusedWorkspace?.id ?? 1
+    property int windowStart: 1
+
+    readonly property int wsCellWidth: Tokens.workspaceCellWidth
+    readonly property int wsRowSpacing: Tokens.spacingXss
     readonly property int wsRowWidth:
         visibleCount * wsCellWidth
         + Math.max(0, visibleCount - 1) * wsRowSpacing
 
+    readonly property int stripIcon: Tokens.workspaceStripIcon
+    readonly property int stripMax: Tokens.workspaceStripMaxIcons
+
+    // Windows on the focused workspace only (layout order from hub)
+    readonly property var activeClients: WorkspaceHub.focusedClients
+
+    function syncWindowStart(id) {
+        const maxStart = Math.max(1, leftBar.workspaceMax - leftBar.visibleCount + 1)
+        if (id >= leftBar.windowStart + leftBar.visibleCount)
+            leftBar.windowStart = Math.min(id - leftBar.visibleCount + 1, maxStart)
+        else if (id < leftBar.windowStart)
+            leftBar.windowStart = Math.max(1, id)
+        // Clamp if focused beyond max
+        if (leftBar.windowStart > maxStart)
+            leftBar.windowStart = maxStart
+    }
+
     Connections {
         target: Hyprland
         function onFocusedWorkspaceChanged() {
-            var id = Hyprland.focusedWorkspace?.id ?? 1
+            const id = Hyprland.focusedWorkspace?.id ?? 1
             leftBar.focusedId = id
-
-            // hit right boundary --- shift forward
-            if (id >= leftBar.windowStart + leftBar.visibleCount) {
-                leftBar.windowStart = id - leftBar.visibleCount + 1
-            }
-            // hit left boundary --- shift backward
-            else if (id < leftBar.windowStart) {
-                leftBar.windowStart = id
-            }
-            // within range --- don't touch windowStart
+            leftBar.syncWindowStart(id)
         }
     }
 
-    // Hyprland 0.55+ with Lua config no longer accepts legacy
-    // "workspace N" strings. Dispatch must be an hl.dsp.* form.
-    function switchToWorkspace(id) {
-        if (Hyprland.usingLua)
-            Hyprland.dispatch("hl.dsp.focus({ workspace = " + id + " })")
-        else
-            Hyprland.dispatch("workspace " + id)
-    }
+    Component.onCompleted: leftBar.syncWindowStart(leftBar.focusedId)
 
-    //  SHAPE
+    function switchToWorkspace(id) {
+        WorkspaceHub.switchToWorkspace(id)
+    }
 
     SideRect {
         anchors.fill: parent
@@ -60,18 +65,13 @@ Item {
         alertActive:  false
     }
 
-    //  CONTENT
-    //  Left  -> workspace numbers (fixed width, never shrinks)
-    //  Sep   -> thin bar with fixed gaps so it never sits on the numbers
-    //  Right -> active window title (takes remaining space)
-
     RowLayout {
-        anchors.fill:        parent
+        anchors.fill: parent
         anchors.leftMargin:  Tokens.workspaceToggleMargin
         anchors.rightMargin: Tokens.workspaceToggleMargin
-        spacing:             Tokens.spacingXss
+        spacing: Tokens.spacingXss
 
-        //  Workspace numbers --- locked width
+        // --- Workspace numbers (clean, no in-cell badges) ---
         RowLayout {
             Layout.alignment:      Qt.AlignVCenter
             Layout.preferredWidth: leftBar.wsRowWidth
@@ -90,7 +90,7 @@ Item {
                 Item {
                     id: wsDelegate
                     property int  wsId:     modelData
-                    property bool isActive: Hyprland.focusedWorkspace?.id === wsId
+                    property bool isActive: leftBar.focusedId === wsId
 
                     Layout.fillHeight:     true
                     Layout.preferredWidth: leftBar.wsCellWidth
@@ -99,54 +99,127 @@ Item {
 
                     Text {
                         anchors.centerIn: parent
-                        text:             wsDelegate.wsId
-                        font.family:      Theme.fontDisplay
-                        font.pixelSize:   Tokens.fontSizeSmall
-                        color:            wsDelegate.isActive ? Theme.textSecondary : Theme.textMuted
+                        text: wsDelegate.wsId
+                        font.family: Theme.fontDisplay
+                        font.pixelSize: Tokens.fontSizeSmall
+                        color: wsDelegate.isActive ? Theme.textSecondary : Theme.textMuted
 
                         Behavior on color {
                             ColorAnimation { duration: Tokens.animFast; easing.type: Easing.OutCubic }
                         }
                     }
 
+                    // Thin active indicator under the number (not icons)
+                    Rectangle {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.bottom: parent.bottom
+                        anchors.bottomMargin: 2
+                        width: Math.min(parent.width - 2, Tokens.spacingMd)
+                        height: Math.max(1, Math.round(Tokens.strokeWidth))
+                        radius: 1
+                        color: Theme.accent
+                        visible: wsDelegate.isActive
+                        opacity: 0.85
+                    }
+
                     MouseArea {
                         anchors.fill: parent
-                        cursorShape:  Qt.PointingHandCursor
-                        onClicked:    leftBar.switchToWorkspace(wsDelegate.wsId)
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: leftBar.switchToWorkspace(wsDelegate.wsId)
                     }
                 }
             }
         }
 
-        // Fixed gap before separator
-        Item {
-            Layout.preferredWidth: Tokens.spacingMd
-            Layout.minimumWidth:   Tokens.spacingMd
-            Layout.fillWidth:      false
+        // --- Icon strip for the ACTIVE workspace only (beside numbers, not under them) ---
+        Row {
+            id: iconStrip
+            Layout.alignment: Qt.AlignVCenter
+            Layout.fillWidth: false
+            Layout.maximumWidth: leftBar.stripIcon * leftBar.stripMax
+                + Tokens.spacingXss * (leftBar.stripMax - 1)
+                + Tokens.spacingMd
+            spacing: Tokens.spacingXss
+            visible: leftBar.activeClients && leftBar.activeClients.length > 0
+            clip: true
+            height: leftBar.stripIcon
+
+            Repeater {
+                model: {
+                    const list = leftBar.activeClients
+                    if (!list || !list.length)
+                        return []
+                    return list.slice(0, leftBar.stripMax)
+                }
+
+                Item {
+                    width:  leftBar.stripIcon
+                    height: leftBar.stripIcon
+
+                    Image {
+                        id: glyph
+                        anchors.fill: parent
+                        source: modelData.icon || ""
+                        sourceSize: Qt.size(width * 2, height * 2)
+                        fillMode: Image.PreserveAspectFit
+                        asynchronous: true
+                        smooth: true
+                        visible: status === Image.Ready
+                    }
+
+                    Text {
+                        anchors.centerIn: parent
+                        visible: glyph.status !== Image.Ready
+                        text: {
+                            const t = modelData.className || modelData.title || "?"
+                            return String(t).charAt(0).toUpperCase()
+                        }
+                        font.family: Theme.fontDisplay
+                        font.pixelSize: Tokens.fontSizeTiny
+                        color: Theme.accent
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: WorkspaceHub.focusWindow(modelData.address)
+                        ToolTip.visible: containsMouse
+                        ToolTip.delay: 350
+                        ToolTip.text: modelData.title || modelData.className || ""
+                    }
+                }
+            }
+
+            Text {
+                visible: leftBar.activeClients
+                    && leftBar.activeClients.length > leftBar.stripMax
+                anchors.verticalCenter: parent.verticalCenter
+                text: "+" + (leftBar.activeClients.length - leftBar.stripMax)
+                font.family: Theme.fontMono
+                font.pixelSize: Tokens.fontSizeTiny
+                color: Theme.textDim
+            }
         }
 
-        // Separator bar
+        // Separator
         Rectangle {
             Layout.preferredWidth:  Math.max(1, Math.round(Tokens.strokeWidth))
-            Layout.preferredHeight: parent.height * 0.5
-            Layout.fillWidth:       false
-            Layout.fillHeight:      false
+            Layout.preferredHeight: parent.height * 0.45
             Layout.alignment:       Qt.AlignVCenter
+            Layout.leftMargin:      Tokens.spacingXs
+            Layout.rightMargin:     Tokens.spacingXs
             color:                  Theme.borderIdle
         }
 
-        // Fixed gap after separator
-        Item {
-            Layout.preferredWidth: Tokens.spacingMd
-            Layout.minimumWidth:   Tokens.spacingMd
-            Layout.fillWidth:      false
-        }
-
-        // Active window title --- only flex child
+        // Active window title
         Text {
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignVCenter
+            Layout.minimumWidth: 0
             elide: Text.ElideRight
+            maximumLineCount: 1
+            clip: true
 
             text: (
                 Hyprland.activeToplevel &&
@@ -158,6 +231,34 @@ Item {
             font.family: Theme.fontDisplay
             font.pixelSize: Tokens.fontSizeSmall
             color: Theme.textSecondary
+        }
+
+        // Board toggle
+        Rectangle {
+            Layout.preferredWidth:  Tokens.workspaceBarIconSize + Tokens.spacingXs
+            Layout.preferredHeight: Tokens.workspaceBarIconSize
+            Layout.maximumWidth:    Tokens.workspaceBarIconSize + Tokens.spacingXs
+            Layout.alignment: Qt.AlignVCenter
+            radius: Tokens.radiusSm
+            color: boardBtn.containsMouse || Globals.workspaceBoardOpen
+                ? Theme.bgElevated : "transparent"
+            border.color: Globals.workspaceBoardOpen ? Theme.borderActive : Theme.borderIdle
+            border.width: Tokens.strokeWidth
+
+            Text {
+                anchors.centerIn: parent
+                text: "▦"
+                font.pixelSize: Tokens.fontSizeSmall
+                color: Globals.workspaceBoardOpen ? Theme.accent : Theme.textMuted
+            }
+
+            MouseArea {
+                id: boardBtn
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: Globals.toggleWorkspaceBoard()
+            }
         }
     }
 }

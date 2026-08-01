@@ -11,16 +11,18 @@ import "notifications"
 Item {
     id: root
 
-    implicitWidth:  Tokens.edgeWindowWidth
-    implicitHeight: Tokens.edgeWindowHeight
+    // Size to the WINDOW parent, not a fixed implicit that fights collapsed width
+    anchors.fill: parent
 
     property bool open: false
-    readonly property bool revealed: open
+    // Force-open is sticky only until hover handoff, timeout, or collapse
+    readonly property bool revealed: open || Globals.edgeForced
 
-    // Allow children (settings) to force-collapse before launching tools
     function collapse() {
         hideTimer.stop()
+        forceTimeout.stop()
         root.open = false
+        Globals.releaseEdgePanel()
     }
 
     readonly property var panelOrder: ["wifi", "bluetooth", "settings", "notifications"]
@@ -41,6 +43,8 @@ Item {
     }
 
     function grabActiveFocus() {
+        if (!root.revealed)
+            return
         const panel = Globals.activeEdgePanel
         if (panel === "wifi")
             wifiPage.grabListFocus()
@@ -59,7 +63,10 @@ Item {
 
     focus: true
     Keys.onPressed: (event) => {
-        if (event.key === Qt.Key_Left) {
+        if (event.key === Qt.Key_Escape) {
+            root.collapse()
+            event.accepted = true
+        } else if (event.key === Qt.Key_Left) {
             root.cyclePanel(-1)
             event.accepted = true
         } else if (event.key === Qt.Key_Right) {
@@ -80,12 +87,19 @@ Item {
         }
     }
 
+    // Hover only while the panel is wide enough to be meaningful.
+    // When collapsed the thin strip still opens on enter.
     HoverHandler {
         id: hoverHandler
         onHoveredChanged: {
             if (hovered) {
                 hideTimer.stop()
                 root.open = true
+                // Handoff: badge force-pin ends once the pointer is on the panel
+                if (Globals.edgeForced) {
+                    forceTimeout.stop()
+                    Globals.releaseEdgePanel()
+                }
             } else {
                 hideTimer.restart()
             }
@@ -97,16 +111,49 @@ Item {
         interval: Tokens.edgeHideDelay
         repeat: false
         onTriggered: {
-            if (!hoverHandler.hovered)
+            if (!hoverHandler.hovered && !Globals.edgeForced)
                 root.open = false
         }
     }
 
+    // Never leave the panel force-pinned forever (badge open without hover)
+    Timer {
+        id: forceTimeout
+        interval: Tokens.edgeForceTimeoutMs
+        repeat: false
+        onTriggered: {
+            if (!hoverHandler.hovered) {
+                Globals.releaseEdgePanel()
+                root.open = false
+            } else {
+                Globals.releaseEdgePanel()
+            }
+        }
+    }
+
+    Connections {
+        target: Globals
+        function onEdgeForcedChanged() {
+            if (Globals.edgeForced) {
+                hideTimer.stop()
+                root.open = true
+                forceTimeout.restart()
+                Qt.callLater(root.grabActiveFocus)
+            } else {
+                forceTimeout.stop()
+                if (!hoverHandler.hovered)
+                    hideTimer.restart()
+            }
+        }
+    }
+
+    // Visual card --- only drawn when revealed to avoid a tall invisible hover slab
     Rectangle {
         id: panelBg
         anchors.fill:    parent
-        anchors.margins: Tokens.edgePanelPad
+        anchors.margins: root.revealed ? Tokens.edgePanelPad : 0
         radius:          Tokens.radiusXl
+        visible:         root.revealed
         color: Qt.rgba(
             Theme.bgConsole.r,
             Theme.bgConsole.g,
@@ -116,55 +163,73 @@ Item {
         border.color: Theme.borderActive
         border.width: Math.max(Tokens.borderXss, Math.round(Tokens.strokeWidthActive))
         antialiasing: true
+        clip: true
     }
 
-    ColumnLayout {
-        id: mainLayout
+    // Content clipped to the card so nothing paints outside or steals layout
+    Item {
+        id: contentHost
         anchors.fill:    panelBg
         anchors.margins: Tokens.paddingH
-        spacing:         Tokens.spacingSm
+        visible:         root.revealed
+        clip:            true
 
-        // 1. Tile grid
-        EdgeTabs {
-            id: tabs
-            Layout.fillWidth: true
-            active: Globals.activeEdgePanel
-            onSwitched: (panel) => root.switchPanel(panel)
-        }
+        ColumnLayout {
+            id: mainLayout
+            anchors.fill: parent
+            spacing:      Tokens.spacingSm
 
-        Rectangle {
-            Layout.fillWidth: true
-            Layout.preferredHeight: Tokens.strokeWidth
-            color: Theme.borderIdle
-            opacity: 0.5
-        }
-
-        StackLayout {
-            id: stack
-            Layout.fillWidth:  true
-            Layout.fillHeight: true
-
-            currentIndex: {
-                const panels = ["wifi", "bluetooth", "settings", "notifications"]
-                const idx = panels.indexOf(Globals.activeEdgePanel)
-                return idx < 0 ? 0 : idx
+            EdgeTabs {
+                id: tabs
+                Layout.fillWidth: true
+                Layout.maximumHeight: tabs.implicitHeight
+                active: Globals.activeEdgePanel
+                onSwitched: (panel) => root.switchPanel(panel)
             }
 
-            NetworkFrontend {
-                id: wifiPage
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: Tokens.strokeWidth
+                color: Theme.borderIdle
+                opacity: 0.5
             }
 
-            BluetoothFrontend {
-                id: btPage
-            }
+            StackLayout {
+                id: stack
+                Layout.fillWidth:  true
+                Layout.fillHeight: true
+                clip: true
 
-            SettingsFrontend {
-                id: settingsPage
-                onRequestClose: root.collapse()
-            }
+                currentIndex: {
+                    const panels = ["wifi", "bluetooth", "settings", "notifications"]
+                    const idx = panels.indexOf(Globals.activeEdgePanel)
+                    return idx < 0 ? 0 : idx
+                }
 
-            NotifFrontend {
-                id: notifPage
+                NetworkFrontend {
+                    id: wifiPage
+                    Layout.fillWidth:  true
+                    Layout.fillHeight: true
+                }
+
+                BluetoothFrontend {
+                    id: btPage
+                    Layout.fillWidth:  true
+                    Layout.fillHeight: true
+                }
+
+                SettingsFrontend {
+                    id: settingsPage
+                    Layout.fillWidth:  true
+                    Layout.fillHeight: true
+                    onRequestClose: root.collapse()
+                }
+
+                NotifFrontend {
+                    id: notifPage
+                    Layout.fillWidth:  true
+                    Layout.fillHeight: true
+                }
             }
         }
     }

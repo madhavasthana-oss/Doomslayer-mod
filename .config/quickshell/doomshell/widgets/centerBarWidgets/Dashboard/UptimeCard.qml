@@ -8,11 +8,13 @@ import "../../.."
 Rectangle {
     id: root
     Layout.fillWidth: true
-    implicitHeight: col.implicitHeight + 2 * Tokens.paddingV
+    implicitHeight: Math.max(Tokens.listRowHeight + 2 * Tokens.paddingV,
+                             col.implicitHeight + 2 * Tokens.paddingV)
     radius: Tokens.radiusMd
     color: Theme.bgSurface
     border.color: Theme.borderIdle
     border.width: Tokens.strokeWidth
+    clip: true
 
     property string uptimeText: "--:--:--"
 
@@ -48,13 +50,15 @@ Rectangle {
         onTriggered: uptimeProc.running = true
     }
 
-    ColumnLayout {
+    // Single compact row — frees vertical room for weather
+    RowLayout {
         id: col
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.top: parent.top
-        anchors.margins: Tokens.paddingH
-        spacing: Tokens.spacingXss
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.leftMargin: Tokens.paddingH
+        anchors.rightMargin: Tokens.paddingH
+        spacing: Tokens.spacingXs
 
         Text {
             text: "UPTIME"
@@ -64,16 +68,13 @@ Rectangle {
         }
         Text {
             Layout.fillWidth: true
-            text: root.uptimeText
-            font.family: Theme.fontMono
-            font.pixelSize: Tokens.fontSizeMedium
-            color: Theme.stateSafe
-        }
-        Text {
-            text: "SYSTEM ONLINE"
+            text: root.uptimeText + " · ONLINE"
             font.family: Theme.fontMono
             font.pixelSize: Tokens.fontSizeTiny
-            color: Theme.textDim
+            color: Theme.stateSafe
+            elide: Text.ElideRight
+            maximumLineCount: 1
+            horizontalAlignment: Text.AlignRight
         }
     }
 }

@@ -5,16 +5,19 @@ import QtQuick.Controls
 import Quickshell
 import Quickshell.Io
 import "../../.."
+import "../../../utils"
 
 Rectangle {
     id: root
+    // Height comes only from parent Layout — never force a floor that overflows
     Layout.fillWidth: true
     Layout.fillHeight: true
-    Layout.minimumHeight: Tokens.weatherCardMinHeight
+    Layout.minimumHeight: 0
     radius: Tokens.radiusMd
     color: Theme.bgSurface
     border.color: Theme.borderIdle
     border.width: Tokens.strokeWidth
+    clip: true
 
     property string currentLine: "FETCHING..."
     property string currentDetail: ""
@@ -185,6 +188,7 @@ Rectangle {
             wrapMode: Text.WordWrap
             maximumLineCount: Tokens.weatherCurrentMaxLines
             elide: Text.ElideRight
+            clip: true
         }
         Text {
             Layout.fillWidth: true
@@ -194,6 +198,8 @@ Rectangle {
             font.pixelSize: Tokens.fontSizeTiny
             color: Theme.textSecondary
             elide: Text.ElideRight
+            maximumLineCount: 1
+            clip: true
         }
 
         Rectangle {
@@ -215,38 +221,27 @@ Rectangle {
             id: weekList
             Layout.fillWidth: true
             Layout.fillHeight: true
+            Layout.minimumHeight: Tokens.forecastRowHeight
             clip: true
             spacing: Tokens.spacingXss
             model: weekModel
             boundsBehavior: Flickable.StopAtBounds
             flickableDirection: Flickable.VerticalFlick
             interactive: contentHeight > height
-
-            ScrollBar.vertical: ScrollBar {
-                policy: weekList.contentHeight > weekList.height
-                    ? ScrollBar.AsNeeded
-                    : ScrollBar.AlwaysOff
-                width: Tokens.borderXs
-                contentItem: Rectangle {
-                    radius: Tokens.radiusSm
-                    color: Theme.accent
-                    opacity: Theme.opacityMuted
-                }
-                background: Rectangle {
-                    radius: Tokens.radiusSm
-                    color: Theme.bgElevated
-                    opacity: Theme.opacityMuted
-                }
-            }
+            ScrollBar.vertical: DoomScrollBar {}
 
             delegate: Rectangle {
-                // Gutter for scrollbar --- sizes from tokens only
-                width: weekList.width - Tokens.borderXs - Tokens.spacingXss
+                // Gutter when scrollbar is visible
+                width: Math.max(0, weekList.width
+                    - (weekList.contentHeight > weekList.height
+                        ? Tokens.borderXs + Tokens.spacingXss + 2
+                        : 0))
                 height: Tokens.forecastRowHeight
                 radius: Tokens.radiusSm
                 color: model.isToday ? Theme.bgElevated : Theme.bgPrimary
                 border.color: model.isToday ? Theme.borderActive : Theme.borderIdle
                 border.width: Tokens.strokeWidth
+                clip: true
 
                 RowLayout {
                     anchors.fill: parent
@@ -260,6 +255,7 @@ Rectangle {
                         font.pixelSize: Tokens.fontSizeLabel
                         color: model.isToday ? Theme.accent : Theme.textDim
                         Layout.preferredWidth: Tokens.forecastDowWidth
+                        elide: Text.ElideRight
                     }
 
                     Text {
@@ -277,6 +273,7 @@ Rectangle {
                         font.pixelSize: Tokens.fontSizeTiny
                         color: Theme.textSecondary
                         elide: Text.ElideRight
+                        maximumLineCount: 1
                     }
 
                     Text {
@@ -294,6 +291,7 @@ Rectangle {
                         color: Theme.textPrimary
                         Layout.preferredWidth: Tokens.forecastTempWidth
                         horizontalAlignment: Text.AlignRight
+                        elide: Text.ElideRight
                     }
                 }
             }

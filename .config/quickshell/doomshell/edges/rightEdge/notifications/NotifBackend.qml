@@ -84,6 +84,7 @@ Item {
                 })
             }
             root.statusMsg = notifModel.count + " ACTIVE"
+            Globals.notifCount = notifModel.count
         } catch (e) {
             root.statusMsg = "PARSE ERROR"
         }

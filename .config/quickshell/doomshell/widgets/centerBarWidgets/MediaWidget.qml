@@ -8,15 +8,13 @@ import "media"
 
 Item {
     id: root
-
-    implicitWidth:  Tokens.centerSmallerWidth
-    implicitHeight: Tokens.centerExpandedHeight
+    clip: true
 
     MediaBackend { id: backend }
 
     readonly property int artSide: {
-        const colW = Math.floor((Tokens.centerSmallerWidth - 3 * Tokens.paddingH) * Tokens.mediaArtWidthFrac)
-        const maxH = Math.floor(Tokens.centerExpandedHeight * Tokens.mediaArtHeightFrac)
+        const colW = Math.floor((width - 3 * Tokens.paddingH) * Tokens.mediaArtWidthFrac)
+        const maxH = Math.floor(height * Tokens.mediaArtHeightFrac)
         return Math.max(Tokens.mediaArtMinSide, Math.min(colW, maxH))
     }
 

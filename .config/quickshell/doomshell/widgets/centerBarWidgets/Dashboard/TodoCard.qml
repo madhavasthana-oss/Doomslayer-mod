@@ -5,15 +5,20 @@ import QtQuick.Controls
 import Quickshell
 import Quickshell.Io
 import "../../.."
+import "../../../utils"
 
 Rectangle {
     id: root
     Layout.fillWidth: true
     Layout.fillHeight: true
+    Layout.preferredHeight: 1
+    Layout.minimumHeight: 0
+    Layout.minimumWidth: 0
     radius: Tokens.radiusMd
     color: Theme.bgSurface
     border.color: Theme.borderIdle
     border.width: Tokens.strokeWidth
+    clip: true
 
     ListModel { id: todoModel }
 
@@ -101,26 +106,14 @@ Rectangle {
             flickableDirection: Flickable.VerticalFlick
             interactive: contentHeight > height
 
-            ScrollBar.vertical: ScrollBar {
-                policy: list.contentHeight > list.height
-                    ? ScrollBar.AsNeeded
-                    : ScrollBar.AlwaysOff
-                width: Tokens.borderXs
-                contentItem: Rectangle {
-                    radius: Tokens.radiusSm
-                    color: Theme.accent
-                    opacity: Theme.opacityMuted
-                }
-                background: Rectangle {
-                    radius: Tokens.radiusSm
-                    color: Theme.bgElevated
-                    opacity: Theme.opacityMuted
-                }
-            }
+            ScrollBar.vertical: DoomScrollBar {}
 
             // Explicit height so wrapped multi-line rows scroll correctly
             delegate: Item {
-                width: list.width - Tokens.borderXs - Tokens.spacingXss
+                width: Math.max(0, list.width
+                    - (list.contentHeight > list.height
+                        ? Tokens.borderXs + Tokens.spacingXss + 2
+                        : 0))
                 height: row.implicitHeight
 
                 RowLayout {

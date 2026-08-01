@@ -1,6 +1,7 @@
 // ConsoleWidget.qml --- app codex: ListView + AnimatedText briefing (once per boot)
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Controls
 import Quickshell
 import "../.."
 import "../../utils"
@@ -8,9 +9,8 @@ import "console"
 
 Item {
     id: root
-
-    implicitWidth:  Tokens.centerSmallerWidth
-    implicitHeight: Tokens.centerExpandedHeight
+    // Sized by StackLayout; clip so content never paints outside
+    clip: true
 
     // session cache: title -> true once typewriter has fired this boot
     property var typedOnce: ({})
@@ -132,6 +132,10 @@ Item {
                     activeFocusOnTab: true
                     keyNavigationEnabled: false
                     highlightFollowsCurrentItem: true
+                    boundsBehavior: Flickable.StopAtBounds
+                    flickableDirection: Flickable.VerticalFlick
+                    interactive: contentHeight > height
+                    ScrollBar.vertical: DoomScrollBar {}
 
                     Keys.onPressed: (event) => {
                         if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
@@ -147,7 +151,10 @@ Item {
                     }
 
                     delegate: Rectangle {
-                        width: appList.width
+                        width: Math.max(0, appList.width
+                            - (appList.contentHeight > appList.height
+                                ? Tokens.borderXs + Tokens.spacingXss + 2
+                                : 0))
                         height: Tokens.statBoxHeight
                         radius: Tokens.radiusSm
                         color: index === root.selectedIndex ? Theme.bgElevated : "transparent"

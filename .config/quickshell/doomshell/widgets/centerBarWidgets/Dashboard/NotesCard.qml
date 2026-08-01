@@ -10,10 +10,14 @@ Rectangle {
     id: root
     Layout.fillWidth: true
     Layout.fillHeight: true
+    Layout.preferredHeight: 1
+    Layout.minimumHeight: 0
+    Layout.minimumWidth: 0
     radius: Tokens.radiusMd
     color: Theme.bgSurface
     border.color: Theme.borderIdle
     border.width: Tokens.strokeWidth
+    clip: true
 
     readonly property string storePath: Quickshell.env("HOME") + "/.cache/doomslayer-notes.txt"
     property string statusMsg: ""

@@ -3,7 +3,8 @@ import QtQuick 2.15
 import Quickshell
 
 QtObject {
-    readonly property int workspaceNumber: 7
+    // Visible workspace count (left bar + board); matches hypr workspaceGroupSize
+    readonly property int workspaceNumber: 10
 
     property string activePanel    : ""
     property string lastPanel      : "cpu"
@@ -15,10 +16,13 @@ QtObject {
     // Right-edge trifold (T.S.S) --- which stack page is active
     property string activeEdgePanel : "wifi"   // "wifi" | "bluetooth" | "settings" | "notifications"
     property string lastEdgePanel   : "wifi"
+    // Force edge open (e.g. notif badge) without requiring hover
+    property bool edgeForced : false
 
-    // Notification modes (mako)
+    // Notification modes (mako) + live count for bar badge
     property bool notifSilent : false
     property bool notifDnd    : false
+    property int  notifCount  : 0
 
     // Screen capture --- edge panel closes itself before launching tools
     property bool screenRecording : false
@@ -26,8 +30,23 @@ QtObject {
     // Cava desktop overlay (toggled from Media panel)
     property bool cavaOverlay : false
 
+    // Workspace board (drag windows between workspaces)
+    property bool workspaceBoardOpen : false
+
     // Last toast summary (debug breadcrumb; not an event bus)
     property string lastAction : ""
+
+    function toggleWorkspaceBoard() {
+        workspaceBoardOpen = !workspaceBoardOpen
+    }
+
+    function openWorkspaceBoard() {
+        workspaceBoardOpen = true
+    }
+
+    function closeWorkspaceBoard() {
+        workspaceBoardOpen = false
+    }
 
     // Fire a mako toast via notify-send. Empty summary = no-op.
     // appName becomes notify-send -a (mako criteria), not "mako".
@@ -55,5 +74,36 @@ QtObject {
 
         lastAction = sum
         Quickshell.execDetached(args)
+    }
+
+    // Right-edge open API (badge / IPC can call without hover)
+    function openEdgePanel(panel) {
+        if (panel !== undefined && panel !== null && String(panel).length) {
+            activeEdgePanel = String(panel)
+            lastEdgePanel = String(panel)
+        }
+        // Always re-assert so Connections fire even if already forced
+        if (edgeForced) {
+            edgeForced = false
+            edgeForced = true
+        } else {
+            edgeForced = true
+        }
+    }
+
+    function releaseEdgePanel() {
+        edgeForced = false
+    }
+
+    function toggleEdgePanel(panel) {
+        const target = (panel !== undefined && panel !== null && String(panel).length)
+            ? String(panel)
+            : activeEdgePanel
+        // Close if already open on this page (forced or just visible via last open)
+        if (edgeForced && activeEdgePanel === target) {
+            edgeForced = false
+            return
+        }
+        openEdgePanel(target)
     }
 }

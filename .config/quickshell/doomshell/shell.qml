@@ -1,14 +1,51 @@
 import QtQuick
 import Quickshell
 import Quickshell.Wayland
+import Quickshell.Io
 import "bars"
 import "edges/rightEdge"
 import "widgets/rightBarWidgets"
 import "widgets/centerBarWidgets"
+import "widgets/leftBarWidgets"
 import "bottom"
 
 ShellRoot {
     id:shellRoot
+
+    // Live mako count for center-bar notification badge (inlined ---
+    // directory-import types under ShellRoot are unreliable on this qs build)
+    Item {
+        id: notifCountPoller
+
+        function refresh() {
+            notifCountProc.running = true
+        }
+
+        Process {
+            id: notifCountProc
+            command: [
+                "bash", "-c",
+                "makoctl list -j 2>/dev/null | python3 -c "
+                    + "'import sys,json; d=json.load(sys.stdin); print(len(d) if isinstance(d,list) else 0)' "
+                    + "2>/dev/null || echo 0"
+            ]
+            stdout: StdioCollector {
+                onStreamFinished: {
+                    const n = parseInt(text.trim())
+                    Globals.notifCount = isNaN(n) ? 0 : Math.max(0, n)
+                }
+            }
+        }
+
+        Timer {
+            interval: Tokens.notifBadgePollMs
+            running: true
+            repeat: true
+            triggeredOnStart: true
+            onTriggered: notifCountPoller.refresh()
+        }
+    }
+
     PanelWindow { 
       id: rightBarWindow
         anchors { top: true; right: true }
@@ -26,7 +63,7 @@ ShellRoot {
     
     PanelWindow {
         id: dropdownWindow
-        anchors { top: true; right: true }
+        anchors { top: true; right: true } 
         implicitWidth:  sysPanel.implicitWidth
         implicitHeight: Globals.activePanel !== "" ? sysPanel.implicitHeight : 0
         
@@ -74,6 +111,40 @@ ShellRoot {
         LeftBar { anchors.fill: parent }
     }
 
+    // Workspace board — drag windows across workspaces (full-screen overlay, card centered)
+    PanelWindow {
+        id: workspaceBoardWindow
+        anchors {
+            top: true
+            left: true
+            right: true
+            bottom: true
+        }
+        visible: Globals.workspaceBoardOpen
+        color: "transparent"
+        exclusiveZone: 0
+        focusable: Globals.workspaceBoardOpen
+        WlrLayershell.layer:     WlrLayer.Overlay
+        WlrLayershell.namespace: "doomshell-workspace-board"
+
+        // Dim click-catcher — click outside card closes board
+        Rectangle {
+            anchors.fill: parent
+            color: Qt.rgba(0, 0, 0, 0.45)
+            MouseArea {
+                anchors.fill: parent
+                onClicked: Globals.closeWorkspaceBoard()
+            }
+        }
+
+        WorkspaceBoard {
+            id: workspaceBoard
+            anchors.centerIn: parent
+            width:  Tokens.workspaceBoardWidth
+            height: Tokens.workspaceBoardHeight
+        }
+    }
+
     PanelWindow {
         id: centerBarWindow
         anchors { top: true }
@@ -105,7 +176,7 @@ ShellRoot {
         WlrLayershell.layer:         WlrLayer.Top
         WlrLayershell.namespace:     "doomshell-center-dropdown"
         WlrLayershell.margins.top:   Tokens.spacingXs
-        visible: Globals.activeCenterPanel !== ""
+        visible: Globals.activeCenterPanel !== "" 
 
         Rectangle {
             id: centerPanelBg
@@ -119,6 +190,9 @@ ShellRoot {
 
         CenterPanel {
             id: centerPanel
+            anchors.fill: parent
+            // Keep a hair of inset so border radius doesn't clip card chrome
+            anchors.margins: Tokens.borderXss
         }
     }
 
@@ -169,9 +243,10 @@ ShellRoot {
         implicitWidth: rightEdgePanel.revealed
             ? Tokens.edgeWindowWidth
             : Tokens.edgeHoverZoneCollapsed
+        // Keep a full-height hit strip only when open; collapsed stays a thin edge
         implicitHeight: Tokens.edgeWindowHeight
 
-        // Keyboard focus for wifi password field
+        // Keyboard only while open (avoids focus stealing that can feel "stuck")
         focusable: rightEdgePanel.revealed
 
         color:         "transparent"
@@ -182,6 +257,7 @@ ShellRoot {
         RightEdgePanel {
             id: rightEdgePanel
             anchors.fill: parent
+            // Collapsed: stay interactive for hover but invisible chrome
             opacity: rightEdgePanel.revealed
                 ? Theme.opacityVisible
                 : Theme.opacityHidden
@@ -194,4 +270,7 @@ ShellRoot {
             }
         }
     }
+
+    // Safety: never boot with a force-pinned edge from a previous session state
+    Component.onCompleted: Globals.releaseEdgePanel()
 }

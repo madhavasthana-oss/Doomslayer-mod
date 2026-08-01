@@ -1,4 +1,4 @@
-// CenterPanel.qml
+// CenterPanel.qml --- fixed-height stack; children must fit (no overflow)
 import QtQuick
 import QtQuick.Layouts
 import "../.."
@@ -6,8 +6,11 @@ import "."
 
 Item {
     id: root
-    implicitHeight: mainCenterPanelLayout.implicitHeight
-    implicitWidth:  mainCenterPanelLayout.implicitWidth
+    // Drive shell dropdown size from tokens (shell binds window to these)
+    implicitWidth:  Tokens.centerSmallerWidth
+    implicitHeight: Tokens.listRowHeight + Tokens.strokeWidth + Tokens.centerExpandedHeight
+                    + Tokens.paddingV
+    clip: true
 
     readonly property var panelOrder: ["dashboard", "console", "media"]
 
@@ -34,7 +37,6 @@ Item {
             root.forceActiveFocus()
     }
 
-    // Left/Right cycle dashboard / console / media
     Keys.onPressed: (event) => {
         if (event.key === Qt.Key_Left) {
             root.cycleCenterPanel(-1)
@@ -57,55 +59,61 @@ Item {
 
     ColumnLayout {
         id: mainCenterPanelLayout
+        anchors.fill: parent
+        spacing: 0
 
         CenterTabs {
             id: tabs
+            Layout.fillWidth: true
             Layout.leftMargin:  Tokens.paddingH
             Layout.rightMargin: Tokens.paddingH
+            Layout.preferredHeight: Tokens.listRowHeight
+            Layout.maximumHeight: Tokens.listRowHeight
 
             active: Globals.activeCenterPanel
             onSwitched: (panel) => root.switchCenterPanel(panel)
         }
 
-        // 2. Separator line
         Rectangle {
             id: sep
+            Layout.fillWidth: true
             Layout.leftMargin:  Tokens.paddingH
             Layout.rightMargin: Tokens.paddingH
             Layout.preferredHeight: Tokens.strokeWidth
-            Layout.fillWidth: true
+            Layout.maximumHeight: Tokens.strokeWidth
             color: Theme.borderIdle
             opacity: 0.5
         }
 
-        // 3. Content panels --- fixed token footprint so token height toggles
-        // stay consistent across tabs (no implicit-size thrash in StackLayout)
-        StackLayout {
-            id: stack
-            Layout.preferredWidth:  Tokens.centerSmallerWidth
+        // Fixed footprint — content must layout inside, never grow the window
+        Item {
+            id: stackHost
+            Layout.fillWidth: true
             Layout.preferredHeight: Tokens.centerExpandedHeight
-            Layout.minimumHeight:   Tokens.centerExpandedHeight
+            Layout.minimumHeight: Tokens.centerExpandedHeight
+            Layout.maximumHeight: Tokens.centerExpandedHeight
+            clip: true
 
-            currentIndex: {
-                let panels = ["dashboard", "console", "media"]
-                const idx = panels.indexOf(Globals.activeCenterPanel)
-                return idx < 0 ? 0 : idx
-            }
+            StackLayout {
+                id: stack
+                anchors.fill: parent
+                clip: true
 
-            DashboardWidget {
-                id: dashboard
-                width:  stack.width
-                height: stack.height
-            }
-            ConsoleWidget {
-                id: consoleView
-                width:  stack.width
-                height: stack.height
-            }
-            MediaWidget {
-                id: media
-                width:  stack.width
-                height: stack.height
+                currentIndex: {
+                    const panels = ["dashboard", "console", "media"]
+                    const idx = panels.indexOf(Globals.activeCenterPanel)
+                    return idx < 0 ? 0 : idx
+                }
+
+                DashboardWidget {
+                    id: dashboard
+                }
+                ConsoleWidget {
+                    id: consoleView
+                }
+                MediaWidget {
+                    id: media
+                }
             }
         }
     }

@@ -22,6 +22,7 @@ taskManager =
 	"~/.config/hypr/hyprland/scripts/launch_first_available.sh 'gnome-system-monitor' 'plasma-systemmonitor --page-name Processes' 'command -v btop && kitty -1 fish -c btop'"
 appManager = "~/.config/fuzzel/launch.sh"
 
+-- Fixed workspace bank size for Super+1..0 and cycle wrap (1↔N, no infinite)
 workspaceGroupSize = 10
 
 -- Animation preset (hyprland/animations/*.lua)

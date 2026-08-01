@@ -7,10 +7,12 @@ Rectangle {
     id: root
     Layout.fillWidth: true
     Layout.fillHeight: true
+    Layout.minimumHeight: 0
     radius: Tokens.radiusMd
     color: Theme.bgSurface
     border.color: Theme.borderIdle
     border.width: Tokens.strokeWidth
+    clip: true
 
     property int viewYear:  new Date().getFullYear()
     property int viewMonth: new Date().getMonth() // 0-11
@@ -133,8 +135,10 @@ Rectangle {
                 Rectangle {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    Layout.minimumHeight: Tokens.listRowHeight
+                    Layout.minimumHeight: 0
+                    Layout.minimumWidth: 0
                     radius: Tokens.radiusSm
+                    clip: true
                     readonly property bool isToday: {
                         const n = new Date()
                         return modelData.inMonth

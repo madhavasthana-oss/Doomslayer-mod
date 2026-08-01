@@ -187,31 +187,38 @@ for i = 1, 10 do
 	end)
 end
 
--- / bind = SUPER+SHIFT, Scroll <|/|>,, -- Send to workspace left/right
-for i = 1, 4 do
-	local key = { "SUPER + SHIFT + mouse_", "SUPER + ALT + mouse_" }
-	local keycombos = { key[1] .. "down", key[1] .. "up", key[2] .. "down", key[2] .. "up" }
-	local prefix = { "r-", "r+", "r-", "r+" }
-	hl.bind(keycombos[i], hl.dsp.window.move({ workspace = prefix[i] .. "1" }))
-end
+-- Send window left/right with WRAP (1↔workspaceGroupSize), not infinite r+/r-
+hl.bind("SUPER + SHIFT + mouse_down", function()
+	cycle_move_window(1)
+end, { description = "Window: Move to next workspace (cycle)" })
+hl.bind("SUPER + SHIFT + mouse_up", function()
+	cycle_move_window(-1)
+end, { description = "Window: Move to previous workspace (cycle)" })
+hl.bind("SUPER + ALT + mouse_down", function()
+	cycle_move_window(1)
+end)
+hl.bind("SUPER + ALT + mouse_up", function()
+	cycle_move_window(-1)
+end)
 
---/ bind = SUPER+SHIFT, Page_<|/|>,, -- Send to workspace left/right
-for i = 1, 2 do
-	local keydirs = { "Up", "Down" }
-	local prefix = { "r-", "r+" }
-	local descdir = { "left", "right" }
-	hl.bind(
-		"SUPER + SHIFT + Page_" .. keydirs[i],
-		hl.dsp.window.move({ workspace = prefix[i] .. "1" }),
-		{ description = "Window: Send to workspace " .. descdir[i] }
-	)
-end
-for i = 1, 4 do
-	local key = { "SUPER + ALT + Page_", "CTRL + SUPER + SHIFT + " }
-	local keycombos = { key[1] .. "down", key[1] .. "up", key[2] .. "Right", key[2] .. "Left" }
-	local prefix = { "r+", "r-", "r+", "r-" }
-	hl.bind(keycombos[i], hl.dsp.window.move({ workspace = prefix[i] .. "1" })) --  [hidden]
-end
+hl.bind("SUPER + SHIFT + Page_Down", function()
+	cycle_move_window(1)
+end, { description = "Window: Move to next workspace (cycle)" })
+hl.bind("SUPER + SHIFT + Page_Up", function()
+	cycle_move_window(-1)
+end, { description = "Window: Move to previous workspace (cycle)" })
+hl.bind("SUPER + ALT + Page_Down", function()
+	cycle_move_window(1)
+end)
+hl.bind("SUPER + ALT + Page_Up", function()
+	cycle_move_window(-1)
+end)
+hl.bind("CTRL + SUPER + SHIFT + Right", function()
+	cycle_move_window(1)
+end)
+hl.bind("CTRL + SUPER + SHIFT + Left", function()
+	cycle_move_window(-1)
+end)
 
 hl.bind(
 	"SUPER + ALT + S",
@@ -241,45 +248,62 @@ for i = 1, 10 do
 	end)
 end
 
---/ bind = CTRL+SUPER, <--/-->,, -- Focus left/right
---/ bind = CTRL+SUPER+ALT, <--/-->,, --  [hidden] Focus busy left/right
-for i = 1, 2 do
-	local keys = { "Left", "Right" }
-	local prefix = { "r-", "r+" }
-	local descdir = { "left", "right" }
-	hl.bind(
-		"CTRL + SUPER + " .. keys[i],
-		hl.dsp.focus({ workspace = prefix[i] .. "1" }),
-		{ description = "Workspace: Focus " .. descdir[i] }
-	)
-end
-for i = 1, 2 do
-	local keys = { "Left", "Right" }
-	local prefix = { "m-", "m+" }
-	hl.bind("CTRL + SUPER + ALT + " .. keys[i], hl.dsp.focus({ workspace = prefix[i] .. "1" }))
-end
---/ bind = SUPER, Page_<|/|>,, -- Focus left/right
-for i = 1, 4 do
-	local key = { "SUPER + Page_Down", "SUPER + Page_Up" }
-	local keycombos = { key[1], key[2], "CTRL + " .. key[1], "CTRL + " .. key[2] }
-	local prefix = { "r+", "r-", "r+", "r-" }
-	hl.bind(keycombos[i], hl.dsp.focus({ workspace = prefix[i] .. "1" }))
-end
---/ bind = SUPER, Scroll <|/|>,, -- Focus left/right
-for i = 1, 4 do
-	local key = { "SUPER + mouse_up", "SUPER + mouse_down" }
-	local keycombos = { key[1], key[2], "CTRL + " .. key[1], "CTRL + " .. key[2] }
-	local prefix = { "+", "-", "r+", "r-" }
-	hl.bind(keycombos[i], hl.dsp.focus({ workspace = prefix[i] .. "1" }))
-end
+-- Relative focus: CYCLE 1↔N (never create workspace 11, 12, …)
+hl.bind("CTRL + SUPER + Left", function()
+	cycle_workspace(-1)
+end, { description = "Workspace: Cycle previous" })
+hl.bind("CTRL + SUPER + Right", function()
+	cycle_workspace(1)
+end, { description = "Workspace: Cycle next" })
+hl.bind("CTRL + SUPER + ALT + Left", function()
+	cycle_workspace(-1)
+end)
+hl.bind("CTRL + SUPER + ALT + Right", function()
+	cycle_workspace(1)
+end)
+
+hl.bind("SUPER + Page_Down", function()
+	cycle_workspace(1)
+end, { description = "Workspace: Cycle next" })
+hl.bind("SUPER + Page_Up", function()
+	cycle_workspace(-1)
+end, { description = "Workspace: Cycle previous" })
+hl.bind("CTRL + SUPER + Page_Down", function()
+	cycle_workspace(1)
+end)
+hl.bind("CTRL + SUPER + Page_Up", function()
+	cycle_workspace(-1)
+end)
+
+hl.bind("SUPER + mouse_down", function()
+	cycle_workspace(1)
+end, { description = "Workspace: Cycle next (scroll)" })
+hl.bind("SUPER + mouse_up", function()
+	cycle_workspace(-1)
+end, { description = "Workspace: Cycle previous (scroll)" })
+hl.bind("CTRL + SUPER + mouse_down", function()
+	cycle_workspace(1)
+end)
+hl.bind("CTRL + SUPER + mouse_up", function()
+	cycle_workspace(-1)
+end)
+
 -- Special
 hl.bind("SUPER + S", hl.dsp.workspace.toggle_special("special"), { description = "Workspace: Toggle scratchpad" })
 hl.bind("SUPER + mouse:275", hl.dsp.workspace.toggle_special("special"))
-for i = 1, 4 do
-	local key = { "BracketLeft", "BracketRight", "Up", "Down" }
-	local prefix = { "-1", "+1", "r-5", "r+5" }
-	hl.bind("CTRL + SUPER + " .. key[i], hl.dsp.focus({ workspace = prefix[i] }))
-end
+
+hl.bind("CTRL + SUPER + BracketLeft", function()
+	cycle_workspace(-1)
+end, { description = "Workspace: Cycle previous" })
+hl.bind("CTRL + SUPER + BracketRight", function()
+	cycle_workspace(1)
+end, { description = "Workspace: Cycle next" })
+hl.bind("CTRL + SUPER + Up", function()
+	cycle_workspace(-1)
+end)
+hl.bind("CTRL + SUPER + Down", function()
+	cycle_workspace(1)
+end)
 
 -- Virtual machines
 hl.define_submap("virtual-machine", function()
