@@ -1,4 +1,7 @@
-// WorkspaceHub.qml --- live hyprctl client list + move/focus helpers
+// WorkspaceHub.qml --- live hyprctl client list + Lua-era Hyprland move/focus
+// Hyprland 0.56+ with hyprland.lua requires hl.dsp.* forms. Classic dispatchers
+// (workspace N, movetoworkspacesilent, focuswindow) fail with:
+//   "dispatch in lua is a shorthand for hl.dispatch(...)"
 pragma Singleton
 import QtQuick
 import Quickshell
@@ -8,13 +11,12 @@ import Quickshell.Hyprland
 Singleton {
     id: root
 
-    // All mapped clients (sorted by workspace, then layout x/y)
     ListModel { id: clientModel }
     property alias clients: clientModel
 
-    // Clients on the focused workspace only (array of plain objects)
+    // Focused workspace clients (plain JS array for strip/board bindings)
     property var focusedClients: []
-    // Map workspaceId (string key) → array of client objects (for bar badges)
+    // Map workspaceId (string key) → array of client objects
     property var clientsByWorkspace: ({})
 
     property int focusedWorkspaceId: Hyprland.focusedWorkspace?.id ?? 1
@@ -24,8 +26,11 @@ Singleton {
     // Set while a board chip is mid-drag so poll won't rebuild the model
     property bool dragActive: false
 
-    // Always expose at least workspaceNumber columns (1..N)
     property int maxWorkspace: Globals.workspaceNumber
+
+    // Hyprland 0.56 lua config — classic string dispatchers do not work.
+    // Always use hl.dsp.* (verified working via hyprctl dispatch).
+    readonly property bool useLuaDispatch: true
 
     function clientsOn(wsId) {
         const key = String(wsId)
@@ -41,6 +46,7 @@ Singleton {
             return ""
         if (a.indexOf("address:") === 0)
             a = a.substring("address:".length)
+        // Hyprland addresses look like 0x...
         return a
     }
 
@@ -70,6 +76,51 @@ Singleton {
         return (p && p.length) ? p : ""
     }
 
+    // --- Hyprland dispatches (Lua-only path for 0.56) ---
+
+    function dispatch(request) {
+        if (!request || !String(request).length)
+            return
+        Hyprland.dispatch(String(request))
+    }
+
+    function focusWindow(address) {
+        const sel = addressSelector(address)
+        if (!sel.length)
+            return
+        // Pattern from illogical-impulse / quickshell-overview
+        dispatch("hl.dsp.focus({ window = \"" + sel + "\" })")
+        refreshSoon.restart()
+    }
+
+    function moveToWorkspace(address, wsId, silent) {
+        const sel = addressSelector(address)
+        const ws = parseInt(wsId)
+        if (!sel.length || isNaN(ws) || ws <= 0)
+            return
+
+        const sil = silent !== false  // default silent
+        // Matches overview: hl.dsp.window.move({ workspace, follow=false, window })
+        let args = "workspace = " + ws
+            + ", window = \"" + sel + "\""
+            + ", follow = false"
+        if (sil)
+            args += ", silent = true"
+        dispatch("hl.dsp.window.move({ " + args + " })")
+        refreshSoon.restart()
+        // Second refresh after compositor settles
+        Qt.callLater(function () { root.refresh() })
+    }
+
+    function switchToWorkspace(id) {
+        const ws = parseInt(id)
+        if (isNaN(ws) || ws <= 0)
+            return
+        dispatch("hl.dsp.focus({ workspace = " + ws + " })")
+    }
+
+    // --- Client polling ---
+
     function refresh() {
         if (refreshing || dragActive)
             return
@@ -81,7 +132,6 @@ Singleton {
         clientModel.clear()
         let focused = []
         const byWs = ({})
-        // Cap display at configured count (still track higher for groups if needed)
         const maxWs = Globals.workspaceNumber
 
         try {
@@ -100,7 +150,7 @@ Singleton {
                     continue
                 const wsId = c.workspace && c.workspace.id !== undefined
                     ? parseInt(c.workspace.id) : 0
-                // Only regular workspaces in the configured range for board/bar
+                // Only regular workspaces in the configured range
                 if (isNaN(wsId) || wsId <= 0 || wsId > maxWs)
                     continue
 
@@ -121,7 +171,6 @@ Singleton {
                 })
             }
 
-            // Layout order: workspace → x → y
             rows.sort(function (a, b) {
                 if (a.workspaceId !== b.workspaceId)
                     return a.workspaceId - b.workspaceId
@@ -153,45 +202,6 @@ Singleton {
         root.refreshing = false
     }
 
-    function focusWindow(address) {
-        const sel = addressSelector(address)
-        if (!sel.length)
-            return
-        if (Hyprland.usingLua)
-            Hyprland.dispatch("hl.dsp.focus({ window = \"" + sel + "\" })")
-        else
-            Hyprland.dispatch("focuswindow " + sel)
-        root.refresh()
-    }
-
-    function moveToWorkspace(address, wsId, silent) {
-        const sel = addressSelector(address)
-        const ws = parseInt(wsId)
-        if (!sel.length || isNaN(ws) || ws <= 0)
-            return
-
-        const sil = silent !== false  // default silent
-        if (Hyprland.usingLua) {
-            let args = "workspace = " + ws + ", window = \"" + sel + "\""
-            if (sil)
-                args += ", silent = true"
-            Hyprland.dispatch("hl.dsp.window.move({ " + args + " })")
-        } else {
-            const cmd = sil ? "movetoworkspacesilent" : "movetoworkspace"
-            Hyprland.dispatch(cmd + " " + ws + "," + sel)
-        }
-        // Refresh after compositor settles
-        Qt.callLater(function () { root.refresh() })
-        refreshSoon.restart()
-    }
-
-    function switchToWorkspace(id) {
-        if (Hyprland.usingLua)
-            Hyprland.dispatch("hl.dsp.focus({ workspace = " + id + " })")
-        else
-            Hyprland.dispatch("workspace " + id)
-    }
-
     Process {
         id: clientsProc
         command: ["hyprctl", "-j", "clients"]
@@ -214,7 +224,7 @@ Singleton {
 
     Timer {
         id: refreshSoon
-        interval: 200
+        interval: 180
         repeat: false
         onTriggered: root.refresh()
     }

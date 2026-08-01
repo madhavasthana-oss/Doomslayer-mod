@@ -1,4 +1,9 @@
-// WorkspaceBoard.qml --- mini-desktop grid + manual drag between workspaces
+// WorkspaceBoard.qml --- mini-desktops + drag-drop
+// Architecture from illogical-impulse / quickshell-overview OverviewWidget:
+//   1. Workspace tiles with DropArea (track draggingTargetWorkspace onEntered)
+//   2. Flat windowSpace layer above tiles (all chips share one parent — no reparent)
+//   3. MouseArea.drag.target + Drag.active on each chip
+//   4. On release: WorkspaceHub.moveToWorkspace(addr, target) via hl.dsp.window.move
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
@@ -17,76 +22,17 @@ Item {
     readonly property int rows: Math.ceil(wsCount / cols)
     readonly property int screenW: Math.max(1, WorkspaceHub.screenW)
     readonly property int screenH: Math.max(1, WorkspaceHub.screenH)
-    readonly property real screenAspect: screenW / screenH
+    readonly property real screenAspect: screenW / Math.max(1, screenH)
     readonly property int iconSz: Tokens.workspaceBoardIcon
     readonly property int gap: Tokens.spacingSm
 
-    // Manual drag state (more reliable than QML Drag across Flickable/clip)
-    property bool dragging: false
-    property string dragAddress: ""
-    property string dragIcon: ""
-    property string dragTitle: ""
-    property string dragClass: ""
-    property int dragFromWs: 0
-    property real dragX: 0
-    property real dragY: 0
+    // Overview-style DnD state
+    property int draggingFromWorkspace: -1
+    property int draggingTargetWorkspace: -1
+    property string draggingAddress: ""
+    property bool isDragging: draggingAddress.length > 0
 
-    // Coordinates are always relative to this board root (not global)
-    function beginDrag(address, icon, title, className, fromWs, localX, localY) {
-        dragging = true
-        dragAddress = address
-        dragIcon = icon || ""
-        dragTitle = title || ""
-        dragClass = className || ""
-        dragFromWs = fromWs
-        dragX = localX - iconSz / 2
-        dragY = localY - iconSz / 2
-        WorkspaceHub.dragActive = true
-    }
-
-    function updateDrag(localX, localY) {
-        if (!dragging)
-            return
-        dragX = localX - iconSz / 2
-        dragY = localY - iconSz / 2
-    }
-
-    function endDrag(localX, localY) {
-        if (!dragging)
-            return
-        let targetWs = -1
-
-        // Hit-test mini desktop frames
-        for (let i = 0; i < deskRepeater.count; i++) {
-            const item = deskRepeater.itemAt(i)
-            if (!item)
-                continue
-            const local = item.mapFromItem(root, localX, localY)
-            if (local.x >= 0 && local.y >= 0
-                    && local.x <= item.width && local.y <= item.height) {
-                targetWs = item.wsId
-                break
-            }
-        }
-
-        if (targetWs > 0 && targetWs !== dragFromWs && dragAddress.length)
-            WorkspaceHub.moveToWorkspace(dragAddress, targetWs, true)
-
-        dragging = false
-        dragAddress = ""
-        dragFromWs = 0
-        WorkspaceHub.dragActive = false
-        WorkspaceHub.refresh()
-    }
-
-    function cancelDrag() {
-        dragging = false
-        dragAddress = ""
-        dragFromWs = 0
-        WorkspaceHub.dragActive = false
-    }
-
-    // Absorb clicks so dim overlay doesn't close when clicking the card
+    // Absorb clicks so the dim overlay behind the card doesn't steal them
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.AllButtons
@@ -118,9 +64,12 @@ Item {
             }
             Text {
                 Layout.fillWidth: true
-                text: dragging
-                    ? ("dragging → drop on a desktop")
-                    : ("drag windows between mini-desktops · " + root.wsCount + " workspaces")
+                text: root.isDragging
+                    ? ("drop on a desktop  ·  target WS "
+                       + (root.draggingTargetWorkspace > 0
+                          ? String(root.draggingTargetWorkspace) : "—"))
+                    : ("drag windows between mini-desktops  ·  "
+                       + root.wsCount + " workspaces")
                 font.family: Theme.fontMono
                 font.pixelSize: Tokens.fontSizeTiny
                 color: Theme.textDim
@@ -171,26 +120,43 @@ Item {
             opacity: 0.5
         }
 
-        // Grid of mini-desktops
+        // Grid host — tiles + flat window layer
         Item {
             id: gridHost
             Layout.fillWidth: true
             Layout.fillHeight: true
 
-            // Compute cell size to fit cols×rows with landscape aspect
             readonly property int hGap: root.gap
             readonly property int vGap: root.gap
-            readonly property int cellW: Math.floor(
-                (width - hGap * (root.cols - 1)) / root.cols)
-            // Header + footer + landscape screen
+            readonly property int cellW: Math.max(40, Math.floor(
+                (width - hGap * (root.cols - 1)) / root.cols))
             readonly property int headerH: Tokens.listRowHeight
             readonly property int footerH: Tokens.listRowHeight
-            readonly property int screenH: Math.floor(cellW / root.screenAspect)
-            readonly property int cellH: headerH + screenH + footerH + Tokens.spacingXss * 2
-
-            // Center the grid block
+            readonly property int miniH: Math.max(
+                Tokens.statBoxHeight,
+                Math.floor(cellW / root.screenAspect))
+            readonly property int cellH: headerH + miniH + footerH
+                + Tokens.spacingXss * 2
             readonly property int gridW: cellW * root.cols + hGap * (root.cols - 1)
             readonly property int gridH: cellH * root.rows + vGap * (root.rows - 1)
+
+            // Geometry helpers for flat window placement (overview pattern)
+            function cellX(wsId) {
+                const i = wsId - 1
+                return (i % root.cols) * (cellW + hGap)
+            }
+            function cellY(wsId) {
+                const i = wsId - 1
+                return Math.floor(i / root.cols) * (cellH + vGap)
+            }
+            function miniX(wsId) {
+                return cellX(wsId)
+            }
+            function miniY(wsId) {
+                return cellY(wsId) + headerH + Tokens.spacingXss
+            }
+            function miniWidth() { return cellW }
+            function miniHeight() { return miniH }
 
             Item {
                 id: grid
@@ -198,42 +164,35 @@ Item {
                 height: gridHost.gridH
                 anchors.centerIn: parent
 
+                // --- Layer 1: workspace tiles + DropAreas (under windows) ---
                 Repeater {
-                    id: deskRepeater
                     model: root.wsCount
 
                     Item {
                         id: desk
                         property int wsId: index + 1
                         property bool isFocused: WorkspaceHub.focusedWorkspaceId === wsId
-                        property bool dropHover: false
-                        property var clients: WorkspaceHub.clientsOn(wsId)
+                        property bool dropHover: root.draggingTargetWorkspace === wsId
+                            && root.isDragging
+                        property int clientCount: {
+                            // Depend on clientsByWorkspace so count updates
+                            const _ = WorkspaceHub.clientsByWorkspace
+                            return WorkspaceHub.clientsOn(desk.wsId).length
+                        }
 
                         width:  gridHost.cellW
                         height: gridHost.cellH
-                        x: (index % root.cols) * (gridHost.cellW + gridHost.hGap)
-                        y: Math.floor(index / root.cols) * (gridHost.cellH + gridHost.vGap)
-
-                        // Highlight when drag ghost is over this desk
-                        property bool dragOver: {
-                            if (!root.dragging)
-                                return false
-                            const p = desk.mapFromItem(root,
-                                root.dragX + root.iconSz / 2,
-                                root.dragY + root.iconSz / 2)
-                            return p.x >= 0 && p.y >= 0 && p.x <= width && p.y <= height
-                        }
+                        x: gridHost.cellX(wsId)
+                        y: gridHost.cellY(wsId)
+                        z: 0
 
                         ColumnLayout {
                             anchors.fill: parent
                             spacing: Tokens.spacingXss
 
-                            // Title bar of mini screen
                             RowLayout {
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: gridHost.headerH
-                                spacing: Tokens.spacingXs
-
                                 Text {
                                     text: "WS " + desk.wsId
                                     font.family: Theme.fontDisplay
@@ -242,151 +201,64 @@ Item {
                                 }
                                 Item { Layout.fillWidth: true }
                                 Text {
-                                    text: String(desk.clients.length)
+                                    text: String(desk.clientCount)
                                     font.family: Theme.fontMono
                                     font.pixelSize: Tokens.fontSizeTiny
                                     color: Theme.textMuted
                                 }
                             }
 
-                            // === Mini desktop bezel (landscape screen) ===
+                            // Mini desktop bezel
                             Rectangle {
                                 id: bezel
                                 Layout.fillWidth: true
-                                Layout.preferredHeight: gridHost.screenH
-                                Layout.maximumHeight: gridHost.screenH
+                                Layout.preferredHeight: gridHost.miniH
+                                Layout.maximumHeight: gridHost.miniH
                                 radius: Tokens.radiusMd
                                 color: Theme.bgPrimary
-                                border.color: desk.dragOver ? Theme.accent
+                                border.color: desk.dropHover ? Theme.accent
                                             : (desk.isFocused ? Theme.borderActive : Theme.borderIdle)
-                                border.width: desk.dragOver ? Math.max(2, Tokens.strokeWidthActive)
-                                            : Tokens.strokeWidth
+                                border.width: desk.dropHover
+                                    ? Math.max(2, Tokens.strokeWidthActive)
+                                    : Tokens.strokeWidth
                                 clip: true
 
-                                // Inner screen surface
+                                // Drop target (overview: onEntered tracks target ws)
+                                DropArea {
+                                    anchors.fill: parent
+                                    onEntered: (drag) => {
+                                        root.draggingTargetWorkspace = desk.wsId
+                                        drag.accept(Qt.MoveAction)
+                                    }
+                                    onExited: {
+                                        if (root.draggingTargetWorkspace === desk.wsId)
+                                            root.draggingTargetWorkspace = -1
+                                    }
+                                }
+
+                                // Click empty desktop → focus workspace
+                                MouseArea {
+                                    anchors.fill: parent
+                                    z: -1
+                                    acceptedButtons: Qt.LeftButton
+                                    onClicked: {
+                                        if (!root.isDragging)
+                                            WorkspaceHub.switchToWorkspace(desk.wsId)
+                                    }
+                                }
+
                                 Rectangle {
-                                    id: screen
                                     anchors.fill: parent
                                     anchors.margins: Tokens.workspaceMiniPad
                                     radius: Tokens.radiusSm
                                     color: Theme.bgConsole
                                     border.color: Theme.borderIdle
                                     border.width: Tokens.strokeWidth
-                                    clip: true
-
-                                    // Windows as scaled rectangles in layout positions
-                                    Repeater {
-                                        model: desk.clients
-
-                                        Item {
-                                            id: winChip
-                                            // Relative position on real monitor → mini screen
-                                            property real nx: Math.max(0, Math.min(0.92, modelData.x / root.screenW))
-                                            property real ny: Math.max(0, Math.min(0.92, modelData.y / root.screenH))
-                                            property real nw: Math.max(0.12, Math.min(1 - nx, modelData.w / root.screenW))
-                                            property real nh: Math.max(0.12, Math.min(1 - ny, modelData.h / root.screenH))
-
-                                            x: nx * screen.width
-                                            y: ny * screen.height
-                                            width:  Math.max(root.iconSz + 4, nw * screen.width)
-                                            height: Math.max(root.iconSz + 4, nh * screen.height)
-
-                                            visible: !(root.dragging && root.dragAddress === modelData.address)
-
-                                            Rectangle {
-                                                anchors.fill: parent
-                                                radius: Tokens.radiusSm
-                                                color: chipMouse.containsMouse ? Theme.bgElevated : Theme.bgSurface
-                                                border.color: chipMouse.containsMouse
-                                                    ? Theme.borderActive : Theme.borderIdle
-                                                border.width: Tokens.strokeWidth
-                                            }
-
-                                            Image {
-                                                id: chipIcon
-                                                anchors.centerIn: parent
-                                                width:  Math.min(root.iconSz, parent.width - 6)
-                                                height: Math.min(root.iconSz, parent.height - 6)
-                                                source: modelData.icon || ""
-                                                sourceSize: Qt.size(width * 2, height * 2)
-                                                fillMode: Image.PreserveAspectFit
-                                                asynchronous: true
-                                                smooth: true
-                                                visible: status === Image.Ready
-                                            }
-
-                                            Text {
-                                                anchors.centerIn: parent
-                                                visible: chipIcon.status !== Image.Ready
-                                                text: {
-                                                    const t = modelData.className || modelData.title || "?"
-                                                    return String(t).charAt(0).toUpperCase()
-                                                }
-                                                font.family: Theme.fontDisplay
-                                                font.pixelSize: Tokens.fontSizeSmall
-                                                color: Theme.accent
-                                            }
-
-                                            MouseArea {
-                                                id: chipMouse
-                                                anchors.fill: parent
-                                                hoverEnabled: true
-                                                cursorShape: pressed ? Qt.ClosedHandCursor : Qt.OpenHandCursor
-                                                preventStealing: true
-
-                                                property real pressX: 0
-                                                property real pressY: 0
-                                                property bool armed: false
-
-                                                function toBoard(mx, my) {
-                                                    return chipMouse.mapToItem(root, mx, my)
-                                                }
-
-                                                onPressed: (mouse) => {
-                                                    armed = true
-                                                    const p = toBoard(mouse.x, mouse.y)
-                                                    pressX = p.x
-                                                    pressY = p.y
-                                                }
-                                                onPositionChanged: (mouse) => {
-                                                    if (!pressed || !armed)
-                                                        return
-                                                    const p = toBoard(mouse.x, mouse.y)
-                                                    const dx = p.x - pressX
-                                                    const dy = p.y - pressY
-                                                    if (!root.dragging && (dx * dx + dy * dy) > 64) {
-                                                        root.beginDrag(
-                                                            modelData.address,
-                                                            modelData.icon,
-                                                            modelData.title,
-                                                            modelData.className,
-                                                            modelData.workspaceId,
-                                                            p.x, p.y
-                                                        )
-                                                    } else if (root.dragging) {
-                                                        root.updateDrag(p.x, p.y)
-                                                    }
-                                                }
-                                                onReleased: (mouse) => {
-                                                    const p = toBoard(mouse.x, mouse.y)
-                                                    if (root.dragging) {
-                                                        root.endDrag(p.x, p.y)
-                                                    } else if (armed) {
-                                                        WorkspaceHub.focusWindow(modelData.address)
-                                                    }
-                                                    armed = false
-                                                }
-                                                onCanceled: {
-                                                    root.cancelDrag()
-                                                    armed = false
-                                                }
-                                            }
-                                        }
-                                    }
 
                                     Text {
                                         anchors.centerIn: parent
-                                        visible: desk.clients.length === 0
+                                        // Only show "empty" when not dragging over
+                                        visible: desk.clientCount === 0 && !desk.dropHover
                                         text: "empty"
                                         font.family: Theme.fontMono
                                         font.pixelSize: Tokens.fontSizeTiny
@@ -395,7 +267,6 @@ Item {
                                 }
                             }
 
-                            // Focus footer
                             Rectangle {
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: gridHost.footerH
@@ -422,73 +293,206 @@ Item {
                         }
                     }
                 }
+
+                // --- Layer 2: flat window chips (overview windowSpace) ---
+                // All chips share this parent so they can drag across tiles without reparent.
+                Item {
+                    id: windowSpace
+                    anchors.fill: parent
+                    z: 10
+
+                    // Rebuild when hub data changes
+                    property var allClients: {
+                        const m = WorkspaceHub.clientsByWorkspace
+                        const out = []
+                        if (!m)
+                            return out
+                        for (let w = 1; w <= root.wsCount; w++) {
+                            const list = m[String(w)]
+                            if (!list)
+                                continue
+                            for (let i = 0; i < list.length; i++)
+                                out.push(list[i])
+                        }
+                        return out
+                    }
+
+                    Repeater {
+                        model: windowSpace.allClients
+
+                        Item {
+                            id: winChip
+                            // modelData is a plain client object from the hub
+                            property string address: modelData.address || ""
+                            property int homeWorkspace: modelData.workspaceId || 1
+                            property string className: modelData.className || ""
+                            property string title: modelData.title || ""
+                            property string iconSource: modelData.icon || ""
+                            property bool dragInProgress: false
+                            property real homeX: 0
+                            property real homeY: 0
+
+                            // Scaled position inside mini-desktop
+                            readonly property real pad: Tokens.workspaceMiniPad
+                            readonly property real innerW: Math.max(1, gridHost.miniWidth() - 2 * pad)
+                            readonly property real innerH: Math.max(1, gridHost.miniHeight() - 2 * pad)
+
+                            readonly property real nx: Math.max(0, Math.min(0.88,
+                                (modelData.x || 0) / root.screenW))
+                            readonly property real ny: Math.max(0, Math.min(0.88,
+                                (modelData.y || 0) / root.screenH))
+                            readonly property real nw: Math.max(0.16, Math.min(
+                                1 - nx, (modelData.w || 200) / root.screenW))
+                            readonly property real nh: Math.max(0.16, Math.min(
+                                1 - ny, (modelData.h || 200) / root.screenH))
+
+                            // Absolute position on flat windowSpace
+                            x: gridHost.miniX(homeWorkspace) + pad + nx * innerW
+                            y: gridHost.miniY(homeWorkspace) + pad + ny * innerH
+                            width:  Math.max(root.iconSz + 8, nw * innerW)
+                            height: Math.max(root.iconSz + 8, nh * innerH)
+                            z: dragInProgress ? 99999 : 1
+
+                            // Hide chip when mid-drag and model refreshes would clobber —
+                            // only hide OTHER chips? Keep self visible.
+                            // When address matches active drag and we're a stale clone, hide.
+                            visible: !(root.isDragging
+                                && root.draggingAddress === address
+                                && !dragInProgress)
+
+                            // Overview: Drag.active is set in onPressed/onReleased (not bound)
+                            Drag.source: winChip
+                            Drag.hotSpot.x: width / 2
+                            Drag.hotSpot.y: height / 2
+                            Drag.supportedActions: Qt.MoveAction
+
+                            Rectangle {
+                                anchors.fill: parent
+                                radius: Tokens.radiusSm
+                                color: dragArea.containsMouse || winChip.dragInProgress
+                                    ? Theme.bgElevated : Theme.bgSurface
+                                border.color: winChip.dragInProgress
+                                    ? Theme.accent
+                                    : (dragArea.containsMouse
+                                       ? Theme.borderActive : Theme.borderIdle)
+                                border.width: Tokens.strokeWidth
+                            }
+
+                            Image {
+                                id: chipIcon
+                                anchors.centerIn: parent
+                                width:  Math.min(root.iconSz, parent.width - 6)
+                                height: Math.min(root.iconSz, parent.height - 6)
+                                source: winChip.iconSource
+                                sourceSize: Qt.size(Math.max(1, width * 2), Math.max(1, height * 2))
+                                fillMode: Image.PreserveAspectFit
+                                asynchronous: true
+                                smooth: true
+                                visible: status === Image.Ready
+                            }
+
+                            Text {
+                                anchors.centerIn: parent
+                                visible: chipIcon.status !== Image.Ready
+                                text: {
+                                    const t = winChip.className || winChip.title || "?"
+                                    return String(t).charAt(0).toUpperCase()
+                                }
+                                font.family: Theme.fontDisplay
+                                font.pixelSize: Tokens.fontSizeSmall
+                                color: Theme.accent
+                            }
+
+                            MouseArea {
+                                id: dragArea
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                preventStealing: true
+                                cursorShape: drag.active
+                                    ? Qt.ClosedHandCursor : Qt.OpenHandCursor
+                                acceptedButtons: Qt.LeftButton
+                                drag.target: winChip
+                                drag.axis: Drag.XAndYAxis
+                                drag.smoothed: false
+                                drag.threshold: 4
+
+                                property bool moved: false
+
+                                onPressed: (mouse) => {
+                                    moved = false
+                                    winChip.homeX = winChip.x
+                                    winChip.homeY = winChip.y
+                                    winChip.dragInProgress = true
+                                    root.draggingFromWorkspace = winChip.homeWorkspace
+                                    root.draggingTargetWorkspace = winChip.homeWorkspace
+                                    root.draggingAddress = winChip.address
+                                    WorkspaceHub.dragActive = true
+
+                                    // Overview pattern: set Drag + hotspot on press
+                                    winChip.Drag.source = winChip
+                                    winChip.Drag.hotSpot.x = mouse.x
+                                    winChip.Drag.hotSpot.y = mouse.y
+                                    winChip.Drag.active = true
+                                }
+
+                                onPositionChanged: {
+                                    if (drag.active)
+                                        moved = true
+                                }
+
+                                onReleased: {
+                                    const target = root.draggingTargetWorkspace
+                                    const addr = root.draggingAddress
+                                    const from = root.draggingFromWorkspace
+                                    const wasMoved = moved
+
+                                    winChip.Drag.active = false
+                                    winChip.dragInProgress = false
+                                    WorkspaceHub.dragActive = false
+                                    root.draggingAddress = ""
+                                    root.draggingFromWorkspace = -1
+                                    root.draggingTargetWorkspace = -1
+
+                                    if (wasMoved && addr.length && target > 0 && target !== from) {
+                                        // Overview: apply move on release using tracked target
+                                        WorkspaceHub.moveToWorkspace(addr, target, true)
+                                    } else if (!wasMoved && addr.length) {
+                                        // Snap back + focus
+                                        winChip.x = winChip.homeX
+                                        winChip.y = winChip.homeY
+                                        WorkspaceHub.focusWindow(addr)
+                                    } else {
+                                        // Cancelled drop — snap back; refresh restores layout
+                                        winChip.x = winChip.homeX
+                                        winChip.y = winChip.homeY
+                                    }
+
+                                    Qt.callLater(function () {
+                                        WorkspaceHub.refresh()
+                                    })
+                                }
+
+                                onCanceled: {
+                                    winChip.Drag.active = false
+                                    winChip.dragInProgress = false
+                                    WorkspaceHub.dragActive = false
+                                    root.draggingAddress = ""
+                                    root.draggingFromWorkspace = -1
+                                    root.draggingTargetWorkspace = -1
+                                    winChip.x = winChip.homeX
+                                    winChip.y = winChip.homeY
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
-    }
-
-    // Drag ghost (follows cursor, above everything)
-    Item {
-        id: ghost
-        visible: root.dragging
-        x: root.dragX
-        y: root.dragY
-        width:  root.iconSz + Tokens.spacingMd
-        height: root.iconSz + Tokens.spacingMd
-        z: 10000
-
-        Rectangle {
-            anchors.fill: parent
-            radius: Tokens.radiusMd
-            color: Theme.bgElevated
-            border.color: Theme.accent
-            border.width: Tokens.strokeWidthActive
-            opacity: 0.95
-        }
-
-        Image {
-            id: ghostIcon
-            anchors.centerIn: parent
-            width:  root.iconSz
-            height: root.iconSz
-            source: root.dragIcon
-            sourceSize: Qt.size(width * 2, height * 2)
-            fillMode: Image.PreserveAspectFit
-            visible: status === Image.Ready
-            asynchronous: true
-        }
-
-        Text {
-            anchors.centerIn: parent
-            visible: ghostIcon.status !== Image.Ready
-            text: {
-                const t = root.dragClass || root.dragTitle || "?"
-                return String(t).charAt(0).toUpperCase()
-            }
-            font.family: Theme.fontDisplay
-            font.pixelSize: Tokens.fontSizeMedium
-            color: Theme.accent
-        }
-    }
-
-    // Track pointer on the board while dragging (mouse left the chip)
-    MouseArea {
-        anchors.fill: parent
-        enabled: root.dragging
-        hoverEnabled: true
-        preventStealing: true
-        z: 9999
-        cursorShape: Qt.ClosedHandCursor
-        onPositionChanged: (mouse) => root.updateDrag(mouse.x, mouse.y)
-        onReleased: (mouse) => root.endDrag(mouse.x, mouse.y)
-        onCanceled: root.cancelDrag()
     }
 
     Keys.onPressed: (event) => {
         if (event.key === Qt.Key_Escape) {
-            if (root.dragging)
-                root.cancelDrag()
-            else
-                Globals.closeWorkspaceBoard()
+            Globals.closeWorkspaceBoard()
             event.accepted = true
         }
     }
@@ -499,7 +503,10 @@ Item {
         target: Globals
         function onWorkspaceBoardOpenChanged() {
             if (Globals.workspaceBoardOpen) {
-                root.cancelDrag()
+                root.draggingAddress = ""
+                root.draggingTargetWorkspace = -1
+                root.draggingFromWorkspace = -1
+                WorkspaceHub.dragActive = false
                 WorkspaceHub.refresh()
                 root.forceActiveFocus()
             }
