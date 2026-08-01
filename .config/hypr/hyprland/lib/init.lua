@@ -44,9 +44,9 @@ function cycle_workspace(delta)
 	hl.dispatch(hl.dsp.focus({ workspace = nextWs }))
 end
 
--- Move active window to previous/next workspace (wrap), stay on current view
+-- Move active window to previous/next workspace (wrap) and follow focus with it
 function cycle_move_window(delta)
 	local curr = hl.get_active_workspace().id
 	local nextWs = workspace_wrap(curr + delta)
-	hl.dispatch(hl.dsp.window.move({ workspace = nextWs, silent = true, follow = false }))
+	hl.dispatch(hl.dsp.window.move({ workspace = nextWs, follow = true }))
 end
