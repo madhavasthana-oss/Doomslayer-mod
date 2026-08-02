@@ -152,7 +152,7 @@ Item {
         readonly property string usageGiB: {
             if (ramTotal < 0 || ramInUse < 0)
                 return "--/--";
-            return __fmtGiB__(ramInUse) + "/" + __fmtGiB__(ramTotal) + " GiB";
+            return rightBar.__fmtGiB__(ramInUse) + "/" + rightBar.__fmtGiB__(ramTotal) + " GiB";
         }
 
         // isReady is a plain property on RAMBackend, not a signal ---
@@ -243,7 +243,7 @@ Item {
                     width: parent.width * batStat.percentage * 0.01
                     height: parent.height
                     // Low battery = critical: invert percentage before feeding gradient.
-                    color: __gradient__(Theme.stateSafe, Theme.stateCritical, 1.00 - (batStat.percentage / 100))
+                    color: rightBar.__gradient__(Theme.stateSafe, Theme.stateCritical, 1.00 - (batStat.percentage / 100))
                     radius: Tokens.radiusXl
                     opacity: 0
                     Behavior on opacity {
@@ -394,7 +394,7 @@ Item {
                     width: parent.width * Math.max(cpuStat.averageUsage, 0) * 0.01
                     height: parent.height
                     // High usage = critical: feed percentage directly, no inversion.
-                    color: __gradient__(Theme.stateSafe, Theme.stateCritical, Math.max(cpuStat.averageUsage, 0) / 100)
+                    color: rightBar.__gradient__(Theme.stateSafe, Theme.stateCritical, Math.max(cpuStat.averageUsage, 0) / 100)
                     radius: Tokens.radiusXl
                     opacity: 0
                     Behavior on opacity {
@@ -457,7 +457,7 @@ Item {
                     width: parent.width * Math.max(gpuStat.gpuUsage, 0) / 100
                     height: parent.height
                     // High usage = critical: feed percentage directly, no inversion.
-                    color: __gradient__(Theme.stateSafe, Theme.stateCritical, Math.max(gpuStat.gpuUsage, 0) / 100)
+                    color: rightBar.__gradient__(Theme.stateSafe, Theme.stateCritical, Math.max(gpuStat.gpuUsage, 0) / 100)
                     radius: Tokens.radiusXl
                     opacity: 0
                     Behavior on opacity {
