@@ -116,10 +116,17 @@ Item {
             Quickshell.execDetached(["systemctl", "reboot"])
             break
         case "logout":
-            Quickshell.execDetached(["hyprctl", "dispatch", "exit"])
+            // Hyprland 0.56+ (Lua): classic "exit" dispatcher is gone.
+            // Prefer hl.dsp.exit(), fall back to loginctl so logout never no-ops.
+            Quickshell.execDetached([
+                "bash", "-lc",
+                "hyprctl dispatch 'hl.dsp.exit()' 2>/dev/null" +
+                " || hyprctl dispatch exit 2>/dev/null" +
+                " || loginctl terminate-session \"${XDG_SESSION_ID:-self}\""
+            ])
             break
         case "lock":
-            Quickshell.execDetached(["hyprlock"])
+            Quickshell.execDetached(["bash", "-lc", "pidof hyprlock >/dev/null || hyprlock"])
             break
         case "sleep":
             Quickshell.execDetached(["systemctl", "suspend"])

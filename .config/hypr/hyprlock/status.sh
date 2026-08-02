@@ -1,29 +1,26 @@
 #!/usr/bin/env bash
+# Compact status for the right island (battery only when present)
 
-############ Variables ############
-enable_battery=false
-battery_charging=false
+capacity=""
+charging=false
 
-####### Check availability ########
 for battery in /sys/class/power_supply/*BAT*; do
-  if [[ -f "$battery/uevent" ]]; then
-    enable_battery=true
-    if [[ $(cat /sys/class/power_supply/*/status | head -1) == "Charging" ]]; then
-      battery_charging=true
+    if [[ -f "$battery/uevent" ]]; then
+        capacity=$(cat /sys/class/power_supply/*/capacity 2>/dev/null | head -1)
+        if [[ $(cat /sys/class/power_supply/*/status 2>/dev/null | head -1) == "Charging" ]]; then
+            charging=true
+        fi
+        break
     fi
-    break
-  fi
 done
 
-############# Output #############
-if [[ $enable_battery == true ]]; then
-  if [[ $battery_charging == true ]]; then
-    echo -n "(+) "
-  fi
-  echo -n "$(cat /sys/class/power_supply/*/capacity | head -1)"%
-  if [[ $battery_charging == false ]]; then
-    echo -n " remaining"
-  fi
+if [[ -n "$capacity" ]]; then
+    if [[ $charging == true ]]; then
+        echo "⚡ ${capacity}%"
+    else
+        echo "▮ ${capacity}%"
+    fi
+else
+    # Desktop / no battery — short host tag so the island isn't empty
+    echo "◆ $(hostname -s 2>/dev/null || echo hell)"
 fi
-
-echo ''
