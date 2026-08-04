@@ -1,28 +1,28 @@
 {
   "_comment": "Doomshell high-vis wallust map: punch accents up, never crush muted roles into mud",
   "_source": "wallust",
-  "_wallpaper": "/home/madhav/Pictures/Wallpapers/Doomslayer-1.jpg",
+  "_wallpaper": "/home/madhav/Pictures/Wallpapers/Sekiro.jpg",
 
   "bgPrimary":   "#000000",
-  "bgSurface":   "#222222",
-  "bgElevated":  "#323131",
-  "bgConsole":   "#262526",
+  "bgSurface":   "#1E1F1E",
+  "bgElevated":  "#2D2E2D",
+  "bgConsole":   "#222222",
 
-  "accent":      "#D2A581",
-  "accentWarm":  "#C2D88E",
-  "accentSoft":  "#BE7795",
+  "accent":      "#D9A382",
+  "accentWarm":  "#AFD58F",
+  "accentSoft":  "#D177A6",
 
-  "textPrimary":   "#D2A581",
-  "textSecondary": "#CFE1A8",
-  "textMuted":     "#BC7944",
-  "textDim":       "#AE6022",
+  "textPrimary":   "#D9A382",
+  "textSecondary": "#C1DEA9",
+  "textMuted":     "#C57644",
+  "textDim":       "#BA5D22",
 
-  "stateCritical": "#C99267",
-  "stateSafe":     "#76BCA2",
-  "stateWarning":  "#BBD482",
+  "stateCritical": "#D19168",
+  "stateSafe":     "#76BBA6",
+  "stateWarning":  "#A7D182",
 
-  "borderActive":  "#D2A581",
-  "borderIdle":    "#BC7944",
-  "borderConsole": "#BC7944",
-  "glowConsole":   "#B3682B"
+  "borderActive":  "#D9A382",
+  "borderIdle":    "#C57644",
+  "borderConsole": "#C57644",
+  "glowConsole":   "#BE642C"
 }

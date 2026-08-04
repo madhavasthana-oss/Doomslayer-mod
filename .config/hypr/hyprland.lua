@@ -29,3 +29,5 @@ end
 if is_file_exists(HOME .. "/.config/hypr/monitors.lua") then
 	require("monitors")
 end
+
+require("hyprcaffeine-keybinds")
